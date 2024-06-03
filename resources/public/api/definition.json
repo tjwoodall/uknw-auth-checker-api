@@ -2,10 +2,10 @@
   "scopes": [
   ],
   "api": {
-    "name": "Hello World",
-    "description": "A 'hello world' example of an API on the HMRC API Developer Hub.",
-    "context": "discuss-with-the-api-platform-team",
-    "categories": ["OTHER"],
+    "name": "UK Internal Market Scheme (UKIMS) Notice of Presentation Waiver (NOP) Checker",
+    "description": "TBC",
+    "context": "customs/uk-notice-of-presentation-waiver",
+    "categories": ["CUSTOMS"],
     "versions": [
       {
         "version": "1.0",
