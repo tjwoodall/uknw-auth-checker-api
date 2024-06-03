@@ -2,7 +2,7 @@
   "scopes": [
   ],
   "api": {
-    "name": "UK Internal Market Scheme (UKIMS) Notice of Presentation Waiver (NOP) Checker",
+    "name": "Notice of Presentation (NOP) Waiver Checker",
     "description": "TBC",
     "context": "customs/uk-notice-of-presentation-waiver",
     "categories": ["CUSTOMS"],
