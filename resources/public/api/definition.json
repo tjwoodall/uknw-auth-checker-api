@@ -2,7 +2,7 @@
   "scopes": [
   ],
   "api": {
-    "name": "Notice of Presentation (NOP) Waiver Checker",
+    "name": "Notice of Presentation Waiver Checker",
     "description": "TBC",
     "context": "customs/uk-notice-of-presentation-waiver",
     "categories": ["CUSTOMS"],
