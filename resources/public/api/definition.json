@@ -3,7 +3,7 @@
   ],
   "api": {
     "name": "Notice of Presentation Waiver Checker",
-    "description": "TBC",
+    "description": "The public-facing API to allow CSP's to request information on NOP Waiver authorisations for traders with EORI numbers",
     "context": "customs/uk-notice-of-presentation-waiver",
     "categories": ["CUSTOMS"],
     "versions": [

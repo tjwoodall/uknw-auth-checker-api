@@ -138,3 +138,43 @@ paths:
                 }
       security:
         - applicationRestricted: []
+components:
+  securitySchemes:
+    applicationRestricted:
+      type: oauth2
+      description: |
+        HMRC supports OAuth 2.0 for authenticating application restricted API requests using an OAuth 2.0 Bearer Token in the AUTHORIZATION header.
+        See https://developer.service.hmrc.gov.uk/api-documentation/docs/authorisation/application-restricted-endpoints for details.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.service.hmrc.gov.uk/oauth/token
+          scopes: { }
+  schemas:
+    Request:
+      type: object
+      properties:
+        date:
+          type: string
+          example: 2024-02-31
+        eoris:
+          type: array
+          items:
+            type: string
+            example: GB123123123333
+    Authorisations:
+      type: object
+      properties:
+        date:
+          type: string
+          example: 2024-02-31
+        eoris:
+          type: array
+          items:
+            type: object
+            properties:
+              eori:
+                type: string
+                example: GB123123123123
+              authorised:
+                type: boolean
+                example: true
