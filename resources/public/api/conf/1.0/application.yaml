@@ -1,49 +1,140 @@
-openapi: "3.0.3"
-
+openapi: 3.0.3
 info:
   version: 1.0.0
-  title: Hello World
+  title: Notice of Presentation (NOP) Waiver Checker API
+  description: |
+    This API enables Community System Providers (CSP's) and software developers to check if traders have a valid Notice of Presentation (NOP) Waiver authorisation using their Economic Operators Registration and Identification (EORI) number. 
+    This waiver is necessary to enable the transit of Not At Risk (NAR) goods moving through from GB-NI. 
+    The API follows REST principles and has a single POST method endpoint that returns the data in JSON format. It uses standard HTTP error response codes.
 
+    Use this API to request the NOP Waiver authorisation status of between 1 and 3000 EORI numbers passed as an array. 
+
+    Note: The API endpoint relates only to Great Britain and Northern Ireland.
+  contact: {}
 servers:
-  - url: https://test-api.service.hmrc.gov.uk/hello-world
-    description: Sandbox
-  - url: https://api.service.hmrc.gov.uk/hello-world
-    description: Production
-
-components:
-  parameters:
-    acceptHeader:
-      name: Accept
-      in: header
-      schema:
-        type: string
-        enum: [
-          "application/vnd.hmrc.1.0+json",
-          "application/vnd.hmrc.1.0+xml"
-        ]
-      required: true
-
+  - url: "https://test-api.service.hmrc.gov.uk"
+    description: |
+      Sandbox URL for the Test Environment
+  - url: "https://api.service.hmrc.gov.uk"
+    description: |
+      Production URL for the Live Environment
 paths:
-  /hello-world:
-    get:
-      summary: Placeholder hello world endpoint
-      description: |
-        An endpoint that returns "Hello world"
+  /customs/uk-notice-of-presentation-waiver/authorisations:
+    post:
       tags:
-        - uknw-auth-checker-api
-      parameters:
-        - $ref: '#/components/parameters/acceptHeader'
+        - Endpoint for Authorisations
+      summary: |
+        Request NOP Waiver Authorisation Status for User Provided EORIs
+      description: |
+        Use this method to request the NOP Waiver authorisation status of between 1 and 3000 EORIs.
+
+      operationId: requestAuth
+      requestBody:
+        description: |
+          The payload of the API request. 
+
+          Request Example:
+
+          curl -X POST "https://test-api.service.hmrc.gov.uk/customs/uk-notice-of-presentation-waiver/authorisations"
+
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Request"
+
       responses:
-        200:
-          description: "OK Response"
+        "200":
+          description: |
+            Success - Authorised. A list of EORI Numbers provided with their authorised status as boolean 'true'.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
+                $ref: "#/components/schemas/Authorisations"
+        "400":
+          description: |
+            Validation failure. The server cannot or will not process the request due to something that is perceived to be a client error. Possible causes could be:
+
+            <ul>
+              <li>unsupported country code in EORI (GB and XI are supported)</li>
+              <li>invalid format for EORI number</li>
+              <li>invalid format for date</li>
+            </ul>
+          content:
+            application/json:
               example:
-                "Hello world"
+                {
+                  "code": "INVALID_FORMAT",
+                  "message": "FR123123123123 is not a suported EORI number",
+                }
+        "401":
+          description: |
+            Authentication failure. Commonly a client side error, typically generated when authentication information is not provided, possibly by omitting a bearer token.
+          content:
+            application/json:
+              example:
+                {
+                  "code": "MISSING_CREDENTIALS",
+                  "message": "Authentication information is not provided",
+                }
+        "403":
+          description: |
+            Forbidden. The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. Other possible causes could be:
+
+            <ul>
+              <li>Authentication token expired</li>
+              <li>Missing authentication token</li>
+            </ul>
+          content:
+            application/json:
+              example:
+                {
+                  "code": "FORBIDDEN",
+                  "message": "You are not allowed to access this resource",
+                }
+        "405":
+          description: |
+            Method not allowed. A 405 usually means the client implemented a GET on a service that only allows POST, or vice-versa, or tried http: on a method that requires https.
+          content:
+            application/json:
+              example:
+                {
+                  "code": "METHOD_NOT_ALLOWED",
+                  "message": "This method is not supported",
+                }
+        "406":
+          description: |
+            Not acceptable. This response is sent when the incoming request desires an accept header for a content we cannot support. Primary way to fix 406 errors is as follows:
+            <ul>
+              <li>Check Accept header</li>
+              <li>Check Request and Response headers</li>
+            </ul>
+          content:
+            application/json:
+              example:
+                {
+                  "code": "NOT_ACCEPTABLE",
+                  "message": "Cannot produce an acceptable response",
+                }
+        "429":
+          description: |
+            Request in excess of rate limit. The user has sent too many requests in a given amount of time.
+          content:
+            application/json:
+              example:
+                {
+                  "code": "RATE_LIMIT_VIOLATION",
+                  "message": "Request count from application in excess of rate limit",
+                }
+        "500":
+          description: |
+            Internal Server Error. The server has encountered a situation it does not know how to handle.
+          content:
+            application/json:
+              example:
+                {
+                  "code": "INTERNAL_SERVER_ERROR",
+                  "message": "Unexpected internal server error",
+                }
       security:
-        - {}
+        - applicationRestricted: []
