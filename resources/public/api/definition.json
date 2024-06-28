@@ -2,9 +2,9 @@
   "scopes": [
   ],
   "api": {
-    "name": "Notice of Presentation Waiver Checker",
+    "name": "Notification of Presentation Waiver Checker",
     "description": "The public-facing API to allow CSP's to request information on NOP Waiver authorisations for traders with EORI numbers",
-    "context": "customs/uk-notice-of-presentation-waiver",
+    "context": "customs/uk-notification-of-presentation-waiver",
     "categories": ["CUSTOMS"],
     "versions": [
       {

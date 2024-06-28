@@ -1,9 +1,9 @@
 openapi: 3.0.3
 info:
   version: 1.0.0
-  title: Notice of Presentation (NOP) Waiver Checker API
+  title: Notification of Presentation (NOP) Waiver Checker API
   description: |
-    This API enables Community System Providers (CSP's) and software developers to check if traders have a valid Notice of Presentation (NOP) Waiver authorisation using their Economic Operators Registration and Identification (EORI) number. 
+    This API enables Community System Providers (CSP's) and software developers to check if traders have a valid Notification of Presentation (NOP) Waiver authorisation using their Economic Operators Registration and Identification (EORI) number. 
     This waiver is necessary to enable the transit of Not At Risk (NAR) goods moving through from GB-NI. 
     The API follows REST principles and has a single POST method endpoint that returns the data in JSON format. It uses standard HTTP error response codes.
 
@@ -19,7 +19,7 @@ servers:
     description: |
       Production URL for the Live Environment
 paths:
-  /customs/uk-notice-of-presentation-waiver/authorisations:
+  /customs/uk-notification-of-presentation-waiver/authorisations:
     post:
       tags:
         - Endpoint for Authorisations
@@ -35,7 +35,7 @@ paths:
 
           Request Example:
 
-          curl -X POST "https://test-api.service.hmrc.gov.uk/customs/uk-notice-of-presentation-waiver/authorisations"
+          curl -X POST "https://test-api.service.hmrc.gov.uk/customs/uk-notification-of-presentation-waiver/authorisations"
 
         required: true
         content:
