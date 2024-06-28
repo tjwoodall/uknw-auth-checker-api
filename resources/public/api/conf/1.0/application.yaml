@@ -19,7 +19,7 @@ servers:
     description: |
       Production URL for the Live Environment
 paths:
-  /customs/uk-notification-of-presentation-waiver/authorisations:
+  /customs/uk-notice-of-presentation-waiver/authorisations:
     post:
       tags:
         - Endpoint for Authorisations
@@ -35,7 +35,7 @@ paths:
 
           Request Example:
 
-          curl -X POST "https://test-api.service.hmrc.gov.uk/customs/uk-notification-of-presentation-waiver/authorisations"
+          curl -X POST "https://test-api.service.hmrc.gov.uk/customs/uk-notice-of-presentation-waiver/authorisations"
 
         required: true
         content:
