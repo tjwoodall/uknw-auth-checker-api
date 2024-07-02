@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uknwauthcheckerapi.controllers
+package uk.gov.hmrc.uknwauthcheckerapi.models
 
-import controllers.Assets
-import javax.inject.{Inject, Singleton}
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
+import play.api.libs.json._
 
-@Singleton
-class DocumentationController @Inject() (assets: Assets, cc: ControllerComponents) extends BackendController(cc) {
+import java.time.LocalDate
 
-  def definition(): Action[AnyContent] =
-    assets.at("/public/api", "definition.json")
+case class AuthorisationRequest(date: LocalDate, eoris: Seq[String])
 
-  def specification(version: String, file: String): Action[AnyContent] =
-    assets.at(s"/public/api/conf/$version", file)
+object AuthorisationRequest {
+  implicit val format: OFormat[AuthorisationRequest] = Json.format[AuthorisationRequest]
+
 }
