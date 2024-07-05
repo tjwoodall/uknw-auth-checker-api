@@ -29,6 +29,9 @@ paths:
         Use this method to request the NOP Waiver authorisation status of between 1 and 3000 EORIs.
 
       operationId: requestAuth
+      parameters:
+        - $ref: '#/components/parameters/acceptHeader'
+        - $ref: '#/components/parameters/contentTypeHeader'
       requestBody:
         description: |
           The payload of the API request. 
@@ -62,11 +65,26 @@ paths:
             </ul>
           content:
             application/json:
-              example:
-                {
-                  "code": "INVALID_FORMAT",
-                  "message": "FR123123123123 is not a suported EORI number",
-                }
+              examples:
+                single_error:
+                  value:
+                    {
+                      "code": "INVALID_FORMAT",
+                      "message": "FR123123123123 is not a supported EORI number"
+                    }
+                multiple_errors:
+                  value:
+                    {
+                      "code": "JSON_ERROR",
+                      "message": "The provided JSON was invalid.",
+                      "errors": [
+                        {
+                          "code": "BAD_REQUEST",
+                          "message": "error.expected.date.isoformat",
+                          "path": "date"
+                        }
+                      ]
+                    }
         "401":
           description: |
             Authentication failure. Commonly a client side error, typically generated when authentication information is not provided, possibly by omitting a bearer token.
@@ -139,6 +157,29 @@ paths:
       security:
         - applicationRestricted: []
 components:
+  parameters:
+    acceptHeader:
+      name: Accept
+      in: header
+      description: >-
+        Specifies the response format and the
+        [version](/api-documentation/docs/reference-guide#versioning) of the API
+        to be used.
+      required: true
+      schema:
+        type: string
+        enum: [
+          "application/vnd.hmrc.1.0+json"
+        ]
+    contentTypeHeader:
+      name: Content-Type
+      in: header
+      description: The media type of the request body.
+      schema:
+        type: string
+        enum:
+          - application/json
+      required: true
   securitySchemes:
     applicationRestricted:
       type: oauth2
@@ -155,7 +196,7 @@ components:
       properties:
         date:
           type: string
-          example: 2024-02-31
+          example: 2024-02-28
         eoris:
           type: array
           items:
@@ -166,7 +207,7 @@ components:
       properties:
         date:
           type: string
-          example: 2024-02-31
+          example: 2024-02-28
         eoris:
           type: array
           items:
