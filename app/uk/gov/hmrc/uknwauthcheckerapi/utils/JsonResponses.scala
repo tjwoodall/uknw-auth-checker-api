@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uknwauthcheckerapi.models
+package uk.gov.hmrc.uknwauthcheckerapi.utils
 
-import play.api.libs.json._
+import play.api.http.{ContentTypeOf, ContentTypes, Writeable}
+import play.api.libs.json.Writes
 
-import java.time.LocalDate
+trait JsonResponses {
 
-case class AuthorisationRequest(date: LocalDate, eoris: Seq[String])
+  implicit def writable[T](implicit writes: Writes[T]): Writeable[T] = {
+    implicit val contentType: ContentTypeOf[T] = ContentTypeOf[T](Some(ContentTypes.JSON))
+    Writeable(Writeable.writeableOf_JsValue.transform.compose(writes.writes))
+  }
 
-object AuthorisationRequest {
-  implicit val format: OFormat[AuthorisationRequest] = Json.format[AuthorisationRequest]
 }

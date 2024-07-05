@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uknwauthcheckerapi.models
+package uk.gov.hmrc.uknwauthcheckerapi.utils
 
-import play.api.libs.json._
-
-import java.time.LocalDate
-
-case class AuthorisationRequest(date: LocalDate, eoris: Seq[String])
-
-object AuthorisationRequest {
-  implicit val format: OFormat[AuthorisationRequest] = Json.format[AuthorisationRequest]
+object HmrcMimeTypes {
+  val json = "application/vnd.hmrc.1.0+json"
 }

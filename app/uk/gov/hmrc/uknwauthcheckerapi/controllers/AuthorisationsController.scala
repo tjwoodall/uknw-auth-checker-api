@@ -16,26 +16,27 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.controllers
 
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsError, JsSuccess, JsValue}
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
+import uk.gov.hmrc.uknwauthcheckerapi.errors.JsonValidationApiError
 import uk.gov.hmrc.uknwauthcheckerapi.models.{AuthorisationRequest, AuthorisationResponse, AuthorisationsResponse}
+import uk.gov.hmrc.uknwauthcheckerapi.utils.JsonResponses
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
 @Singleton()
-class AuthorisationsController @Inject() (cc: ControllerComponents) extends BackendController(cc) {
+class AuthorisationsController @Inject() (cc: ControllerComponents) extends BackendController(cc) with HeaderValidator with JsonResponses {
 
-  def authorisations: Action[JsValue] = Action.async(parse.json) { implicit request =>
-    withJsonBody[AuthorisationRequest] { authorisationRequest =>
-      Future.successful(
-        Ok(
-          Json.toJson(
-            AuthorisationsResponse(authorisationRequest.date, authorisationRequest.eoris.map(r => AuthorisationResponse(r, authorised = true)))
-          )
-        )
-      )
-    }
+  def authorisations: Action[JsValue] = validateHeaders(cc).async(parse.json) { implicit request =>
+    Future.successful(
+      request.body.validate[AuthorisationRequest] match {
+        case JsSuccess(authorisationRequest: AuthorisationRequest, _) =>
+          Ok(AuthorisationsResponse(authorisationRequest.date, authorisationRequest.eoris.map(r => AuthorisationResponse(r, authorised = true))))
+        case errors: JsError =>
+          JsonValidationApiError(errors).toResult
+      }
+    )
   }
 }

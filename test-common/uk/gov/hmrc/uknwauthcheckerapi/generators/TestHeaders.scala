@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uknwauthcheckerapi.models
+package uk.gov.hmrc.uknwauthcheckerapi.generators
 
-import play.api.libs.json._
+import play.api.http.MimeTypes
+import play.mvc.Http.HeaderNames
+import uk.gov.hmrc.uknwauthcheckerapi.utils.HmrcMimeTypes
 
-import java.time.LocalDate
+trait TestHeaders {
 
-case class AuthorisationRequest(date: LocalDate, eoris: Seq[String])
+  val jsonAcceptHeader:      (String, String) = HeaderNames.ACCEPT       -> HmrcMimeTypes.json
+  val jsonContentTypeHeader: (String, String) = HeaderNames.CONTENT_TYPE -> MimeTypes.JSON
 
-object AuthorisationRequest {
-  implicit val format: OFormat[AuthorisationRequest] = Json.format[AuthorisationRequest]
+  val defaultHeaders: Seq[(String, String)] = Seq(jsonAcceptHeader, jsonContentTypeHeader)
 }

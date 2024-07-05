@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uknwauthcheckerapi
+package uk.gov.hmrc.uknwauthcheckerapi.generators
 
-import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
-import play.api.http.Status
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.uknwauthcheckerapi.models.AuthorisationRequest
 
-class AuthorisationControllerISpec extends BaseISpec {
+trait TestData extends Generators {
 
-  "POST /authorisations" should {
-    "return OK (200) with authorised eoris when request has valid date and eoris" in {
-      forAll { authorisationRequest: AuthorisationRequest =>
-        val authorisationRequestJson = Json.toJson(authorisationRequest)
+  val authorisationEndpoint = "authorisation"
+  val emptyJson: JsValue = Json.parse("{}")
 
-        postRequestWithoutHeader(authorisationsUrl, authorisationRequestJson).status mustBe Status.OK
-      }
-    }
-  }
+  def randomAuthorisationRequest: AuthorisationRequest = arbAuthorisationRequest.arbitrary.sample.get
 }
-

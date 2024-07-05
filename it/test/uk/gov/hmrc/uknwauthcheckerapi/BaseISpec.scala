@@ -23,12 +23,15 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSClient, WSResponse}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
-import uk.gov.hmrc.uknwauthcheckerapi.generators.Generators
+import uk.gov.hmrc.uknwauthcheckerapi.generators.{TestData, TestHeaders}
 
 import scala.reflect.ClassTag
 
-class BaseISpec extends PlaySpec with GuiceOneServerPerSuite
-                                  with Generators {
+class BaseISpec
+  extends PlaySpec
+    with GuiceOneServerPerSuite
+    with TestData
+    with TestHeaders {
 
   lazy val hostUrl: String = s"http://localhost:$port"
   lazy val authorisationsUrl = s"$hostUrl/authorisations"
@@ -38,7 +41,47 @@ class BaseISpec extends PlaySpec with GuiceOneServerPerSuite
   def injected[T](c: Class[T]): T                    = app.injector.instanceOf(c)
   def injected[T](implicit evidence: ClassTag[T]): T = app.injector.instanceOf[T]
 
-  def postRequestWithHeader(url: String, body: JsValue, headers: Seq[(String, String)]): WSResponse = {
+  def deleteRequest(url: String, headers: Seq[(String, String)] = defaultHeaders): WSResponse = {
+    await(wsClient.url(url)
+      .addHttpHeaders(
+        headers: _*
+      ).delete()
+    )
+  }
+
+  def headRequest(url: String, headers: Seq[(String, String)] = defaultHeaders): WSResponse = {
+    await(wsClient.url(url)
+      .addHttpHeaders(
+        headers: _*
+      ).head()
+    )
+  }
+
+  def getRequest(url: String, headers: Seq[(String, String)] = defaultHeaders): WSResponse = {
+    await(wsClient.url(url)
+      .addHttpHeaders(
+        headers: _*
+      ).get()
+    )
+  }
+
+  def optionsRequest(url: String, body: JsValue, headers: Seq[(String, String)] = defaultHeaders): WSResponse = {
+    await(wsClient.url(url)
+      .addHttpHeaders(
+        headers: _*
+      ).options()
+    )
+  }
+
+  def patchRequest(url: String, body: JsValue, headers: Seq[(String, String)] = defaultHeaders): WSResponse = {
+    await(wsClient.url(url)
+      .addHttpHeaders(
+        headers: _*
+      ).patch(Json.toJson(body))
+    )
+  }
+
+  def postRequest(url: String, body: JsValue, headers: Seq[(String, String)] = defaultHeaders): WSResponse = {
     await(wsClient.url(url)
       .addHttpHeaders(
         headers: _*
@@ -46,8 +89,12 @@ class BaseISpec extends PlaySpec with GuiceOneServerPerSuite
     )
   }
 
-  def postRequestWithoutHeader(url: String, body: JsValue): WSResponse = {
-    await(wsClient.url(url).post(Json.toJson(body)))
+  def putRequest(url: String, body: JsValue, headers: Seq[(String, String)] = defaultHeaders): WSResponse = {
+    await(wsClient.url(url)
+      .addHttpHeaders(
+        headers: _*
+      ).put(Json.toJson(body))
+    )
   }
 
 }
