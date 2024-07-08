@@ -131,8 +131,8 @@ paths:
             application/json:
               example:
                 {
-                  "code": "NOT_ACCEPTABLE",
-                  "message": "Cannot produce an acceptable response",
+                  "code": "ACCEPT_HEADER_INVALID",
+                  "message": "The accept header is missing or invalid",
                 }
         "429":
           description: |
