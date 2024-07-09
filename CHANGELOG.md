@@ -4,6 +4,8 @@ All notable changes to this API will be documented in this file. Learn about API
 
 ## 1 July 2024
 
+### Release Version 0.16.0
+
 Entering Alpha Assessment
 
 ### Updates
