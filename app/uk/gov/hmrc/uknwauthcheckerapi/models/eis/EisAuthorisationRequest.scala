@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uknwauthcheckerapi.generators
+package uk.gov.hmrc.uknwauthcheckerapi.models.eis
 
-import play.api.http.MimeTypes
-import play.mvc.Http.HeaderNames
-import uk.gov.hmrc.uknwauthcheckerapi.utils.HmrcMimeTypes
+import play.api.libs.json.{Json, OFormat}
+import java.time.LocalDate
 
-trait TestHeaders {
+case class EisAuthorisationRequest(validityDate: Option[LocalDate], authType: String, eoris: Seq[String]) {}
 
-  val jsonAcceptHeader:      (String, String) = HeaderNames.ACCEPT        -> HmrcMimeTypes.json
-  val jsonContentTypeHeader: (String, String) = HeaderNames.CONTENT_TYPE  -> MimeTypes.JSON
-  val jsonAuthHeader:        (String, String) = HeaderNames.AUTHORIZATION -> "Bearer PFZBTElEX1RPS0VOPg=="
-
-  val defaultHeaders: Seq[(String, String)] = Seq(jsonAcceptHeader, jsonContentTypeHeader, jsonAcceptHeader)
+object EisAuthorisationRequest {
+  implicit val format: OFormat[EisAuthorisationRequest] = Json.format[EisAuthorisationRequest]
 }

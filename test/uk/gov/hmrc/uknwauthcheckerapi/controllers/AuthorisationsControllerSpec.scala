@@ -16,46 +16,62 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.controllers
 
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import org.scalatest.prop.TableDrivenPropertyChecks.whenever
+import org.scalatestplus.mockito.MockitoSugar.mock
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 import play.api.libs.json.{JsError, JsPath, Json, JsonValidationError}
 import play.api.test.Helpers._
 import uk.gov.hmrc.uknwauthcheckerapi.errors.{ApiErrorResponse, JsonValidationApiError, NotAcceptableApiError}
 import uk.gov.hmrc.uknwauthcheckerapi.models.{AuthorisationRequest, AuthorisationResponse, AuthorisationsResponse}
+import uk.gov.hmrc.uknwauthcheckerapi.services.IntegrationFrameworkService
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class AuthorisationsControllerSpec extends BaseSpec {
 
-  val controller = new AuthorisationsController(stubComponents)
+  val mockIntegrationFrameworkService: IntegrationFrameworkService = mock[IntegrationFrameworkService]
+
+  val controller = new AuthorisationsController(
+    stubComponents,
+    mockIntegrationFrameworkService
+  )
 
   "AuthorisationsController" should {
 
     "return OK (200) with authorised eoris when request has valid date and eoris" in {
 
       forAll { authorisationRequest: AuthorisationRequest =>
-        val expectedResponse = AuthorisationsResponse(
-          authorisationRequest.date,
-          authorisationRequest.eoris.map(r => AuthorisationResponse(r, authorised = true))
-        )
+        whenever(authorisationRequest.date.isDefined) {
+          val expectedResponse = AuthorisationsResponse(
+            authorisationRequest.date.getOrElse(LocalDate.now),
+            authorisationRequest.eoris.map(r => AuthorisationResponse(r, authorised = true))
+          )
 
-        val request = fakeRequestWithJsonBody(Json.toJson(authorisationRequest))
+          val request = fakeRequestWithJsonBody(Json.toJson(authorisationRequest), headers = defaultHeaders)
+          when(mockIntegrationFrameworkService.getAuthorisations(any())(any()))
+            .thenReturn(Future.successful(expectedResponse))
 
-        val result = controller.authorisations()(request)
+          val result = controller.authorisations()(request)
 
-        status(result)        shouldBe OK
-        contentAsJson(result) shouldBe Json.toJson(expectedResponse)
+          status(result)        shouldBe OK
+          contentAsJson(result) shouldBe Json.toJson(expectedResponse)
+          true
+        }
       }
     }
 
     "return BAD_REQUEST (400) error when request json is invalid" in {
-      val request = fakeRequestWithJsonBody(emptyJson)
+      val request = fakeRequestWithJsonBody(emptyJson, headers = defaultHeaders)
 
       val result = controller.authorisations()(request)
 
       val expectedResponse = Json.toJson(
         JsonValidationApiError(
           JsError(
-            Seq("date", "eoris").map { field =>
+            Seq("eoris").map { field =>
               (JsPath \ field, Seq(JsonValidationError("error.path.missing")))
             }
           )

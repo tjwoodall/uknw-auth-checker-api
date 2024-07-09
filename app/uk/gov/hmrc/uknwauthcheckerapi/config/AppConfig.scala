@@ -22,5 +22,35 @@ import play.api.Configuration
 @Singleton
 class AppConfig @Inject() (config: Configuration) {
 
-  val appName: String = config.get[String]("appName")
+  val authType: String = config.get[String]("authType")
+
+  val integrationFrameworkBearerToken: String =
+    config.get[String]("microservice.services.integration-framework.bearerToken")
+
+  def baseUrl(serviceName: String): String = {
+    val protocol = getConfString(s"$serviceName.protocol", defaultProtocol)
+    val host     = getConfString(s"$serviceName.host", throwConfigNotFoundError(s"$serviceName.host"))
+    val port     = getConfInt(s"$serviceName.port", throwConfigNotFoundError(s"$serviceName.port"))
+    s"$protocol://$host:$port"
+  }
+
+  protected lazy val rootServices = "microservice.services"
+
+  protected lazy val defaultProtocol: String =
+    config
+      .getOptional[String](s"$rootServices.protocol")
+      .getOrElse("http")
+
+  private def getConfString(confKey: String, defString: => String): String =
+    config
+      .getOptional[String](s"$rootServices.$confKey")
+      .getOrElse(defString)
+
+  private def getConfInt(confKey: String, defInt: => Int): Int =
+    config
+      .getOptional[Int](s"$rootServices.$confKey")
+      .getOrElse(defInt)
+
+  private def throwConfigNotFoundError(key: String): Nothing =
+    throw new RuntimeException(s"Could not find config key '$key'")
 }

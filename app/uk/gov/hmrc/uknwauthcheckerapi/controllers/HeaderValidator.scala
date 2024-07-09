@@ -25,15 +25,14 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait HeaderValidator extends Results {
 
-  private val acceptHeaderExists: Option[String] => Boolean = _.contains(HmrcMimeTypes.json)
+  private val acceptHeaderExists:      Option[String] => Boolean = _.contains(HmrcMimeTypes.json)
   private val contentTypeHeaderExists: Option[String] => Boolean = _.contains(MimeTypes.JSON)
 
-  def validateHeaders(
-    controllerComponents: ControllerComponents): ActionBuilder[Request, AnyContent] = new ActionBuilder[Request, AnyContent] {
+  def validateHeaders(controllerComponents: ControllerComponents): ActionBuilder[Request, AnyContent] = new ActionBuilder[Request, AnyContent] {
 
     def invokeBlock[A](request: Request[A], block: Request[A] => Future[Result]): Future[Result] = {
 
-      val hasAcceptHeader: Boolean = acceptHeaderExists(request.headers.get(HeaderNames.ACCEPT))
+      val hasAcceptHeader:      Boolean = acceptHeaderExists(request.headers.get(HeaderNames.ACCEPT))
       val hasContentTypeHeader: Boolean = contentTypeHeaderExists(request.headers.get(HeaderNames.CONTENT_TYPE))
 
       if (hasAcceptHeader && hasContentTypeHeader) {

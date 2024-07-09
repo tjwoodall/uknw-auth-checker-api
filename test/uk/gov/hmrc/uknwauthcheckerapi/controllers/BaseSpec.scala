@@ -16,18 +16,50 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.controllers
 
+import com.typesafe.config.Config
 import org.apache.pekko.actor.ActorSystem
 import org.apache.pekko.stream.Materializer
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import play.api.http.HttpVerbs
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.Application
+import play.api.http.{HeaderNames, HttpVerbs}
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.JsValue
 import play.api.mvc.{AnyContentAsEmpty, ControllerComponents}
-import play.api.test.{FakeHeaders, FakeRequest, Helpers}
+import play.api.test.{DefaultAwaitTimeout, FakeHeaders, FakeRequest, Helpers}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.HttpVerbs.POST
-import uk.gov.hmrc.uknwauthcheckerapi.generators.{TestData, TestHeaders}
+import uk.gov.hmrc.uknwauthcheckerapi.config.AppConfig
+import uk.gov.hmrc.uknwauthcheckerapi.generators.{Generators, TestData, TestHeaders}
 
-class BaseSpec extends AnyWordSpec with Matchers with TestData with TestHeaders {
+import scala.concurrent.ExecutionContext
+
+class BaseSpec
+    extends AnyWordSpec
+    with Matchers
+    with Generators
+    with GuiceOneAppPerSuite
+    with BeforeAndAfterEach
+    with DefaultAwaitTimeout
+    with HeaderNames
+    with TestData
+    with TestHeaders {
+
+  def configOverrides: Map[String, Any] = Map()
+
+  val additionalAppConfig: Map[String, Any] = Map(
+    "create-internal-auth-token-on-start" -> false,
+    "metrics.enabled"                     -> false,
+    "auditing.enabled"                    -> false,
+    "http-verbs.retries.intervals"        -> List("1ms", "1ms", "1ms")
+  ) ++ configOverrides
+
+  override def fakeApplication(): Application =
+    GuiceApplicationBuilder()
+      .configure(additionalAppConfig)
+      .build()
 
   implicit lazy val system:       ActorSystem  = ActorSystem()
   implicit lazy val materializer: Materializer = Materializer(system)
@@ -37,4 +69,9 @@ class BaseSpec extends AnyWordSpec with Matchers with TestData with TestHeaders 
 
   def fakeRequestWithJsonBody(json: JsValue, verb: String = HttpVerbs.POST, headers: Seq[(String, String)] = defaultHeaders): FakeRequest[JsValue] =
     FakeRequest(verb, authorisationEndpoint, FakeHeaders(headers), json)
+  implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+  implicit val hc: HeaderCarrier    = HeaderCarrier()
+  val config:      Config           = app.injector.instanceOf[Config]
+  val appConfig:   AppConfig        = app.injector.instanceOf[AppConfig]
+  val actorSystem: ActorSystem      = ActorSystem("actor")
 }

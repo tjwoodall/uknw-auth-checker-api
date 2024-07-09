@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,6 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.models
 
-import play.api.libs.json._
-
-import java.time.LocalDate
-
-case class AuthorisationRequest(date: Option[LocalDate], eoris: Seq[String])
-
-object AuthorisationRequest {
-  implicit val format: OFormat[AuthorisationRequest] = Json.format[AuthorisationRequest]
+object CustomHeaderNames {
+  val xCorrelationId = "X-Correlation-Id"
 }

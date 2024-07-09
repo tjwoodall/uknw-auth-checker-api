@@ -30,16 +30,27 @@ import scala.reflect.ClassTag
 class BaseISpec
   extends PlaySpec
     with GuiceOneServerPerSuite
+    with WireMockHelper
     with TestData
     with TestHeaders {
 
   lazy val hostUrl: String = s"http://localhost:$port"
   lazy val authorisationsUrl = s"$hostUrl/authorisations"
-  override lazy val app: Application = GuiceApplicationBuilder().build()
+  override lazy val app: Application = GuiceApplicationBuilder()
+    .configure(additionalAppConfig)
+    .build()
   private lazy val wsClient: WSClient = injected[WSClient]
 
   def injected[T](c: Class[T]): T                    = app.injector.instanceOf(c)
   def injected[T](implicit evidence: ClassTag[T]): T = app.injector.instanceOf[T]
+
+  val additionalAppConfig: Map[String, Any] = Map(
+    "metrics.enabled"                     -> false,
+    "auditing.enabled"                    -> false,
+  ) ++ setWireMockPort(
+    "auth",
+    "integration-framework"
+  )
 
   def deleteRequest(url: String, headers: Seq[(String, String)] = defaultHeaders): WSResponse = {
     await(wsClient.url(url)

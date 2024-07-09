@@ -16,8 +16,11 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.generators
 
+import org.scalacheck.{Arbitrary, Gen}
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.uknwauthcheckerapi.models.AuthorisationRequest
+import uk.gov.hmrc.uknwauthcheckerapi.models.eis.{EisAuthorisationResponse, EisAuthorisationsResponse}
+import java.time.LocalDate
 
 trait TestData extends Generators {
 
@@ -25,4 +28,22 @@ trait TestData extends Generators {
   val emptyJson: JsValue = Json.parse("{}")
 
   def randomAuthorisationRequest: AuthorisationRequest = arbAuthorisationRequest.arbitrary.sample.get
+
+  implicit val arbValidGetAuthorisationsResponse: Arbitrary[ValidGetAuthorisationsResponse] = Arbitrary {
+    for {
+      date  <- Gen.option(LocalDate.now())
+      eoris <- eorisGen
+    } yield ValidGetAuthorisationsResponse(
+      EisAuthorisationsResponse(
+        date.getOrElse(LocalDate.now()),
+        "UKNW",
+        eoris.map(e => EisAuthorisationResponse(e, valid = true, 0))
+      )
+    )
+
+  }
 }
+
+final case class ValidGetAuthorisationsResponse(
+  response: EisAuthorisationsResponse
+)
