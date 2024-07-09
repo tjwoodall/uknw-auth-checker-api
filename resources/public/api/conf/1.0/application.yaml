@@ -132,7 +132,7 @@ paths:
               example:
                 {
                   "code": "NOT_ACCEPTABLE",
-                  "message": "Cannot produce an acceptable response",
+                  "message": "Cannot produce an acceptable response. The Accept or Content-Type header is missing or invalid",
                 }
         "429":
           description: |
