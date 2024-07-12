@@ -37,3 +37,10 @@ check, run a scala style check, run unit tests, run integration tests and produc
 ### License
 
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").
+
+### Requesting data from the Stub API
+
+To request data from the stub API please use the `.bru` files that can be found in `.bruno` and do not change any of those files as the stub API returns an error `500` on any unexpected requests.
+
+To add a new expected request please refer to the [uknw-auth-checker-api-stub
+/README.md](https://github.com/hmrc/uknw-auth-checker-api-stub?tab=readme-ov-file#add-new-expected-requests)

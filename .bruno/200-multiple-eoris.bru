@@ -1,0 +1,25 @@
+meta {
+  name: 200-multiple-eoris
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:9070/authorisations
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/vnd.hmrc.1.0+json
+}
+
+body:json {
+  {
+      "date": "2024-02-08",
+      "eoris": [
+        "GB0000000200",
+        "XI0000000200"
+      ]
+  }
+}
