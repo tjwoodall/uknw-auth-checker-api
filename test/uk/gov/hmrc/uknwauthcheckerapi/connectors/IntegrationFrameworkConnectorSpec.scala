@@ -19,12 +19,10 @@ package uk.gov.hmrc.uknwauthcheckerapi.connectors
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.prop.TableDrivenPropertyChecks.whenever
-import org.scalatestplus.mockito.MockitoSugar.mock
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 import play.api.http.Status._
 import play.api.libs.json._
 import play.api.test.Helpers.await
-import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 import uk.gov.hmrc.http.{HttpResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.uknwauthcheckerapi.controllers.BaseSpec
 import uk.gov.hmrc.uknwauthcheckerapi.generators.ValidEisAuthorisationsResponse
@@ -36,11 +34,9 @@ import scala.util.{Failure, Success, Try}
 
 class IntegrationFrameworkConnectorSpec extends BaseSpec {
 
-  val callAmountWithRetries = 4
-  val mockHttpClient:     HttpClientV2   = mock[HttpClientV2]
-  val mockRequestBuilder: RequestBuilder = mock[RequestBuilder]
+  private val callAmountWithRetries = 4
 
-  val connector = new IntegrationFrameworkConnector(appConfig, mockHttpClient, config, actorSystem)
+  private lazy val connector: IntegrationFrameworkConnector = injected[IntegrationFrameworkConnector]
 
   override def beforeEach(): Unit = {
     reset(mockHttpClient)

@@ -20,7 +20,6 @@ import play.api.Logging
 import play.api.http.HttpErrorHandler
 import play.api.http.Status._
 import play.api.mvc.{RequestHeader, Result}
-import uk.gov.hmrc.auth.core.AuthorisationException
 import uk.gov.hmrc.http.NotFoundException
 
 import javax.inject.{Inject, Singleton}
@@ -45,7 +44,6 @@ class ApiErrorHandler @Inject() extends HttpErrorHandler with Logging {
             case _                 => NotFoundApiError.toResult
           }
         case SERVICE_UNAVAILABLE => ServiceUnavailableApiError.toResult
-        case UNAUTHORIZED        => UnauthorisedApiError.toResult
         case _ =>
           logger.warn(s"[ApiErrorHandler][onClientError] Unexpected client error type")
           InternalServerApiError.toResult
@@ -60,8 +58,7 @@ class ApiErrorHandler @Inject() extends HttpErrorHandler with Logging {
     )
 
     ex match {
-      case _: NotFoundException      => Future.successful(NotFoundApiError.toResult)
-      case _: AuthorisationException => Future.successful(UnauthorisedApiError.toResult)
+      case _: NotFoundException => Future.successful(NotFoundApiError.toResult)
       case ex =>
         logger.error(s"[ApiErrorHandler][onServerError] Server error due to unexpected exception", ex)
         Future.successful(InternalServerApiError.toResult)

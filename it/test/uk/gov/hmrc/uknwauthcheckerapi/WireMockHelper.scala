@@ -21,6 +21,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, removeS
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite}
+import play.api.http.Status.OK
 
 
 trait WireMockHelper extends BeforeAndAfterAll with BeforeAndAfterEach {
@@ -49,6 +50,17 @@ trait WireMockHelper extends BeforeAndAfterAll with BeforeAndAfterEach {
     services.foldLeft(Map.empty[String, Any]) { case (map, service) =>
       map + (s"microservice.services.$service.port" -> wireMockPort)
     }
+
+  protected def stubAuthorised(): StubMapping = {
+    server.stubFor(
+      post("/auth/authorise")
+        .willReturn(
+          aResponse()
+            .withStatus(OK)
+            .withBody("{}")
+        )
+    )
+  }
 
   protected def stubPost(
       url: String,

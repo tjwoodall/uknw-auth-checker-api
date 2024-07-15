@@ -1,0 +1,22 @@
+meta {
+  name: Create-Bearer-Token
+  type: http
+  seq: 7
+}
+
+post {
+  url: http://localhost:8585/application/session/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "clientId": "uknw-auth-checker-api",
+    "authProvider": "StandardApplication",
+    "applicationId":"uknw-auth-checker-api",
+    "applicationName": "uknw-auth-checker-api",
+    "enrolments": [],
+    "ttl": 5000
+  }
+}

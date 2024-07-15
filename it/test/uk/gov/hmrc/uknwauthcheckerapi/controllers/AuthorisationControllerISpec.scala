@@ -28,10 +28,11 @@ import uk.gov.hmrc.uknwauthcheckerapi.utils.EisAuthTypes
 import java.time.LocalDate
 
 class AuthorisationControllerISpec extends BaseISpec {
-
   "POST /authorisations" should {
     "return OK (200) with authorised eoris when request has valid date and eoris" in {
       forAll { (validRequest: ValidAuthorisationRequest, date: LocalDate) =>
+        stubAuthorised()
+
         val request = validRequest.request
 
         val authorisationRequestJson = Json.toJson(request)
@@ -50,6 +51,8 @@ class AuthorisationControllerISpec extends BaseISpec {
 
     "return BAD_REQUEST when request validation is invalid" in {
       forAll { (validRequest: ValidAuthorisationRequest) =>
+        stubAuthorised()
+
         val request = validRequest.request.copy(
           date = "ABCD"
         )
@@ -64,6 +67,8 @@ class AuthorisationControllerISpec extends BaseISpec {
 
     "return BAD_REQUEST when integration framework returns BAD_REQUEST" in {
       forAll { (validRequest: ValidAuthorisationRequest) =>
+        stubAuthorised()
+
         val request = validRequest.request
 
         val authorisationRequestJson = Json.toJson(request)
@@ -80,6 +85,8 @@ class AuthorisationControllerISpec extends BaseISpec {
 
     "return FORBIDDEN when integration framework returns FORBIDDEN" in {
       forAll { (validRequest: ValidAuthorisationRequest) =>
+        stubAuthorised()
+
         val request = validRequest.request
 
         val authorisationRequestJson = Json.toJson(request)
@@ -96,6 +103,8 @@ class AuthorisationControllerISpec extends BaseISpec {
 
     "return INTERNAL_SERVER_ERROR when integration framework returns INTERNAL_SERVER_ERROR" in {
       forAll { (validRequest: ValidAuthorisationRequest) =>
+        stubAuthorised()
+
         val request = validRequest.request
 
         val authorisationRequestJson = Json.toJson(request)
@@ -112,6 +121,8 @@ class AuthorisationControllerISpec extends BaseISpec {
 
     "return INTERNAL_SERVER_ERROR when integration framework returns unhandled status" in {
       forAll { (validRequest: ValidAuthorisationRequest) =>
+        stubAuthorised()
+
         val request = validRequest.request
 
         val authorisationRequestJson = Json.toJson(request)
@@ -128,6 +139,8 @@ class AuthorisationControllerISpec extends BaseISpec {
 
     "return METHOD_NOT_ALLOWED when integration framework returns METHOD_NOT_ALLOWED" in {
       forAll { (validRequest: ValidAuthorisationRequest) =>
+        stubAuthorised()
+
         val request = validRequest.request
 
         val authorisationRequestJson = Json.toJson(request)
@@ -143,27 +156,37 @@ class AuthorisationControllerISpec extends BaseISpec {
     }
 
     "return METHOD_NOT_ALLOWED (405) when request is DELETE" in {
+      stubAuthorised()
+
       val result = deleteRequest(authorisationsUrl)
       result.status mustBe METHOD_NOT_ALLOWED
     }
 
     "return METHOD_NOT_ALLOWED (405) when request is GET" in {
+      stubAuthorised()
+
       val result = getRequest(authorisationsUrl)
       result.status mustBe METHOD_NOT_ALLOWED
     }
 
     "return METHOD_NOT_ALLOWED (405) when request is HEAD" in {
+      stubAuthorised()
+
       val result = headRequest(authorisationsUrl)
       result.status mustBe METHOD_NOT_ALLOWED
     }
 
     "return METHOD_NOT_ALLOWED (405) when request is OPTIONS" in {
+      stubAuthorised()
+
       val result = optionsRequest(authorisationsUrl)
       result.status mustBe METHOD_NOT_ALLOWED
     }
 
     "return METHOD_NOT_ALLOWED (405) when request is PUT" in {
       forAll { (authorisationRequest: AuthorisationRequest) =>
+        stubAuthorised()
+
         val authorisationRequestJson = Json.toJson(authorisationRequest)
         val result = putRequest(authorisationsUrl, authorisationRequestJson)
         result.status mustBe METHOD_NOT_ALLOWED
@@ -172,6 +195,8 @@ class AuthorisationControllerISpec extends BaseISpec {
 
     "return METHOD_NOT_ALLOWED (405) when request is PATCH" in {
       forAll { (authorisationRequest: AuthorisationRequest) =>
+        stubAuthorised()
+
         val authorisationRequestJson = Json.toJson(authorisationRequest)
         val result = patchRequest(authorisationsUrl, authorisationRequestJson)
         result.status mustBe METHOD_NOT_ALLOWED
@@ -180,6 +205,8 @@ class AuthorisationControllerISpec extends BaseISpec {
 
     "return SERVICE_UNAVAILABLE when integration framework returns BAD_GATEWAY" in {
       forAll { (validRequest: ValidAuthorisationRequest) =>
+        stubAuthorised()
+
         val request = validRequest.request
 
         val authorisationRequestJson = Json.toJson(request)
@@ -189,6 +216,20 @@ class AuthorisationControllerISpec extends BaseISpec {
         val result = postRequest(authorisationsUrl, authorisationRequestJson)
 
         result.status mustBe SERVICE_UNAVAILABLE
+      }
+    }
+
+    "return UNAUTHORIZED when bearer token is missing" in {
+      forAll { (validRequest: ValidAuthorisationRequest, date: LocalDate) =>
+        val request = validRequest.request
+
+        val authorisationRequestJson = Json.toJson(request)
+
+        val headers = defaultHeaders.filterNot(header => header == authorizationHeader)
+
+        val result = postRequest(authorisationsUrl, authorisationRequestJson, headers)
+
+        result.status mustBe UNAUTHORIZED
       }
     }
   }

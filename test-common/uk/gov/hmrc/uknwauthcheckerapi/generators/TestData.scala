@@ -27,16 +27,16 @@ import java.time.LocalDate
 
 trait TestData extends Generators {
 
-  val authorisationEndpoint = "authorisation"
-  val emptyJson: JsValue = Json.parse("{}")
+  protected val authorisationEndpoint = "authorisation"
+  protected val emptyJson: JsValue = Json.parse("{}")
 
-  val invalidAuthTypeEisErrorMessage: String = """Invalid authorisation type : UKNW""".stripMargin
-  val invalidEorisEisErrorMessage:    String = """Invalid format of EORI(s): 0000000001,0000000003""".stripMargin
-  val invalidDateEisErrorMessage:     String = """Invalid supplied date(Date format should be - YYYY-MM-DD) : 202-01-01""".stripMargin
-  val invalidMixedEisErrorMessage: String =
+  protected val invalidAuthTypeEisErrorMessage: String = """Invalid authorisation type : UKNW""".stripMargin
+  protected val invalidEorisEisErrorMessage:    String = """Invalid format of EORI(s): 0000000001,0000000003""".stripMargin
+  protected val invalidDateEisErrorMessage:     String = """Invalid supplied date(Date format should be - YYYY-MM-DD) : 202-01-01""".stripMargin
+  protected val invalidMixedEisErrorMessage: String =
     """Invalid format of EORI(s): 0000000001,0000000003,Invalid supplied date(Date format should be - YYYY-MM-DD) : 202-01-01""".stripMargin
 
-  implicit val arbValidAuthorisationRequest: Arbitrary[ValidAuthorisationRequest] = Arbitrary {
+  implicit protected val arbValidAuthorisationRequest: Arbitrary[ValidAuthorisationRequest] = Arbitrary {
     for {
       date  <- Arbitrary.arbitrary[LocalDate]
       eoris <- eorisGen
@@ -48,7 +48,7 @@ trait TestData extends Generators {
     )
   }
 
-  implicit val arbValidEisAuthorisationsResponse: Arbitrary[ValidEisAuthorisationsResponse] = Arbitrary {
+  implicit protected val arbValidEisAuthorisationsResponse: Arbitrary[ValidEisAuthorisationsResponse] = Arbitrary {
     for {
       date  <- Arbitrary.arbitrary[LocalDate]
       eoris <- eorisGen

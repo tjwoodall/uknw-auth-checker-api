@@ -22,9 +22,9 @@ import uk.gov.hmrc.uknwauthcheckerapi.utils.HmrcMimeTypes
 
 trait TestHeaders {
 
-  val jsonAcceptHeader:      (String, String) = HeaderNames.ACCEPT        -> HmrcMimeTypes.json
-  val jsonContentTypeHeader: (String, String) = HeaderNames.CONTENT_TYPE  -> MimeTypes.JSON
-  val jsonAuthHeader:        (String, String) = HeaderNames.AUTHORIZATION -> "Bearer PFZBTElEX1RPS0VOPg=="
+  protected val authorizationHeader: (String, String) = HeaderNames.AUTHORIZATION -> "Bearer PFZBTElEX1RPS0VOPg=="
+  protected val acceptHeader:        (String, String) = HeaderNames.ACCEPT        -> HmrcMimeTypes.json
+  protected val contentTypeHeader:   (String, String) = HeaderNames.CONTENT_TYPE  -> MimeTypes.JSON
 
-  val defaultHeaders: Seq[(String, String)] = Seq(jsonAcceptHeader, jsonContentTypeHeader, jsonAcceptHeader)
+  protected val defaultHeaders: Seq[(String, String)] = Seq(acceptHeader, contentTypeHeader, authorizationHeader)
 }

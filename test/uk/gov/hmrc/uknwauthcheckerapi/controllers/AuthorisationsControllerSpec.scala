@@ -17,12 +17,13 @@
 package uk.gov.hmrc.uknwauthcheckerapi.controllers
 
 import cats.data.EitherT
+import com.google.inject.AbstractModule
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.scalatestplus.mockito.MockitoSugar.mock
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 import play.api.libs.json.{JsError, JsPath, Json, JsonValidationError}
 import play.api.test.Helpers._
+import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.uknwauthcheckerapi.errors.DataRetrievalError._
 import uk.gov.hmrc.uknwauthcheckerapi.errors._
 import uk.gov.hmrc.uknwauthcheckerapi.generators.ValidAuthorisationRequest
@@ -35,9 +36,20 @@ import scala.concurrent.Future
 
 class AuthorisationsControllerSpec extends BaseSpec {
 
-  private val mockIntegrationFrameworkService: IntegrationFrameworkService = mock[IntegrationFrameworkService]
-  private val mockValidationService:           ValidationService           = mock[ValidationService]
-  private val controller = new AuthorisationsController(stubComponents, mockIntegrationFrameworkService, mockValidationService)
+  private lazy val controller = injected[AuthorisationsController]
+
+  override def moduleOverrides: AbstractModule = new AbstractModule {
+    override def configure(): Unit = {
+      bind(classOf[AuthConnector]).toInstance(mockAuthConnector)
+      bind(classOf[IntegrationFrameworkService]).toInstance(mockIntegrationFrameworkService)
+      bind(classOf[ValidationService]).toInstance(mockValidationService)
+    }
+  }
+
+  override protected def beforeEach(): Unit = {
+    stubAuthorization()
+    super.beforeEach()
+  }
 
   "AuthorisationsController" should {
     "return OK (200) with authorised eoris when request has valid date and eoris" in {
@@ -345,7 +357,7 @@ class AuthorisationsControllerSpec extends BaseSpec {
 
   "return NOT_ACCEPTABLE (406) error when accept header is not present" in {
     forAll { authorisationRequest: AuthorisationRequest =>
-      val headers = defaultHeaders.filterNot(_._1.equals(jsonAcceptHeader._1))
+      val headers = defaultHeaders.filterNot(_._1.equals(acceptHeader._1))
 
       val request = fakeRequestWithJsonBody(Json.toJson(authorisationRequest), headers = headers)
 
@@ -358,7 +370,7 @@ class AuthorisationsControllerSpec extends BaseSpec {
 
   "return NOT_ACCEPTABLE (406) error when content type header is not present" in {
     forAll { authorisationRequest: AuthorisationRequest =>
-      val headers = defaultHeaders.filterNot(_._1.equals(jsonContentTypeHeader._1))
+      val headers = defaultHeaders.filterNot(_._1.equals(contentTypeHeader._1))
 
       val request = fakeRequestWithJsonBody(Json.toJson(authorisationRequest), headers = headers)
 

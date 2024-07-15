@@ -32,6 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton()
 class AuthorisationsController @Inject() (
+  authAction:                  AuthAction,
   cc:                          ControllerComponents,
   integrationFrameworkService: IntegrationFrameworkService,
   validationService:           ValidationService
@@ -41,7 +42,7 @@ class AuthorisationsController @Inject() (
     with ExtensionHelpers
     with Logging {
 
-  def authorisations: Action[JsValue] = validateHeaders(cc).async(parse.json) { implicit request =>
+  def authorisations: Action[JsValue] = Action.andThen(authAction).andThen(validateHeaders(cc)).async(parse.json) { implicit request =>
     (for {
       authorisationsRequest <- EitherT.fromEither[Future](validationService.validateRequest(request))
       response              <- integrationFrameworkService.getAuthorisations(authorisationsRequest)

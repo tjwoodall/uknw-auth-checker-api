@@ -28,17 +28,10 @@ import scala.concurrent.Future
 
 class ApiErrorHandlerSpec extends BaseSpec {
 
-  private val apiErrorHandler = new ApiErrorHandler()
-  private val errorMessage    = "ErrorMessage"
+  private lazy val apiErrorHandler = injected[ApiErrorHandler]
+  private val errorMessage         = "ErrorMessage"
 
   "onClientError" should {
-//    "convert a BAD_REQUEST to Bad Request (400) response" in {
-//      val result = apiErrorHandler.onClientError(fakePostRequest, BAD_REQUEST, errorMessage)
-//
-//      status(result) shouldEqual BAD_REQUEST
-//      contentAsJson(result) shouldEqual contentAsJson(Future.successful(EisBadRequestApiError.toResult))
-//    }
-
     "convert a FORBIDDEN to Forbidden (403) response" in {
       val result = apiErrorHandler.onClientError(fakePostRequest, FORBIDDEN, errorMessage)
 
@@ -80,26 +73,10 @@ class ApiErrorHandlerSpec extends BaseSpec {
       status(result) shouldEqual SERVICE_UNAVAILABLE
       contentAsJson(result) shouldEqual contentAsJson(Future.successful(ServiceUnavailableApiError.toResult))
     }
-
-    "convert a UNAUTHORIZED to Unauthorized (401) response" in {
-      val result = apiErrorHandler.onClientError(fakePostRequest, UNAUTHORIZED, errorMessage)
-
-      status(result) shouldEqual UNAUTHORIZED
-      contentAsJson(result) shouldEqual contentAsJson(Future.successful(UnauthorisedApiError.toResult))
-    }
   }
 
   "onServerError" should {
     case class TestAuthorisationException(msg: String = errorMessage) extends AuthorisationException(msg)
-
-    "convert a AuthorisationException to Unauthorized response" in {
-      val authorisationException = new TestAuthorisationException
-
-      val result = apiErrorHandler.onServerError(fakePostRequest, authorisationException)
-
-      status(result) shouldEqual UNAUTHORIZED
-      contentAsJson(result) shouldEqual contentAsJson(Future.successful(UnauthorisedApiError.toResult))
-    }
 
     "convert a NotFoundException to Not Found response" in {
       val notfoundException = new NotFoundException(errorMessage)

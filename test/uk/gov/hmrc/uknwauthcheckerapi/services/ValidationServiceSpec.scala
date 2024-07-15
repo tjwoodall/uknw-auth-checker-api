@@ -25,7 +25,7 @@ import uk.gov.hmrc.uknwauthcheckerapi.utils.JsonErrors
 
 class ValidationServiceSpec extends BaseSpec {
 
-  val service = new ValidationService()
+  private lazy val service = new ValidationService()
 
   "validateRequest" should {
     "return AuthorisationRequest when AuthorisationRequest is valid" in {
@@ -133,5 +133,4 @@ class ValidationServiceSpec extends BaseSpec {
       }
     }
   }
-
 }

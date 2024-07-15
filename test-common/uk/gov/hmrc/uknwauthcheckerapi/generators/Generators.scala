@@ -26,10 +26,10 @@ import java.time.LocalDate
 
 trait Generators extends ExtensionHelpers {
 
-  val eoriGen:  Gen[String]      = RegexpGen.from(CustomRegexes.eoriPattern)
-  val eorisGen: Gen[Seq[String]] = Gen.chooseNum(1, 3000).flatMap(n => Gen.listOfN(n, eoriGen))
+  protected val eoriGen:  Gen[String]      = RegexpGen.from(CustomRegexes.eoriPattern)
+  protected val eorisGen: Gen[Seq[String]] = Gen.chooseNum(1, 3000).flatMap(n => Gen.listOfN(n, eoriGen))
 
-  implicit val arbLocalDate: Arbitrary[LocalDate] = Arbitrary(
+  implicit protected val arbLocalDate: Arbitrary[LocalDate] = Arbitrary(
     Gen
       .choose(
         min = LocalDate.MIN.toEpochDay,
@@ -38,14 +38,14 @@ trait Generators extends ExtensionHelpers {
       .map(LocalDate.ofEpochDay)
   )
 
-  implicit val arbAuthorisationRequest: Arbitrary[AuthorisationRequest] = Arbitrary {
+  implicit protected val arbAuthorisationRequest: Arbitrary[AuthorisationRequest] = Arbitrary {
     for {
       date  <- Arbitrary.arbitrary[LocalDate]
       eoris <- eorisGen
     } yield AuthorisationRequest(date.toLocalDateFormatted, eoris)
   }
 
-  implicit val arbEisAuthorisationRequest: Arbitrary[EisAuthorisationRequest] = Arbitrary {
+  implicit protected val arbEisAuthorisationRequest: Arbitrary[EisAuthorisationRequest] = Arbitrary {
     for {
       localDate  <- Arbitrary.arbitrary[LocalDate]
       dateOption <- Gen.option(localDate)
@@ -53,11 +53,10 @@ trait Generators extends ExtensionHelpers {
     } yield EisAuthorisationRequest(dateOption, EisAuthTypes.NopWaiver, eoris)
   }
 
-  implicit val arbEisAuthorisationResponseError: Arbitrary[EisAuthorisationResponseError] = Arbitrary {
+  implicit protected val arbEisAuthorisationResponseError: Arbitrary[EisAuthorisationResponseError] = Arbitrary {
     for {
-      errorCode             <- Arbitrary.arbitrary[Int]
-      errorMessage          <- Arbitrary.arbitrary[String]
-      sourcePDSFaultDetails <- Arbitrary.arbitrary[String]
+      errorCode    <- Arbitrary.arbitrary[Int]
+      errorMessage <- Arbitrary.arbitrary[String]
     } yield EisAuthorisationResponseError(
       errorDetail = EisAuthorisationResponseErrorDetail(
         errorCode = errorCode,

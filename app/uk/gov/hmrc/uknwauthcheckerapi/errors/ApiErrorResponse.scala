@@ -93,10 +93,10 @@ case object ServiceUnavailableApiError extends ApiErrorResponse {
   val message:    String = "Server is currently unable to handle the incoming requests"
 }
 
-case object UnauthorisedApiError extends ApiErrorResponse {
+final case class UnauthorizedApiError(reason: String) extends ApiErrorResponse {
   val statusCode: Int    = UNAUTHORIZED
-  val code:       String = "MISSING_CREDENTIALS"
-  val message:    String = "Authentication information is not provided"
+  val code:       String = "UNAUTHORIZED"
+  val message:    String = reason
 }
 
 final case class BadRequestApiError(errorMessages: String) extends ApiErrorResponse with BadRequestErrorTransformer {

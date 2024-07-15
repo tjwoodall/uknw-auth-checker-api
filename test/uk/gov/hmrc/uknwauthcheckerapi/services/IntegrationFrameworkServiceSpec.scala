@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.services
 
+import com.google.inject.AbstractModule
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.scalatestplus.mockito.MockitoSugar.mock
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 import play.api.http.Status._
 import play.api.libs.json.{JsError, JsPath, Json, JsonValidationError}
@@ -28,8 +28,8 @@ import uk.gov.hmrc.uknwauthcheckerapi.connectors.IntegrationFrameworkConnector
 import uk.gov.hmrc.uknwauthcheckerapi.controllers.BaseSpec
 import uk.gov.hmrc.uknwauthcheckerapi.errors.DataRetrievalError._
 import uk.gov.hmrc.uknwauthcheckerapi.generators.ValidAuthorisationRequest
-import uk.gov.hmrc.uknwauthcheckerapi.models.eis._
 import uk.gov.hmrc.uknwauthcheckerapi.models._
+import uk.gov.hmrc.uknwauthcheckerapi.models.eis._
 import uk.gov.hmrc.uknwauthcheckerapi.utils.JsonErrors
 
 import java.time.LocalDate
@@ -37,9 +37,12 @@ import scala.concurrent.Future
 
 class IntegrationFrameworkServiceSpec extends BaseSpec {
 
-  private val mockIntegrationFrameworkConnector = mock[IntegrationFrameworkConnector]
+  private lazy val service: IntegrationFrameworkService = injected[IntegrationFrameworkService]
 
-  val service = new IntegrationFrameworkService(appConfig, mockIntegrationFrameworkConnector)(ec)
+  override def moduleOverrides: AbstractModule = new AbstractModule {
+    override def configure(): Unit =
+      bind(classOf[IntegrationFrameworkConnector]).toInstance(mockIntegrationFrameworkConnector)
+  }
 
   "getEisAuthorisations" should {
     "return EisAuthorisationsResponse when call to the integration framework succeeds" in forAll {
