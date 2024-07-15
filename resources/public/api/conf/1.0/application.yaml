@@ -66,22 +66,96 @@ paths:
           content:
             application/json:
               examples:
-                single_error:
+                single_error_json_malformed:
                   value:
                     {
-                      "code": "INVALID_FORMAT",
-                      "message": "FR123123123123 is not a supported EORI number"
-                    }
-                multiple_errors:
-                  value:
-                    {
-                      "code": "JSON_ERROR",
-                      "message": "The provided JSON was invalid.",
+                      "code": "BAD_REQUEST",
+                      "message": "Bad request",
                       "errors": [
                         {
-                          "code": "BAD_REQUEST",
-                          "message": "error.expected.date.isoformat",
+                          "code": "INVALID_FORMAT",
+                          "message": "JSON is malformed",
+                          "path": ""
+                        }
+                      ]
+                    }
+                single_error_date:
+                  value:
+                    {
+                      "code": "BAD_REQUEST",
+                      "message": "Bad request",
+                      "errors": [
+                        {
+                          "code": "INVALID_FORMAT",
+                          "message": "2024-02-2 is not a valid date in the format YYYY-MM-DD",
                           "path": "date"
+                        }
+                      ]
+                    }
+                single_error_eoris:
+                  value:
+                    {
+                      "code": "BAD_REQUEST",
+                      "message": "Bad request",
+                      "errors": [
+                        {
+                          "code": "INVALID_FORMAT",
+                          "message": "ABCDEFGHIJK is not a supported EORI number",
+                          "path": "eoris"
+                        }
+                      ]
+                    }
+                multiple_errors_eoris:
+                  value:
+                    {
+                      "code": "BAD_REQUEST",
+                      "message": "Bad request",
+                      "errors": [
+                        {
+                          "code": "INVALID_FORMAT",
+                          "message": "ABCDEFGHIJK is not a supported EORI number",
+                          "path": "eoris"
+                        },
+                        {
+                          "code": "INVALID_FORMAT",
+                          "message": "LMNOPQRSTUV is not a supported EORI number",
+                          "path": "eoris"
+                        }
+                      ]
+                    }
+                multiple_errors_mixed:
+                  value:
+                    {
+                      "code": "BAD_REQUEST",
+                      "message": "Bad request",
+                      "errors": [
+                        {
+                          "code": "INVALID_FORMAT",
+                          "message": "ABCDEFGHIJK is not a supported EORI number",
+                          "path": "eoris"
+                        },
+                        {
+                          "code": "INVALID_FORMAT",
+                          "message": "2024-02-2 is not a valid date in the format YYYY-MM-DD",
+                          "path": "date"
+                        }
+                      ]
+                    }
+                multiple_errors_path_missing:
+                  value:
+                    {
+                      "code": "BAD_REQUEST",
+                      "message": "Bad request",
+                      "errors": [
+                        {
+                          "code": "INVALID_FORMAT",
+                          "message": "error.path.missing",
+                          "path": "date"
+                        },
+                        {
+                          "code": "INVALID_FORMAT",
+                          "message": "error.path.missing",
+                          "path": "eoris"
                         }
                       ]
                     }

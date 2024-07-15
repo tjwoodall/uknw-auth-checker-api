@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uknwauthcheckerapi.models
+package uk.gov.hmrc.uknwauthcheckerapi.generators
 
-import play.api.libs.json._
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
-case class AuthorisationRequest(date: String, eoris: Seq[String])
+trait ExtensionHelpers {
+  implicit class StringHelpers(date: LocalDate) {
 
-object AuthorisationRequest {
-  implicit val format: OFormat[AuthorisationRequest] = Json.format[AuthorisationRequest]
+    def toLocalDateFormatted: String =
+      date.format(DateTimeFormatter.ISO_LOCAL_DATE)
+  }
 }

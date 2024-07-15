@@ -14,12 +14,23 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uknwauthcheckerapi.models
+package uk.gov.hmrc.uknwauthcheckerapi.models.eis
 
-import play.api.libs.json._
+import play.api.libs.json.{Json, OFormat}
 
-case class AuthorisationRequest(date: String, eoris: Seq[String])
+final case class EisAuthorisationResponseError(
+  errorDetail: EisAuthorisationResponseErrorDetail
+)
 
-object AuthorisationRequest {
-  implicit val format: OFormat[AuthorisationRequest] = Json.format[AuthorisationRequest]
+object EisAuthorisationResponseError {
+  implicit val format: OFormat[EisAuthorisationResponseError] = Json.format[EisAuthorisationResponseError]
+}
+
+final case class EisAuthorisationResponseErrorDetail(
+  errorCode:    Int,
+  errorMessage: String
+)
+
+object EisAuthorisationResponseErrorDetail {
+  implicit val format: OFormat[EisAuthorisationResponseErrorDetail] = Json.format[EisAuthorisationResponseErrorDetail]
 }

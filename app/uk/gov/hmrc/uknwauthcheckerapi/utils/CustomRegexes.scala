@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uknwauthcheckerapi.models
+package uk.gov.hmrc.uknwauthcheckerapi.utils
 
-import play.api.libs.json._
+import scala.util.matching.Regex
 
-case class AuthorisationRequest(date: String, eoris: Seq[String])
+object CustomRegexes {
+  val eoriPattern:                 String = "^(GB|XI)[0-9]{12}|(GB|XI)[0-9]{15}$"
+  val invalidAuthTypePattern:      String = "^.*(Invalid authorisation type).*$"
+  val invalidFormatOfDatePattern:  String = "^.*(supplied date).*$"
+  val invalidFormatOfEorisPattern: String = "^.*(format of EORI).*$"
+  val uuid:                        String = "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
 
-object AuthorisationRequest {
-  implicit val format: OFormat[AuthorisationRequest] = Json.format[AuthorisationRequest]
+  val invalidAuthTypePatternRegex: Regex = invalidAuthTypePattern.r
 }

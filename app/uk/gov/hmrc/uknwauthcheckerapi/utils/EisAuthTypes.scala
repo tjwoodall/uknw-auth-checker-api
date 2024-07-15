@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uknwauthcheckerapi.models
+package uk.gov.hmrc.uknwauthcheckerapi.utils
 
-import play.api.libs.json._
-
-case class AuthorisationRequest(date: String, eoris: Seq[String])
-
-object AuthorisationRequest {
-  implicit val format: OFormat[AuthorisationRequest] = Json.format[AuthorisationRequest]
+object EisAuthTypes {
+  val NopWaiver = "UKNW"
 }

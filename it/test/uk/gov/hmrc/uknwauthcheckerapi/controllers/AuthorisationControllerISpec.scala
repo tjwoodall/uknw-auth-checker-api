@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.controllers
 
-import org.scalatest.prop.TableDrivenPropertyChecks.whenever
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.uknwauthcheckerapi.BaseISpec
+import uk.gov.hmrc.uknwauthcheckerapi.generators.ValidAuthorisationRequest
 import uk.gov.hmrc.uknwauthcheckerapi.models.AuthorisationRequest
 import uk.gov.hmrc.uknwauthcheckerapi.models.eis.EisAuthorisationsResponse
+import uk.gov.hmrc.uknwauthcheckerapi.utils.EisAuthTypes
 
 import java.time.LocalDate
 
@@ -30,44 +31,138 @@ class AuthorisationControllerISpec extends BaseISpec {
 
   "POST /authorisations" should {
     "return OK (200) with authorised eoris when request has valid date and eoris" in {
-      forAll { authorisationRequest: AuthorisationRequest =>
-        whenever (authorisationRequest.date.isDefined && authorisationRequest.eoris.nonEmpty) {
-          val authorisationRequestJson = Json.toJson(authorisationRequest)
+      forAll { (validRequest: ValidAuthorisationRequest, date: LocalDate) =>
+        val request = validRequest.request
 
-          val expectedResponse = Json.toJson(
-            EisAuthorisationsResponse(LocalDate.now(), "UKNW", Seq.empty)
-          )
+        val authorisationRequestJson = Json.toJson(request)
 
-          stubPost("/cau/validatecustomsauth/v1", OK, expectedResponse.toString())
+        val expectedResponse = Json.toJson(
+          EisAuthorisationsResponse(date, EisAuthTypes.NopWaiver, Seq.empty)
+        )
 
-          val result = postRequest(authorisationsUrl, authorisationRequestJson)
+        stubPost(eisAuthorisationsEndpointPath, OK, expectedResponse.toString())
 
-          result.status mustBe OK
-        }
+        val result = postRequest(authorisationsUrl, authorisationRequestJson)
+
+        result.status mustBe OK
       }
     }
 
-    "return METHOD_NOT_ALLOWED (405) when request is not DELETE" in {
+    "return BAD_REQUEST when request validation is invalid" in {
+      forAll { (validRequest: ValidAuthorisationRequest) =>
+        val request = validRequest.request.copy(
+          date = "ABCD"
+        )
+
+        val authorisationRequestJson = Json.toJson(request)
+
+        val result = postRequest(authorisationsUrl, authorisationRequestJson)
+
+        result.status mustBe BAD_REQUEST
+      }
+    }
+
+    "return BAD_REQUEST when integration framework returns BAD_REQUEST" in {
+      forAll { (validRequest: ValidAuthorisationRequest) =>
+        val request = validRequest.request
+
+        val authorisationRequestJson = Json.toJson(request)
+
+        val response = Json.toJson(badRequestEisAuthorisationResponseError)
+
+        stubPost(eisAuthorisationsEndpointPath, BAD_REQUEST, response.toString())
+
+        val result = postRequest(authorisationsUrl, authorisationRequestJson)
+
+        result.status mustBe BAD_REQUEST
+      }
+    }
+
+    "return FORBIDDEN when integration framework returns FORBIDDEN" in {
+      forAll { (validRequest: ValidAuthorisationRequest) =>
+        val request = validRequest.request
+
+        val authorisationRequestJson = Json.toJson(request)
+
+        val response = Json.toJson(forbiddenEisAuthorisationResponseError)
+
+        stubPost(eisAuthorisationsEndpointPath, FORBIDDEN, response.toString())
+
+        val result = postRequest(authorisationsUrl, authorisationRequestJson)
+
+        result.status mustBe FORBIDDEN
+      }
+    }
+
+    "return INTERNAL_SERVER_ERROR when integration framework returns INTERNAL_SERVER_ERROR" in {
+      forAll { (validRequest: ValidAuthorisationRequest) =>
+        val request = validRequest.request
+
+        val authorisationRequestJson = Json.toJson(request)
+
+        val response = Json.toJson(internalServerErrorEisAuthorisationResponseError)
+
+        stubPost(eisAuthorisationsEndpointPath, INTERNAL_SERVER_ERROR, response.toString())
+
+        val result = postRequest(authorisationsUrl, authorisationRequestJson)
+
+        result.status mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+
+    "return INTERNAL_SERVER_ERROR when integration framework returns unhandled status" in {
+      forAll { (validRequest: ValidAuthorisationRequest) =>
+        val request = validRequest.request
+
+        val authorisationRequestJson = Json.toJson(request)
+
+        val response = Json.toJson(imATeapotEisAuthorisationResponseError)
+
+        stubPost(eisAuthorisationsEndpointPath, IM_A_TEAPOT, response.toString())
+
+        val result = postRequest(authorisationsUrl, authorisationRequestJson)
+
+        result.status mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+
+    "return METHOD_NOT_ALLOWED when integration framework returns METHOD_NOT_ALLOWED" in {
+      forAll { (validRequest: ValidAuthorisationRequest) =>
+        val request = validRequest.request
+
+        val authorisationRequestJson = Json.toJson(request)
+
+        val response = Json.toJson(methodNotAllowedEisAuthorisationResponseError)
+
+        stubPost(eisAuthorisationsEndpointPath, METHOD_NOT_ALLOWED, response.toString())
+
+        val result = postRequest(authorisationsUrl, authorisationRequestJson)
+
+        result.status mustBe METHOD_NOT_ALLOWED
+      }
+    }
+
+    "return METHOD_NOT_ALLOWED (405) when request is DELETE" in {
       val result = deleteRequest(authorisationsUrl)
       result.status mustBe METHOD_NOT_ALLOWED
     }
 
-    "return METHOD_NOT_ALLOWED (405) when request is not GET" in {
-      val result = deleteRequest(authorisationsUrl)
+    "return METHOD_NOT_ALLOWED (405) when request is GET" in {
+      val result = getRequest(authorisationsUrl)
       result.status mustBe METHOD_NOT_ALLOWED
     }
 
-    "return METHOD_NOT_ALLOWED (405) when request is not HEAD" in {
-      val result = deleteRequest(authorisationsUrl)
+    "return METHOD_NOT_ALLOWED (405) when request is HEAD" in {
+      val result = headRequest(authorisationsUrl)
       result.status mustBe METHOD_NOT_ALLOWED
     }
 
-    "return METHOD_NOT_ALLOWED (405) when request is not OPTIONS" in {
-      val result = deleteRequest(authorisationsUrl)
+    "return METHOD_NOT_ALLOWED (405) when request is OPTIONS" in {
+      val result = optionsRequest(authorisationsUrl)
       result.status mustBe METHOD_NOT_ALLOWED
     }
 
-    "return METHOD_NOT_ALLOWED (405) when request is not PUT" in {
+    "return METHOD_NOT_ALLOWED (405) when request is PUT" in {
       forAll { (authorisationRequest: AuthorisationRequest) =>
         val authorisationRequestJson = Json.toJson(authorisationRequest)
         val result = putRequest(authorisationsUrl, authorisationRequestJson)
@@ -75,11 +170,25 @@ class AuthorisationControllerISpec extends BaseISpec {
       }
     }
 
-    "return METHOD_NOT_ALLOWED (405) when request is not PATCH" in {
+    "return METHOD_NOT_ALLOWED (405) when request is PATCH" in {
       forAll { (authorisationRequest: AuthorisationRequest) =>
         val authorisationRequestJson = Json.toJson(authorisationRequest)
         val result = patchRequest(authorisationsUrl, authorisationRequestJson)
         result.status mustBe METHOD_NOT_ALLOWED
+      }
+    }
+
+    "return SERVICE_UNAVAILABLE when integration framework returns BAD_GATEWAY" in {
+      forAll { (validRequest: ValidAuthorisationRequest) =>
+        val request = validRequest.request
+
+        val authorisationRequestJson = Json.toJson(request)
+
+        stubPost(eisAuthorisationsEndpointPath, BAD_GATEWAY)
+
+        val result = postRequest(authorisationsUrl, authorisationRequestJson)
+
+        result.status mustBe SERVICE_UNAVAILABLE
       }
     }
   }

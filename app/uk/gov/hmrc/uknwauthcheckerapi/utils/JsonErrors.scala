@@ -16,14 +16,7 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.utils
 
-import play.api.http.{ContentTypeOf, ContentTypes, Writeable}
-import play.api.libs.json.Writes
-
-trait JsonResponses {
-
-  implicit def writable[T](implicit writes: Writes[T]): Writeable[T] = {
-    implicit val contentType: ContentTypeOf[T] = ContentTypeOf[T](Some(ContentTypes.JSON))
-    Writeable(Writeable.writeableOf_JsValue.transform.compose(writes.writes))
-  }
-
+object JsonErrors {
+  val expectedJsObject = "error.expected.jsobject"
+  val pathMissing      = "error.path.missing"
 }

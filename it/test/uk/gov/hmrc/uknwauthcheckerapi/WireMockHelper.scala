@@ -26,7 +26,7 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite}
 trait WireMockHelper extends BeforeAndAfterAll with BeforeAndAfterEach {
   this: Suite =>
 
-  val wireMockPort = 9999
+  private val wireMockPort = 9999
 
   protected val server: WireMockServer = new WireMockServer(wireMockConfig().port(wireMockPort))
 
@@ -45,12 +45,12 @@ trait WireMockHelper extends BeforeAndAfterAll with BeforeAndAfterEach {
     server.stop()
   }
 
-  def setWireMockPort(services: String*): Map[String, Any] =
+  protected def setWireMockPort(services: String*): Map[String, Any] =
     services.foldLeft(Map.empty[String, Any]) { case (map, service) =>
       map + (s"microservice.services.$service.port" -> wireMockPort)
     }
 
-  def stubPost(
+  protected def stubPost(
       url: String,
       responseStatus: Int,
       responseBody: String
@@ -62,6 +62,20 @@ trait WireMockHelper extends BeforeAndAfterAll with BeforeAndAfterEach {
           aResponse()
             .withStatus(responseStatus)
             .withBody(responseBody)
+        )
+    )
+  }
+
+  protected def stubPost(
+    url: String,
+    responseStatus: Int
+  ): StubMapping = {
+    server.removeStub(post(urlMatching(url)))
+    server.stubFor(
+      post(urlMatching(url))
+        .willReturn(
+          aResponse()
+            .withStatus(responseStatus)
         )
     )
   }

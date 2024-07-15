@@ -18,28 +18,52 @@ package uk.gov.hmrc.uknwauthcheckerapi.generators
 
 import org.scalacheck.{Arbitrary, Gen}
 import uk.gov.hmrc.uknwauthcheckerapi.models.AuthorisationRequest
-import uk.gov.hmrc.uknwauthcheckerapi.models.eis.EisAuthorisationRequest
+import uk.gov.hmrc.uknwauthcheckerapi.models.eis.{EisAuthorisationRequest, EisAuthorisationResponseError, EisAuthorisationResponseErrorDetail}
+import uk.gov.hmrc.uknwauthcheckerapi.utils.{CustomRegexes, EisAuthTypes}
 import wolfendale.scalacheck.regexp.RegexpGen
 
 import java.time.LocalDate
 
-trait Generators {
+trait Generators extends ExtensionHelpers {
 
-  val eoriGen:  Gen[String]      = RegexpGen.from("^(GB|XI)[0-9]{12}|(GB|XI)[0-9]{15}$")
+  val eoriGen:  Gen[String]      = RegexpGen.from(CustomRegexes.eoriPattern)
   val eorisGen: Gen[Seq[String]] = Gen.chooseNum(1, 3000).flatMap(n => Gen.listOfN(n, eoriGen))
+
+  implicit val arbLocalDate: Arbitrary[LocalDate] = Arbitrary(
+    Gen
+      .choose(
+        min = LocalDate.MIN.toEpochDay,
+        max = LocalDate.MAX.toEpochDay
+      )
+      .map(LocalDate.ofEpochDay)
+  )
 
   implicit val arbAuthorisationRequest: Arbitrary[AuthorisationRequest] = Arbitrary {
     for {
-      date  <- Gen.option(LocalDate.now())
+      date  <- Arbitrary.arbitrary[LocalDate]
       eoris <- eorisGen
-    } yield AuthorisationRequest(date, eoris)
+    } yield AuthorisationRequest(date.toLocalDateFormatted, eoris)
   }
 
   implicit val arbEisAuthorisationRequest: Arbitrary[EisAuthorisationRequest] = Arbitrary {
     for {
-      date  <- Gen.option(LocalDate.now())
-      eoris <- eorisGen
-    } yield EisAuthorisationRequest(date, "UKNW", eoris)
+      localDate  <- Arbitrary.arbitrary[LocalDate]
+      dateOption <- Gen.option(localDate)
+      eoris      <- eorisGen
+    } yield EisAuthorisationRequest(dateOption, EisAuthTypes.NopWaiver, eoris)
+  }
+
+  implicit val arbEisAuthorisationResponseError: Arbitrary[EisAuthorisationResponseError] = Arbitrary {
+    for {
+      errorCode             <- Arbitrary.arbitrary[Int]
+      errorMessage          <- Arbitrary.arbitrary[String]
+      sourcePDSFaultDetails <- Arbitrary.arbitrary[String]
+    } yield EisAuthorisationResponseError(
+      errorDetail = EisAuthorisationResponseErrorDetail(
+        errorCode = errorCode,
+        errorMessage = errorMessage
+      )
+    )
   }
 
 }

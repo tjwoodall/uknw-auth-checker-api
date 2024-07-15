@@ -32,9 +32,10 @@ import play.api.test.{DefaultAwaitTimeout, FakeHeaders, FakeRequest, Helpers}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.HttpVerbs.POST
 import uk.gov.hmrc.uknwauthcheckerapi.config.AppConfig
-import uk.gov.hmrc.uknwauthcheckerapi.generators.{Generators, TestData, TestHeaders}
+import uk.gov.hmrc.uknwauthcheckerapi.generators.{ExtensionHelpers, Generators, TestData, TestHeaders}
 
 import scala.concurrent.ExecutionContext
+import scala.reflect.ClassTag
 
 class BaseSpec
     extends AnyWordSpec
@@ -45,33 +46,41 @@ class BaseSpec
     with DefaultAwaitTimeout
     with HeaderNames
     with TestData
-    with TestHeaders {
+    with TestHeaders
+    with ExtensionHelpers {
 
-  def configOverrides: Map[String, Any] = Map()
+  implicit val ec:                ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+  implicit val hc:                HeaderCarrier    = HeaderCarrier()
+  implicit lazy val system:       ActorSystem      = ActorSystem()
+  implicit lazy val materializer: Materializer     = Materializer(system)
 
-  val additionalAppConfig: Map[String, Any] = Map(
+  @annotation.nowarn
+  protected val additionalAppConfig: Map[String, Any] = Map(
     "create-internal-auth-token-on-start" -> false,
     "metrics.enabled"                     -> false,
     "auditing.enabled"                    -> false,
     "http-verbs.retries.intervals"        -> List("1ms", "1ms", "1ms")
   ) ++ configOverrides
+  protected val actorSystem:     ActorSystem                         = ActorSystem("actor")
+  protected lazy val appConfig:  AppConfig                           = injected[AppConfig]
+  protected lazy val config:     Config                              = injected[Config]
+  protected val fakePostRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(POST, "")
+  protected val stubComponents:  ControllerComponents                = Helpers.stubControllerComponents()
 
   override def fakeApplication(): Application =
     GuiceApplicationBuilder()
       .configure(additionalAppConfig)
       .build()
 
-  implicit lazy val system:       ActorSystem  = ActorSystem()
-  implicit lazy val materializer: Materializer = Materializer(system)
+  protected def configOverrides: Map[String, Any] = Map()
 
-  val fakePostRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(POST, "")
-  val stubComponents:  ControllerComponents                = Helpers.stubControllerComponents()
+  protected def injected[T](c:                 Class[T]):    T = app.injector.instanceOf(c)
+  protected def injected[T](implicit evidence: ClassTag[T]): T = app.injector.instanceOf[T]
 
-  def fakeRequestWithJsonBody(json: JsValue, verb: String = HttpVerbs.POST, headers: Seq[(String, String)] = defaultHeaders): FakeRequest[JsValue] =
+  protected def fakeRequestWithJsonBody(
+    json:    JsValue,
+    verb:    String = HttpVerbs.POST,
+    headers: Seq[(String, String)] = defaultHeaders
+  ): FakeRequest[JsValue] =
     FakeRequest(verb, authorisationEndpoint, FakeHeaders(headers), json)
-  implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
-  implicit val hc: HeaderCarrier    = HeaderCarrier()
-  val config:      Config           = app.injector.instanceOf[Config]
-  val appConfig:   AppConfig        = app.injector.instanceOf[AppConfig]
-  val actorSystem: ActorSystem      = ActorSystem("actor")
 }

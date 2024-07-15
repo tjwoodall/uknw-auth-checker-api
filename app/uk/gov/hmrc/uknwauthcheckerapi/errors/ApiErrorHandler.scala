@@ -21,7 +21,7 @@ import play.api.http.HttpErrorHandler
 import play.api.http.Status._
 import play.api.mvc.{RequestHeader, Result}
 import uk.gov.hmrc.auth.core.AuthorisationException
-import uk.gov.hmrc.http.{JsValidationException, NotFoundException}
+import uk.gov.hmrc.http.NotFoundException
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
@@ -37,15 +37,15 @@ class ApiErrorHandler @Inject() extends HttpErrorHandler with Logging {
 
     Future.successful(
       statusCode match {
-        case BAD_REQUEST => BadRequestApiError.toResult
+        case FORBIDDEN          => ForbiddenApiError.toResult
+        case METHOD_NOT_ALLOWED => MethodNotAllowedApiError.toResult
         case NOT_FOUND =>
           request.path match {
             case "/authorisations" => MethodNotAllowedApiError.toResult
             case _                 => NotFoundApiError.toResult
           }
-        case FORBIDDEN          => ForbiddenApiError.toResult
-        case METHOD_NOT_ALLOWED => MethodNotAllowedApiError.toResult
-        case UNAUTHORIZED       => UnauthorisedApiError.toResult
+        case SERVICE_UNAVAILABLE => ServiceUnavailableApiError.toResult
+        case UNAUTHORIZED        => UnauthorisedApiError.toResult
         case _ =>
           logger.warn(s"[ApiErrorHandler][onClientError] Unexpected client error type")
           InternalServerApiError.toResult
@@ -62,7 +62,6 @@ class ApiErrorHandler @Inject() extends HttpErrorHandler with Logging {
     ex match {
       case _: NotFoundException      => Future.successful(NotFoundApiError.toResult)
       case _: AuthorisationException => Future.successful(UnauthorisedApiError.toResult)
-      case _: JsValidationException  => Future.successful(BadRequestApiError.toResult)
       case ex =>
         logger.error(s"[ApiErrorHandler][onServerError] Server error due to unexpected exception", ex)
         Future.successful(InternalServerApiError.toResult)
