@@ -55,7 +55,7 @@ trait TestData extends Generators {
     } yield ValidEisAuthorisationsResponse(
       EisAuthorisationsResponse(
         date,
-        EisAuthTypes.NopWaiver,
+        EisAuthTypes.nopWaiver,
         eoris.map(e => EisAuthorisationResponse(e, valid = true, 0))
       )
     )

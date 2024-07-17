@@ -17,5 +17,5 @@
 package uk.gov.hmrc.uknwauthcheckerapi.utils
 
 object EisAuthTypes {
-  val NopWaiver = "UKNW"
+  val nopWaiver = "UKNW"
 }

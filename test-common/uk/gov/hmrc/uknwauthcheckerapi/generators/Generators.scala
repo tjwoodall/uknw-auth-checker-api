@@ -50,7 +50,7 @@ trait Generators extends ExtensionHelpers {
       localDate  <- Arbitrary.arbitrary[LocalDate]
       dateOption <- Gen.option(localDate)
       eoris      <- eorisGen
-    } yield EisAuthorisationRequest(dateOption, EisAuthTypes.NopWaiver, eoris)
+    } yield EisAuthorisationRequest(dateOption, EisAuthTypes.nopWaiver, eoris)
   }
 
   implicit protected val arbEisAuthorisationResponseError: Arbitrary[EisAuthorisationResponseError] = Arbitrary {
