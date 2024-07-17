@@ -121,22 +121,17 @@ class IntegrationFrameworkServiceSpec extends BaseSpec {
     }
 
     "return ForbiddenDataRetrievalError error when call to the integration framework fails with a FORBIDDEN" in forAll {
-      (validRequest: ValidAuthorisationRequest, eisErrorResponse: EisAuthorisationResponseError) =>
+      (validRequest: ValidAuthorisationRequest) =>
         val request = validRequest.request
 
-        val eisError = eisErrorResponse.copy(errorDetail =
-          eisErrorResponse.errorDetail
-            .copy(errorCode = FORBIDDEN)
-        )
-
-        val expectedResponse = UpstreamErrorResponse(Json.stringify(Json.toJson(eisError)), FORBIDDEN)
+        val expectedResponse = UpstreamErrorResponse("{}", FORBIDDEN)
 
         when(mockIntegrationFrameworkConnector.getEisAuthorisationsResponse(any())(any()))
           .thenReturn(Future.failed(expectedResponse))
 
         val result = await(service.getAuthorisations(request).value)
 
-        result shouldBe Left(ForbiddenDataRetrievalError(eisError.errorDetail.errorMessage))
+        result shouldBe Left(ForbiddenDataRetrievalError())
     }
 
     "return InternalServerDataRetrievalError error when call to the integration framework fails with a INTERNAL_SERVER_ERROR" in forAll {

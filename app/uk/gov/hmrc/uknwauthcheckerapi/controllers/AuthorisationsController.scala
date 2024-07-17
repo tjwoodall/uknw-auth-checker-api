@@ -57,7 +57,7 @@ class AuthorisationsController @Inject() (
             logger.warn(toLogMessage(BAD_REQUEST, Some(errorMessages)))
             BadRequestApiError(errorMessages).toResult
 
-          case ForbiddenDataRetrievalError(_) =>
+          case ForbiddenDataRetrievalError() =>
             logger.error(toLogMessage(FORBIDDEN))
             ForbiddenApiError.toResult
 

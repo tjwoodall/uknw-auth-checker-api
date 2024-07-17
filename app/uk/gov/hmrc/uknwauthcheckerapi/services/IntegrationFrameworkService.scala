@@ -66,6 +66,7 @@ class IntegrationFrameworkService @Inject() (appConfig: AppConfig, integrationFr
         .recover {
           case _: BadGatewayException => Left(BadGatewayDataRetrievalError())
           case _ @UpstreamErrorResponse(_, BAD_GATEWAY, _, _) => Left(BadGatewayDataRetrievalError())
+          case _ @UpstreamErrorResponse(_, FORBIDDEN, _, _)   => Left(ForbiddenDataRetrievalError())
           case _ @UpstreamErrorResponse(body, _, _, _)        => handleUpstreamErrorResponse(body)
           case NonFatal(thr)                                  => Left(InternalUnexpectedDataRetrievalError(thr.getMessage, thr))
         }
@@ -83,7 +84,6 @@ class IntegrationFrameworkService @Inject() (appConfig: AppConfig, integrationFr
         Left(
           errorCode match {
             case BAD_REQUEST           => handleBadRequest(errorMessage)
-            case FORBIDDEN             => ForbiddenDataRetrievalError(errorMessage)
             case INTERNAL_SERVER_ERROR => InternalServerDataRetrievalError(errorMessage)
             case METHOD_NOT_ALLOWED    => MethodNotAllowedDataRetrievalError(errorMessage)
             case _                     => InternalServerDataRetrievalError(errorMessage)

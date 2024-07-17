@@ -275,7 +275,7 @@ class AuthorisationsControllerSpec extends BaseSpec {
         )
 
       when(mockIntegrationFrameworkService.getAuthorisations(any())(any()))
-        .thenReturn(EitherT.leftT(ForbiddenDataRetrievalError(errorMessage)))
+        .thenReturn(EitherT.leftT(ForbiddenDataRetrievalError()))
 
       val request = fakeRequestWithJsonBody(Json.toJson(authorisationRequest))
 
