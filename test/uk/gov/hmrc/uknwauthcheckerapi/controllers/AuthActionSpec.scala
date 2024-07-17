@@ -21,6 +21,7 @@ import org.mockito.Mockito.when
 import play.api.test.Helpers.await
 import uk.gov.hmrc.auth.core.retrieve.Credentials
 import uk.gov.hmrc.auth.core.{InternalError, MissingBearerToken}
+import uk.gov.hmrc.uknwauthcheckerapi.controllers.actions.AuthAction
 import uk.gov.hmrc.uknwauthcheckerapi.errors.{ServiceUnavailableApiError, UnauthorizedApiError}
 
 import scala.concurrent.Future

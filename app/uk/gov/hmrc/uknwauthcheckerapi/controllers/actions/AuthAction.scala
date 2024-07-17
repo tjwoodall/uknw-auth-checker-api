@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uknwauthcheckerapi.controllers
+package uk.gov.hmrc.uknwauthcheckerapi.controllers.actions
 
 import play.api.Logging
 import play.api.mvc._

@@ -65,31 +65,34 @@ class IntegrationFrameworkService @Inject() (appConfig: AppConfig, integrationFr
         }
         .recover {
           case _: BadGatewayException => Left(BadGatewayDataRetrievalError())
-          case _ @UpstreamErrorResponse(_, BAD_GATEWAY, _, _) => Left(BadGatewayDataRetrievalError())
-          case _ @UpstreamErrorResponse(_, FORBIDDEN, _, _)   => Left(ForbiddenDataRetrievalError())
-          case _ @UpstreamErrorResponse(body, _, _, _)        => handleUpstreamErrorResponse(body)
-          case NonFatal(thr)                                  => Left(InternalUnexpectedDataRetrievalError(thr.getMessage, thr))
+          case _ @UpstreamErrorResponse(body, statusCode, _, _) => handleUpstreamErrorResponse(body, statusCode)
+          case NonFatal(thr)                                    => Left(InternalUnexpectedDataRetrievalError(thr.getMessage, thr))
         }
     }
   }
 
-  private def handleUpstreamErrorResponse(body: String): Either[DataRetrievalError, AuthorisationsResponse] =
-    Json
-      .parse(body)
-      .validate[EisAuthorisationResponseError] match {
-      case JsSuccess(error, _) =>
-        val errorCode    = error.errorDetail.errorCode
-        val errorMessage = error.errorDetail.errorMessage
+  private def handleUpstreamErrorResponse(body: String, statusCode: Int): Either[DataRetrievalError, AuthorisationsResponse] =
+    statusCode match {
+      case BAD_GATEWAY => Left(BadGatewayDataRetrievalError())
+      case FORBIDDEN   => Left(ForbiddenDataRetrievalError())
+      case _ =>
+        Json
+          .parse(body)
+          .validate[EisAuthorisationResponseError] match {
+          case JsSuccess(error, _) =>
+            val errorCode    = error.errorDetail.errorCode
+            val errorMessage = error.errorDetail.errorMessage
 
-        Left(
-          errorCode match {
-            case BAD_REQUEST           => handleBadRequest(errorMessage)
-            case INTERNAL_SERVER_ERROR => InternalServerDataRetrievalError(errorMessage)
-            case METHOD_NOT_ALLOWED    => MethodNotAllowedDataRetrievalError(errorMessage)
-            case _                     => InternalServerDataRetrievalError(errorMessage)
-          }
-        )
-      case jsError: JsError => Left(UnableToDeserialiseDataRetrievalError(jsError))
+            Left(
+              errorCode match {
+                case BAD_REQUEST           => handleBadRequest(errorMessage)
+                case INTERNAL_SERVER_ERROR => InternalServerDataRetrievalError(errorMessage)
+                case METHOD_NOT_ALLOWED    => MethodNotAllowedDataRetrievalError(errorMessage)
+                case _                     => InternalServerDataRetrievalError(errorMessage)
+              }
+            )
+          case jsError: JsError => Left(UnableToDeserialiseDataRetrievalError(jsError))
+        }
     }
 
   private def handleBadRequest(errorMessage: String): DataRetrievalError =

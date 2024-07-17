@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uknwauthcheckerapi.controllers
+package uk.gov.hmrc.uknwauthcheckerapi.controllers.actions
 
 import play.api.http.{HeaderNames, MimeTypes}
 import play.api.mvc._
@@ -23,7 +23,7 @@ import uk.gov.hmrc.uknwauthcheckerapi.utils.HmrcMimeTypes
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait HeaderValidator extends Results {
+trait HeaderValidatorAction extends Results {
 
   private val acceptHeaderExists:      Option[String] => Boolean = _.contains(HmrcMimeTypes.json)
   private val contentTypeHeaderExists: Option[String] => Boolean = _.contains(MimeTypes.JSON)
