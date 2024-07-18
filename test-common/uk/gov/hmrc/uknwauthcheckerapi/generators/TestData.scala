@@ -16,18 +16,20 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.generators
 
+import java.time.LocalDate
+
 import org.scalacheck.Arbitrary
+
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.uknwauthcheckerapi.models.AuthorisationRequest
 import uk.gov.hmrc.uknwauthcheckerapi.models.eis._
 import uk.gov.hmrc.uknwauthcheckerapi.utils.EisAuthTypes
 
-import java.time.LocalDate
-
 trait TestData extends Generators {
 
   protected val authorisationEndpoint = "authorisation"
+  protected val bearerToken           = "Bearer PFZBTElEX1RPS0VOPg=="
   protected val emptyJson: JsValue = Json.parse("{}")
 
   protected val invalidAuthTypeEisErrorMessage: String = """Invalid authorisation type : UKNW""".stripMargin

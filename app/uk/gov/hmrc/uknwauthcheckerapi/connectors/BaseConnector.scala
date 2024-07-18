@@ -16,17 +16,16 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.connectors
 
-import org.apache.pekko.actor.ActorSystem
-import com.typesafe.config.Config
+import scala.concurrent.{ExecutionContext, Future}
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import com.typesafe.config.Config
+import org.apache.pekko.actor.ActorSystem
+
 import play.api.http.Status._
-import play.api.libs.json.JsResult
-import play.api.libs.json.Reads
+import play.api.libs.json.{JsResult, Reads}
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.client.RequestBuilder
 import uk.gov.hmrc.http.{HttpResponse, Retries, UpstreamErrorResponse}
-import uk.gov.hmrc.http.HttpReads.Implicits._
 
 trait BaseConnector extends Retries {
 

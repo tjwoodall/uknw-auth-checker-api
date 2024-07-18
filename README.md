@@ -34,6 +34,24 @@ This is a sbt command alias specific to this project. It will run a scala format
 check, run a scala style check, run unit tests, run integration tests and produce a coverage report.
 > `sbt runAllChecks`
 
+> ### Pre-Commit
+
+This is a sbt command alias specific to this project. It will run a scala format , run a scala fix, 
+run unit tests, run integration tests and produce a coverage report.
+> `sbt runAllChecks`
+
+### Format all
+
+This is a sbt command alias specific to this project. It will run a scala format
+check in the app, tests, and integration tests
+> `sbt fmtAll`
+
+### Fix all
+
+This is a sbt command alias specific to this project. It will run the scala fix 
+linter/reformatter in the app, tests, and integration tests
+> `sbt fixAll`
+
 ### License
 
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").

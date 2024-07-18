@@ -16,7 +16,10 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.controllers.responses
 
+import scala.concurrent.{ExecutionContext, Future}
+
 import cats.data.EitherT
+
 import play.api.Logging
 import play.api.http.Status._
 import play.api.libs.json.JsError.toJson
@@ -25,8 +28,6 @@ import play.api.mvc.{Request, Result, Results}
 import uk.gov.hmrc.uknwauthcheckerapi.errors.DataRetrievalError._
 import uk.gov.hmrc.uknwauthcheckerapi.errors._
 import uk.gov.hmrc.uknwauthcheckerapi.models.AuthorisationsResponse
-
-import scala.concurrent.{ExecutionContext, Future}
 
 trait AuthorisationResponseHandler extends Logging {
 

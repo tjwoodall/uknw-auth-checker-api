@@ -14,21 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uknwauthcheckerapi.controllers
+package uk.gov.hmrc.uknwauthcheckerapi.generators
 
-import javax.inject.{Inject, Singleton}
+object TestRegexes {
+  val rfc7231DateTimePattern: String = "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), ([0-3][0-9]) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)" +
+    " ([0-9]{4}) ([01][0-9]|2[0-3])(:[0-5][0-9]){2} [A-Z][A-Z][A-Z]$"
 
-import controllers.Assets
-
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-
-@Singleton
-class DocumentationController @Inject() (assets: Assets, cc: ControllerComponents) extends BackendController(cc) {
-
-  def definition(): Action[AnyContent] =
-    assets.at("/public/api", "definition.json")
-
-  def specification(version: String, file: String): Action[AnyContent] =
-    assets.at(s"/public/api/conf/$version", file)
+  val uuidPattern: String = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
 }

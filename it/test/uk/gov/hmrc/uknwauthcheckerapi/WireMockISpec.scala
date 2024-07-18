@@ -17,14 +17,15 @@
 package uk.gov.hmrc.uknwauthcheckerapi
 
 import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, removeStub, stubFor, urlMatching}
+import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, urlMatching}
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite}
+
 import play.api.http.Status.OK
 
-
-trait WireMockHelper extends BeforeAndAfterAll with BeforeAndAfterEach {
+trait WireMockISpec extends BeforeAndAfterAll with BeforeAndAfterEach {
   this: Suite =>
 
   private val wireMockPort = 9999
@@ -34,10 +35,11 @@ trait WireMockHelper extends BeforeAndAfterAll with BeforeAndAfterEach {
   override def beforeAll(): Unit = {
     server.start()
     super.beforeAll()
+    WireMock.configureFor("localhost", wireMockPort) // https://github.com/wiremock/wiremock/issues/369
   }
 
   override def beforeEach(): Unit = {
-    server.resetAll()
+    resetWireMock()
     super.beforeEach()
   }
 
@@ -46,12 +48,17 @@ trait WireMockHelper extends BeforeAndAfterAll with BeforeAndAfterEach {
     server.stop()
   }
 
+  protected def resetWireMock(): Unit = {
+    server.resetAll()
+    WireMock.reset()
+  }
+
   protected def setWireMockPort(services: String*): Map[String, Any] =
     services.foldLeft(Map.empty[String, Any]) { case (map, service) =>
       map + (s"microservice.services.$service.port" -> wireMockPort)
     }
 
-  protected def stubAuthorised(): StubMapping = {
+  protected def stubAuthorised(): StubMapping =
     server.stubFor(
       post("/auth/authorise")
         .willReturn(
@@ -60,13 +67,12 @@ trait WireMockHelper extends BeforeAndAfterAll with BeforeAndAfterEach {
             .withBody("{}")
         )
     )
-  }
 
   protected def stubPost(
-      url: String,
-      responseStatus: Int,
-      responseBody: String
-    ): StubMapping = {
+    url:            String,
+    responseStatus: Int,
+    responseBody:   String
+  ): StubMapping = {
     server.removeStub(post(urlMatching(url)))
     server.stubFor(
       post(urlMatching(url))
@@ -79,7 +85,7 @@ trait WireMockHelper extends BeforeAndAfterAll with BeforeAndAfterEach {
   }
 
   protected def stubPost(
-    url: String,
+    url:            String,
     responseStatus: Int
   ): StubMapping = {
     server.removeStub(post(urlMatching(url)))

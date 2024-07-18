@@ -16,16 +16,16 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.services
 
+import java.time.LocalDate
+import java.time.format.DateTimeParseException
+import scala.collection.Seq
+
 import play.api.libs.json._
 import play.api.mvc.Request
 import uk.gov.hmrc.uknwauthcheckerapi.errors.DataRetrievalError
 import uk.gov.hmrc.uknwauthcheckerapi.errors.DataRetrievalError.ValidationDataRetrievalError
 import uk.gov.hmrc.uknwauthcheckerapi.models.AuthorisationRequest
 import uk.gov.hmrc.uknwauthcheckerapi.utils.CustomRegexes
-
-import java.time.LocalDate
-import java.time.format.DateTimeParseException
-import scala.collection.Seq
 
 class ValidationService {
   def validateRequest(request: Request[JsValue]): Either[DataRetrievalError, AuthorisationRequest] =

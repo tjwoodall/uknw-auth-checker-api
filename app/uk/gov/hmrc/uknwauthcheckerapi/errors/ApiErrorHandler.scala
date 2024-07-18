@@ -16,14 +16,14 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.errors
 
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.Future
+
 import play.api.Logging
 import play.api.http.HttpErrorHandler
 import play.api.http.Status._
 import play.api.mvc.{RequestHeader, Result}
 import uk.gov.hmrc.http.NotFoundException
-
-import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
 
 @Singleton
 class ApiErrorHandler @Inject() extends HttpErrorHandler with Logging {

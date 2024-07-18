@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.generators
 
+import java.time.LocalDate
+
 import org.scalacheck.{Arbitrary, Gen}
+import wolfendale.scalacheck.regexp.RegexpGen
+
 import uk.gov.hmrc.uknwauthcheckerapi.models.AuthorisationRequest
 import uk.gov.hmrc.uknwauthcheckerapi.models.eis.{EisAuthorisationRequest, EisAuthorisationResponseError, EisAuthorisationResponseErrorDetail}
 import uk.gov.hmrc.uknwauthcheckerapi.utils.{CustomRegexes, EisAuthTypes}
-import wolfendale.scalacheck.regexp.RegexpGen
-
-import java.time.LocalDate
 
 trait Generators extends ExtensionHelpers {
 

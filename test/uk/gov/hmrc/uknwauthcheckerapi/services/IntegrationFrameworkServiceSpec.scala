@@ -16,10 +16,14 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.services
 
+import java.time.LocalDate
+import scala.concurrent.Future
+
 import com.google.inject.AbstractModule
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
+
 import play.api.http.Status._
 import play.api.libs.json.{JsError, JsPath, Json, JsonValidationError}
 import play.api.test.Helpers.await
@@ -31,9 +35,6 @@ import uk.gov.hmrc.uknwauthcheckerapi.generators.ValidAuthorisationRequest
 import uk.gov.hmrc.uknwauthcheckerapi.models._
 import uk.gov.hmrc.uknwauthcheckerapi.models.eis._
 import uk.gov.hmrc.uknwauthcheckerapi.utils.JsonErrors
-
-import java.time.LocalDate
-import scala.concurrent.Future
 
 class IntegrationFrameworkServiceSpec extends BaseSpec {
 

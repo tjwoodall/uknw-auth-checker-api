@@ -17,6 +17,7 @@
 package uk.gov.hmrc.uknwauthcheckerapi.services
 
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
+
 import play.api.libs.json.{JsError, JsPath, Json, JsonValidationError}
 import uk.gov.hmrc.uknwauthcheckerapi.controllers.BaseSpec
 import uk.gov.hmrc.uknwauthcheckerapi.errors.DataRetrievalError.ValidationDataRetrievalError

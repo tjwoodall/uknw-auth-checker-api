@@ -16,10 +16,14 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.connectors
 
+import scala.concurrent.Future
+import scala.util.{Failure, Success, Try}
+
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.prop.TableDrivenPropertyChecks.whenever
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
+
 import play.api.http.Status._
 import play.api.libs.json._
 import play.api.test.Helpers.await
@@ -28,9 +32,6 @@ import uk.gov.hmrc.uknwauthcheckerapi.controllers.BaseSpec
 import uk.gov.hmrc.uknwauthcheckerapi.generators.ValidEisAuthorisationsResponse
 import uk.gov.hmrc.uknwauthcheckerapi.models.eis.EisAuthorisationRequest
 import uk.gov.hmrc.uknwauthcheckerapi.utils.JsonErrors
-
-import scala.concurrent.Future
-import scala.util.{Failure, Success, Try}
 
 class IntegrationFrameworkConnectorSpec extends BaseSpec {
 

@@ -16,6 +16,9 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.controllers
 
+import scala.concurrent.{ExecutionContext, Future}
+import scala.reflect.ClassTag
+
 import com.google.inject.AbstractModule
 import com.typesafe.config.Config
 import org.apache.pekko.actor.ActorSystem
@@ -27,6 +30,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar.mock
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+
 import play.api.Application
 import play.api.http.{HeaderNames, HttpVerbs}
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -42,9 +46,6 @@ import uk.gov.hmrc.uknwauthcheckerapi.config.AppConfig
 import uk.gov.hmrc.uknwauthcheckerapi.connectors.IntegrationFrameworkConnector
 import uk.gov.hmrc.uknwauthcheckerapi.generators.{ExtensionHelpers, Generators, TestData, TestHeaders}
 import uk.gov.hmrc.uknwauthcheckerapi.services.{IntegrationFrameworkService, ValidationService}
-
-import scala.concurrent.{ExecutionContext, Future}
-import scala.reflect.ClassTag
 
 class BaseSpec
     extends AnyWordSpec

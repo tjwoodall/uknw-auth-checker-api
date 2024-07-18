@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.models
 
-import play.api.libs.json.{Json, OFormat}
-
 import java.time.LocalDate
+
+import play.api.libs.json.{Json, OFormat}
 
 case class AuthorisationsResponse(date: LocalDate, eoris: Seq[AuthorisationResponse])
 

@@ -16,6 +16,9 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.controllers.actions
 
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
+
 import play.api.Logging
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.AuthProvider.StandardApplication
@@ -23,9 +26,6 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import uk.gov.hmrc.uknwauthcheckerapi.errors.{ServiceUnavailableApiError, UnauthorizedApiError}
-
-import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AuthAction @Inject() (ac: AuthConnector)(implicit val executionContext: ExecutionContext) extends ActionFilter[Request] with Logging {

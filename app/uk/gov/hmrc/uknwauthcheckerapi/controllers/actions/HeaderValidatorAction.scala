@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.controllers.actions
 
+import scala.concurrent.{ExecutionContext, Future}
+
 import play.api.http.{HeaderNames, MimeTypes}
 import play.api.mvc._
 import uk.gov.hmrc.uknwauthcheckerapi.errors.NotAcceptableApiError
 import uk.gov.hmrc.uknwauthcheckerapi.utils.HmrcMimeTypes
-
-import scala.concurrent.{ExecutionContext, Future}
 
 trait HeaderValidatorAction extends Results {
 

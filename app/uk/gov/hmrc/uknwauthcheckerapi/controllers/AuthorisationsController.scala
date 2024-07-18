@@ -16,16 +16,17 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.controllers
 
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
+
 import cats.data.EitherT
+
 import play.api.libs.json.JsValue
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.uknwauthcheckerapi.controllers.actions.{AuthAction, HeaderValidatorAction}
 import uk.gov.hmrc.uknwauthcheckerapi.controllers.responses.AuthorisationResponseHandler
 import uk.gov.hmrc.uknwauthcheckerapi.services.{IntegrationFrameworkService, ValidationService}
-
-import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton()
 class AuthorisationsController @Inject() (

@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.models.eis
 
-import play.api.libs.json.{Json, OFormat}
-
 import java.time.LocalDate
+
+import play.api.libs.json.{Json, OFormat}
 
 case class EisAuthorisationsResponse(processingDate: LocalDate, authType: String, results: Seq[EisAuthorisationResponse])
 
