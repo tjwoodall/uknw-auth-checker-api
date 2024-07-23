@@ -41,7 +41,7 @@ trait TestData extends Generators {
   implicit protected val arbValidAuthorisationRequest: Arbitrary[ValidAuthorisationRequest] = Arbitrary {
     for {
       date  <- Arbitrary.arbitrary[LocalDate]
-      eoris <- eorisGen
+      eoris <- eoriGenerator()
     } yield ValidAuthorisationRequest(
       AuthorisationRequest(
         date.toLocalDateFormatted,
@@ -53,12 +53,35 @@ trait TestData extends Generators {
   implicit protected val arbValidEisAuthorisationsResponse: Arbitrary[ValidEisAuthorisationsResponse] = Arbitrary {
     for {
       date  <- Arbitrary.arbitrary[LocalDate]
-      eoris <- eorisGen
+      eoris <- eoriGenerator()
     } yield ValidEisAuthorisationsResponse(
       EisAuthorisationsResponse(
         date,
         EisAuthTypes.nopWaiver,
         eoris.map(e => EisAuthorisationResponse(e, valid = true, 0))
+      )
+    )
+  }
+
+  implicit protected val arbTooManyEorisAuthorisationRequest: Arbitrary[TooManyEorisAuthorisationRequest] = Arbitrary {
+    for {
+      date  <- Arbitrary.arbitrary[LocalDate]
+      eoris <- eoriGenerator(3001, 3005)
+    } yield TooManyEorisAuthorisationRequest(
+      AuthorisationRequest(
+        date.toLocalDateFormatted,
+        eoris
+      )
+    )
+  }
+
+  implicit protected val arbNoEorisAuthorisationRequest: Arbitrary[NoEorisAuthorisationRequest] = Arbitrary {
+    for {
+      date <- Arbitrary.arbitrary[LocalDate]
+    } yield NoEorisAuthorisationRequest(
+      AuthorisationRequest(
+        date.toLocalDateFormatted,
+        Seq.empty
       )
     )
   }
@@ -110,4 +133,12 @@ final case class ValidAuthorisationRequest(
 
 final case class ValidEisAuthorisationsResponse(
   response: EisAuthorisationsResponse
+)
+
+final case class TooManyEorisAuthorisationRequest(
+  request: AuthorisationRequest
+)
+
+final case class NoEorisAuthorisationRequest(
+  request: AuthorisationRequest
 )

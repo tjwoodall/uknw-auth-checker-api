@@ -27,8 +27,7 @@ import uk.gov.hmrc.uknwauthcheckerapi.utils.{CustomRegexes, EisAuthTypes}
 
 trait Generators extends ExtensionHelpers {
 
-  protected val eoriGen:  Gen[String]      = RegexpGen.from(CustomRegexes.eoriPattern)
-  protected val eorisGen: Gen[Seq[String]] = Gen.chooseNum(1, 3000).flatMap(n => Gen.listOfN(n, eoriGen))
+  protected val eoriGen: Gen[String] = RegexpGen.from(CustomRegexes.eoriPattern)
 
   implicit protected val arbLocalDate: Arbitrary[LocalDate] = Arbitrary(
     Gen
@@ -42,7 +41,7 @@ trait Generators extends ExtensionHelpers {
   implicit protected val arbAuthorisationRequest: Arbitrary[AuthorisationRequest] = Arbitrary {
     for {
       date  <- Arbitrary.arbitrary[LocalDate]
-      eoris <- eorisGen
+      eoris <- eoriGenerator()
     } yield AuthorisationRequest(date.toLocalDateFormatted, eoris)
   }
 
@@ -50,7 +49,7 @@ trait Generators extends ExtensionHelpers {
     for {
       localDate  <- Arbitrary.arbitrary[LocalDate]
       dateOption <- Gen.option(localDate)
-      eoris      <- eorisGen
+      eoris      <- eoriGenerator()
     } yield EisAuthorisationRequest(dateOption, EisAuthTypes.nopWaiver, eoris)
   }
 
@@ -65,5 +64,8 @@ trait Generators extends ExtensionHelpers {
       )
     )
   }
+
+  protected def eoriGenerator(min: Int = 1, max: Int = 3000): Gen[Seq[String]] =
+    Gen.chooseNum(min, max).flatMap(n => Gen.listOfN(n, eoriGen))
 
 }

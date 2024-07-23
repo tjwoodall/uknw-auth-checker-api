@@ -18,21 +18,20 @@ package uk.gov.hmrc.uknwauthcheckerapi.controllers
 
 import java.time.LocalDate
 import scala.concurrent.Future
-
 import cats.data.EitherT
 import com.google.inject.AbstractModule
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
-
 import play.api.libs.json.{JsError, JsPath, Json, JsonValidationError}
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.uknwauthcheckerapi.errors.DataRetrievalError._
 import uk.gov.hmrc.uknwauthcheckerapi.errors._
-import uk.gov.hmrc.uknwauthcheckerapi.generators.ValidAuthorisationRequest
+import uk.gov.hmrc.uknwauthcheckerapi.generators.{NoEorisAuthorisationRequest, TooManyEorisAuthorisationRequest, ValidAuthorisationRequest}
 import uk.gov.hmrc.uknwauthcheckerapi.models.{AuthorisationRequest, AuthorisationResponse, AuthorisationsResponse}
 import uk.gov.hmrc.uknwauthcheckerapi.services.{IntegrationFrameworkService, ValidationService}
+import uk.gov.hmrc.uknwauthcheckerapi.utils.ErrorMessages
 import uk.gov.hmrc.uknwauthcheckerapi.utils.JsonErrors
 
 class AuthorisationsControllerSpec extends BaseSpec {
@@ -256,6 +255,50 @@ class AuthorisationsControllerSpec extends BaseSpec {
         .thenReturn(EitherT.leftT(BadRequestDataRetrievalError(invalidDateEisErrorMessage)))
 
       val request = fakeRequestWithJsonBody(Json.toJson(authorisationRequest))
+
+      val result = controller.authorisations()(request)
+
+      status(result)        shouldBe BAD_REQUEST
+      contentAsJson(result) shouldBe Json.toJson(expectedResponse)
+    }
+  }
+
+  "return BAD_REQUEST (400) with authorised eoris when request has valid date and eoris but they exceed the maximum eoris" in {
+
+    forAll { authorisationRequest: TooManyEorisAuthorisationRequest =>
+      val jsError = JsError(JsPath \ "eoris", JsonValidationError(ErrorMessages.invalidEoriCount))
+
+      val expectedResponse = Json.toJson(
+        JsonValidationApiError(jsError)
+      )(ApiErrorResponse.jsonValidationApiErrorWrites)
+
+      when(mockValidationService.validateRequest(any())).thenReturn(
+        Left(ValidationDataRetrievalError(jsError))
+      )
+
+      val request = fakeRequestWithJsonBody(Json.toJson(authorisationRequest.request))
+
+      val result = controller.authorisations()(request)
+
+      status(result)        shouldBe BAD_REQUEST
+      contentAsJson(result) shouldBe Json.toJson(expectedResponse)
+    }
+  }
+
+  "return BAD_REQUEST (400) when request has valid date but hasn't any eoris" in {
+
+    forAll { authorisationRequest: NoEorisAuthorisationRequest =>
+      val jsError = JsError(JsPath \ "eoris", JsonValidationError(ErrorMessages.invalidEoriCount))
+
+      val expectedResponse = Json.toJson(
+        JsonValidationApiError(jsError)
+      )(ApiErrorResponse.jsonValidationApiErrorWrites)
+
+      when(mockValidationService.validateRequest(any())).thenReturn(
+        Left(ValidationDataRetrievalError(jsError))
+      )
+
+      val request = fakeRequestWithJsonBody(Json.toJson(authorisationRequest.request))
 
       val result = controller.authorisations()(request)
 

@@ -19,13 +19,13 @@ package uk.gov.hmrc.uknwauthcheckerapi.services
 import java.time.LocalDate
 import java.time.format.DateTimeParseException
 import scala.collection.Seq
-
 import play.api.libs.json._
 import play.api.mvc.Request
 import uk.gov.hmrc.uknwauthcheckerapi.errors.DataRetrievalError
 import uk.gov.hmrc.uknwauthcheckerapi.errors.DataRetrievalError.ValidationDataRetrievalError
 import uk.gov.hmrc.uknwauthcheckerapi.models.AuthorisationRequest
 import uk.gov.hmrc.uknwauthcheckerapi.utils.CustomRegexes
+import uk.gov.hmrc.uknwauthcheckerapi.utils.ErrorMessages
 
 class ValidationService {
   def validateRequest(request: Request[JsValue]): Either[DataRetrievalError, AuthorisationRequest] =
@@ -48,9 +48,10 @@ class ValidationService {
 
     val dateError = Seq(JsonValidationError(s"$date is not a valid date in the format YYYY-MM-DD"))
 
-    (eoriErrors.nonEmpty, !date.isValidLocalDate) match {
-      case (false, false) => Right(request)
-      case (true, true) =>
+    (eoriErrors.nonEmpty, !date.isValidLocalDate, !isEoriSizeOk(eoris.size)) match {
+      case (false, false, false) => Right(request)
+      case (_, _, true)          => Left(JsError(JsPath \ "eoris", ErrorMessages.invalidEoriCount))
+      case (true, true, _) =>
         Left(
           JsError(
             Seq("eoris").map { field =>
@@ -61,7 +62,7 @@ class ValidationService {
               }
           )
         )
-      case (false, true) =>
+      case (false, true, _) =>
         Left(
           JsError(
             Seq("date").map { field =>
@@ -69,7 +70,7 @@ class ValidationService {
             }
           )
         )
-      case (true, false) =>
+      case (true, false, _) =>
         Left(
           JsError(
             Seq("eoris").map { field =>
@@ -79,6 +80,9 @@ class ValidationService {
         )
     }
   }
+
+  private def isEoriSizeOk(eorisSize: Int): Boolean =
+    if (eorisSize > 3000 || eorisSize < 1) false else true
 
   private implicit class StringExtensions(text: String) {
     def isValidLocalDate: Boolean =
