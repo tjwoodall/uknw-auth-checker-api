@@ -303,6 +303,9 @@ components:
   schemas:
     Request:
       type: object
+      required:
+        - date
+        - eoris
       properties:
         date:
           description: |
