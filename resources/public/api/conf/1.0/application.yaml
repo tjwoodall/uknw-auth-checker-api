@@ -338,3 +338,12 @@ components:
               authorised:
                 type: boolean
                 example: true
+              code:
+                type: integer
+                enum: [0, 1, 2]
+                description: |
+                  <ul>
+                    <li>0 EORI record found</li>
+                    <li>1 No live EORI record found</li>
+                    <li>2 No live authorisation found for a live EORI record</li>
+                  </ul>
