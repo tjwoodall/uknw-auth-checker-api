@@ -18,11 +18,13 @@ package uk.gov.hmrc.uknwauthcheckerapi.controllers
 
 import java.time.LocalDate
 import scala.concurrent.Future
+
 import cats.data.EitherT
 import com.google.inject.AbstractModule
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
+
 import play.api.libs.json.{JsError, JsPath, Json, JsonValidationError}
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -31,8 +33,7 @@ import uk.gov.hmrc.uknwauthcheckerapi.errors._
 import uk.gov.hmrc.uknwauthcheckerapi.generators.{NoEorisAuthorisationRequest, TooManyEorisAuthorisationRequest, ValidAuthorisationRequest}
 import uk.gov.hmrc.uknwauthcheckerapi.models.{AuthorisationRequest, AuthorisationResponse, AuthorisationsResponse}
 import uk.gov.hmrc.uknwauthcheckerapi.services.{IntegrationFrameworkService, ValidationService}
-import uk.gov.hmrc.uknwauthcheckerapi.utils.ErrorMessages
-import uk.gov.hmrc.uknwauthcheckerapi.utils.JsonErrors
+import uk.gov.hmrc.uknwauthcheckerapi.utils.{ErrorMessages, JsonErrors}
 
 class AuthorisationsControllerSpec extends BaseSpec {
 

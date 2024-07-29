@@ -18,5 +18,5 @@ package uk.gov.hmrc.uknwauthcheckerapi.utils
 
 object ErrorMessages {
   val invalidEoriCount: String = "The request payload must contain between 1 and 3000 EORI entries"
-
+  val unauthorized:     String = "The bearer token is invalid, missing, or expired"
 }

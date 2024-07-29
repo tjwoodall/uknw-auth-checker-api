@@ -26,6 +26,7 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import uk.gov.hmrc.uknwauthcheckerapi.errors.{ServiceUnavailableApiError, UnauthorizedApiError}
+import uk.gov.hmrc.uknwauthcheckerapi.utils.ErrorMessages
 
 @Singleton
 class AuthAction @Inject() (ac: AuthConnector)(implicit val executionContext: ExecutionContext) extends ActionFilter[Request] with Logging {
@@ -43,7 +44,7 @@ class AuthAction @Inject() (ac: AuthConnector)(implicit val executionContext: Ex
           Some(ServiceUnavailableApiError.toResult)
         case exception: AuthorisationException =>
           logger.warn(s"[AuthAction][filter] Authorization failed.", exception)
-          Some(UnauthorizedApiError(exception.reason).toResult)
+          Some(UnauthorizedApiError(ErrorMessages.unauthorized).toResult)
         case exception =>
           logger.warn(s"[AuthAction][filter] Authorization request failed with unexpected exception: $exception")
           Some(ServiceUnavailableApiError.toResult)

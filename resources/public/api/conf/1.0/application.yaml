@@ -164,37 +164,11 @@ paths:
             Authentication failure. Commonly a client side error, typically generated when authentication information is not provided, possibly by omitting a bearer token.
           content:
             application/json:
-              examples:
-                bearer-token-expired:
-                  value:
-                    {
-                      "code": "UNAUTHORIZED",
-                      "message": "Bearer token expired",
-                    }
-                invalid-bearer-token:
-                  value:
-                    {
-                      "code": "UNAUTHORIZED",
-                      "message": "Invalid bearer token",
-                    }
-                missing-bearer-token:
-                  value:
-                    {
-                      "code": "UNAUTHORIZED",
-                      "message": "Bearer token not supplied",
-                    }
-                session-record-not-found:
-                  value:
-                    {
-                      "code": "UNAUTHORIZED",
-                      "message": "Session record not found",
-                    }
-                unsupported-auth-provider:
-                  value:
-                    {
-                      "code": "UNAUTHORIZED",
-                      "message": "UnsupportedAuthProvider",
-                    }
+              example:
+                {
+                  "code": "UNAUTHORIZED",
+                  "message": "The bearer token is invalid, missing, or expired",
+                }
         "403":
           description: |
             Forbidden. The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. Other possible causes could be:
