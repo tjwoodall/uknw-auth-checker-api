@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.services
 
-import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -34,7 +33,11 @@ import uk.gov.hmrc.uknwauthcheckerapi.models.eis.{EisAuthorisationRequest, EisAu
 import uk.gov.hmrc.uknwauthcheckerapi.models.{AuthorisationRequest, AuthorisationResponse, AuthorisationsResponse}
 import uk.gov.hmrc.uknwauthcheckerapi.utils.CustomRegexes._
 
-class IntegrationFrameworkService @Inject() (appConfig: AppConfig, integrationFrameworkConnector: IntegrationFrameworkConnector)(implicit
+class IntegrationFrameworkService @Inject() (
+  appConfig:                     AppConfig,
+  integrationFrameworkConnector: IntegrationFrameworkConnector,
+  localDateService:              LocalDateService
+)(implicit
   ec: ExecutionContext
 ) {
 
@@ -42,7 +45,7 @@ class IntegrationFrameworkService @Inject() (appConfig: AppConfig, integrationFr
     authorisationRequest: AuthorisationRequest
   )(implicit hc: HeaderCarrier): EitherT[Future, DataRetrievalError, AuthorisationsResponse] = {
     val eisAuthorisationRequest = EisAuthorisationRequest(
-      Some(LocalDate.parse(authorisationRequest.date)),
+      Some(localDateService.now()),
       appConfig.authType,
       authorisationRequest.eoris
     )

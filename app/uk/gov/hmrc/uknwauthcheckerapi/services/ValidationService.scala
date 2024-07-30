@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.services
 
-import java.time.LocalDate
-import java.time.format.DateTimeParseException
 import scala.collection.Seq
 
 import play.api.libs.json._
@@ -39,38 +37,16 @@ class ValidationService {
     }
 
   private def validateAuthorisationRequest(request: AuthorisationRequest): Either[JsError, AuthorisationRequest] = {
-    val date  = request.date
     val eoris = request.eoris
 
     val eoriErrors: Seq[JsonValidationError] = eoris
       .filterNot(e => e matches CustomRegexes.eoriPattern)
       .map(e => JsonValidationError(s"$e is not a supported EORI number"))
 
-    val dateError = Seq(JsonValidationError(s"$date is not a valid date in the format YYYY-MM-DD"))
-
-    (eoriErrors.nonEmpty, !date.isValidLocalDate, !isEoriSizeOk(eoris.size)) match {
-      case (false, false, false) => Right(request)
-      case (_, _, true)          => Left(JsError(JsPath \ "eoris", ErrorMessages.invalidEoriCount))
-      case (true, true, _) =>
-        Left(
-          JsError(
-            Seq("eoris").map { field =>
-              (JsPath \ field, eoriErrors)
-            } ++
-              Seq("date").map { field =>
-                (JsPath \ field, dateError)
-              }
-          )
-        )
-      case (false, true, _) =>
-        Left(
-          JsError(
-            Seq("date").map { field =>
-              (JsPath \ field, dateError)
-            }
-          )
-        )
-      case (true, false, _) =>
+    (eoriErrors.nonEmpty, isEoriSizeInvalid(eoris.size)) match {
+      case (false, false) => Right(request)
+      case (_, true)      => Left(JsError(JsPath \ "eoris", ErrorMessages.invalidEoriCount))
+      case (true, _) =>
         Left(
           JsError(
             Seq("eoris").map { field =>
@@ -81,16 +57,7 @@ class ValidationService {
     }
   }
 
-  private def isEoriSizeOk(eorisSize: Int): Boolean =
-    if (eorisSize > 3000 || eorisSize < 1) false else true
+  private def isEoriSizeInvalid(eorisSize: Int): Boolean =
+    if (eorisSize > 3000 || eorisSize < 1) true else false
 
-  private implicit class StringExtensions(text: String) {
-    def isValidLocalDate: Boolean =
-      try {
-        LocalDate.parse(text)
-        true
-      } catch {
-        case _: DateTimeParseException => false
-      }
-  }
 }

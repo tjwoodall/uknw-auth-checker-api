@@ -101,13 +101,11 @@ class IntegrationFrameworkServiceSpec extends BaseSpec {
       (validRequest: ValidAuthorisationRequest, eisErrorResponse: EisAuthorisationResponseError) =>
         val request = validRequest.request
 
-        val errorMessage = """Invalid supplied date(Date format should be - YYYY-MM-DD) : 202-01-01""".stripMargin
-
         val eisError = eisErrorResponse.copy(errorDetail =
           eisErrorResponse.errorDetail
             .copy(
               errorCode = BAD_REQUEST,
-              errorMessage = errorMessage
+              errorMessage = invalidEorisEisErrorMessage
             )
         )
 
@@ -118,7 +116,7 @@ class IntegrationFrameworkServiceSpec extends BaseSpec {
 
         val result = await(service.getAuthorisations(request).value)
 
-        result shouldBe Left(BadRequestDataRetrievalError(errorMessage))
+        result shouldBe Left(BadRequestDataRetrievalError(invalidEorisEisErrorMessage))
     }
 
     "return ForbiddenDataRetrievalError error when call to the integration framework fails with a FORBIDDEN" in forAll {

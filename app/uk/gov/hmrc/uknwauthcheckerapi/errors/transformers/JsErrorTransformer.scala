@@ -29,7 +29,6 @@ trait JsErrorTransformer {
         "code" -> "INVALID_FORMAT",
         "message" -> (validationError.message match {
           case message if message == JsonErrors.expectedJsObject               => "JSON is malformed"
-          case message if message == JsonErrors.pathMissing && path == "date"  => "date field missing from JSON"
           case message if message == JsonErrors.pathMissing && path == "eoris" => "eoris field missing from JSON"
           case message                                                         => message
         }),

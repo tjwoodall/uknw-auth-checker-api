@@ -17,7 +17,7 @@
 package uk.gov.hmrc.uknwauthcheckerapi.errors.transformers
 
 import play.api.libs.json.{JsObject, JsValue, Json}
-import uk.gov.hmrc.uknwauthcheckerapi.utils.CustomRegexes.{invalidFormatOfDatePattern, invalidFormatOfEorisPattern}
+import uk.gov.hmrc.uknwauthcheckerapi.utils.CustomRegexes.invalidFormatOfEorisPattern
 
 trait BadRequestErrorTransformer {
 
@@ -25,30 +25,8 @@ trait BadRequestErrorTransformer {
   private val errorMessagePrefix         = "Invalid"
   private val errorMessageValueSeparator = ":"
 
-  def transformBadRequest(errorMessages: String): JsValue = {
-    val dateErrors = transformDateError(errorMessages)
-    val eoriErrors = transformEoriErrors(errorMessages)
-
-    Json.toJson(
-      (dateErrors ++ eoriErrors).flatten
-    )
-  }
-
-  private def transformDateError(errorMessages: String): Option[Array[JsObject]] = errorMessages
-    .split(errorMessagePrefix)
-    .filter(_ matches invalidFormatOfDatePattern)
-    .map(_.trim)
-    .headOption
-    .map { errorMessage =>
-      val date = errorMessage.split(errorMessageValueSeparator).last.trim
-      Array(
-        Json.obj(
-          "code"    -> "INVALID_FORMAT",
-          "message" -> s"$date is not a valid date in the format YYYY-MM-DD",
-          "path"    -> "date"
-        )
-      )
-    }
+  def transformBadRequest(errorMessages: String): JsValue =
+    Json.toJson(transformEoriErrors(errorMessages))
 
   private def transformEoriErrors(errorMessages: String): Option[Array[JsObject]] = errorMessages
     .split(errorMessagePrefix)

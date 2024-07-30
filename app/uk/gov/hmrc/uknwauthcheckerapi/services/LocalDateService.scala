@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uknwauthcheckerapi.utils
+package uk.gov.hmrc.uknwauthcheckerapi.services
 
-import scala.util.matching.Regex
+import java.time.LocalDate
+import javax.inject.Singleton
 
-object CustomRegexes {
-  val eoriPattern:                 String = "^(GB|XI)[0-9]{12}|(GB|XI)[0-9]{15}$"
-  val invalidAuthTypePattern:      String = "^.*(Invalid authorisation type).*$"
-  val invalidFormatOfEorisPattern: String = "^.*(format of EORI).*$"
-
-  val invalidAuthTypePatternRegex: Regex = invalidAuthTypePattern.r
+@Singleton
+class LocalDateService {
+  def now(): LocalDate = LocalDate.now()
 }

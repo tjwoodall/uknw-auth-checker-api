@@ -34,17 +34,12 @@ trait TestData extends Generators {
 
   protected val invalidAuthTypeEisErrorMessage: String = """Invalid authorisation type : UKNW""".stripMargin
   protected val invalidEorisEisErrorMessage:    String = """Invalid format of EORI(s): 0000000001,0000000003""".stripMargin
-  protected val invalidDateEisErrorMessage:     String = """Invalid supplied date(Date format should be - YYYY-MM-DD) : 202-01-01""".stripMargin
-  protected val invalidMixedEisErrorMessage: String =
-    """Invalid format of EORI(s): 0000000001,0000000003,Invalid supplied date(Date format should be - YYYY-MM-DD) : 202-01-01""".stripMargin
 
   implicit protected val arbValidAuthorisationRequest: Arbitrary[ValidAuthorisationRequest] = Arbitrary {
     for {
-      date  <- Arbitrary.arbitrary[LocalDate]
       eoris <- eoriGenerator()
     } yield ValidAuthorisationRequest(
       AuthorisationRequest(
-        date.toLocalDateFormatted,
         eoris
       )
     )
@@ -65,23 +60,26 @@ trait TestData extends Generators {
 
   implicit protected val arbTooManyEorisAuthorisationRequest: Arbitrary[TooManyEorisAuthorisationRequest] = Arbitrary {
     for {
-      date  <- Arbitrary.arbitrary[LocalDate]
       eoris <- eoriGenerator(3001, 3005)
     } yield TooManyEorisAuthorisationRequest(
       AuthorisationRequest(
-        date.toLocalDateFormatted,
         eoris
       )
     )
   }
 
   implicit protected val arbNoEorisAuthorisationRequest: Arbitrary[NoEorisAuthorisationRequest] = Arbitrary {
-    for {
-      date <- Arbitrary.arbitrary[LocalDate]
-    } yield NoEorisAuthorisationRequest(
+    NoEorisAuthorisationRequest(
       AuthorisationRequest(
-        date.toLocalDateFormatted,
         Seq.empty
+      )
+    )
+  }
+
+  implicit protected val arbInvalidEorisAuthorisationRequest: Arbitrary[InvalidEorisAuthorisationRequest] = Arbitrary {
+    InvalidEorisAuthorisationRequest(
+      AuthorisationRequest(
+        Seq("garbage")
       )
     )
   }
@@ -90,7 +88,7 @@ trait TestData extends Generators {
     EisAuthorisationResponseError(
       errorDetail = EisAuthorisationResponseErrorDetail(
         errorCode = BAD_REQUEST,
-        errorMessage = invalidMixedEisErrorMessage
+        errorMessage = invalidEorisEisErrorMessage
       )
     )
 
@@ -140,5 +138,9 @@ final case class TooManyEorisAuthorisationRequest(
 )
 
 final case class NoEorisAuthorisationRequest(
+  request: AuthorisationRequest
+)
+
+final case class InvalidEorisAuthorisationRequest(
   request: AuthorisationRequest
 )

@@ -18,7 +18,7 @@ package uk.gov.hmrc.uknwauthcheckerapi.models
 
 import play.api.libs.json._
 
-case class AuthorisationRequest(date: String, eoris: Seq[String])
+case class AuthorisationRequest(eoris: Seq[String])
 
 object AuthorisationRequest {
   implicit val format: OFormat[AuthorisationRequest] = Json.format[AuthorisationRequest]

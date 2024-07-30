@@ -27,7 +27,7 @@ import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.mvc.Http.HeaderNames
 import uk.gov.hmrc.uknwauthcheckerapi.BaseISpec
-import uk.gov.hmrc.uknwauthcheckerapi.generators.{TestRegexes, ValidAuthorisationRequest}
+import uk.gov.hmrc.uknwauthcheckerapi.generators.{InvalidEorisAuthorisationRequest, TestRegexes, ValidAuthorisationRequest}
 import uk.gov.hmrc.uknwauthcheckerapi.models.eis.EisAuthorisationsResponse
 import uk.gov.hmrc.uknwauthcheckerapi.models.{AuthorisationRequest, CustomHeaderNames}
 import uk.gov.hmrc.uknwauthcheckerapi.utils.{EisAuthTypes, HmrcContentTypes}
@@ -56,7 +56,7 @@ class AuthorisationControllerISpec extends BaseISpec {
   }
 
   "POST /authorisations" should {
-    "return OK (200) with authorised eoris when request has valid date and eoris" in new Setup {
+    "return OK (200) with authorised eoris when request has valid eoris" in new Setup {
       forAll { (validRequest: ValidAuthorisationRequest, date: LocalDate) =>
         reset()
 
@@ -79,14 +79,10 @@ class AuthorisationControllerISpec extends BaseISpec {
     }
 
     "return BAD_REQUEST when request validation is invalid" in new Setup {
-      forAll { (validRequest: ValidAuthorisationRequest) =>
+      forAll { (invalidRequest: InvalidEorisAuthorisationRequest) =>
         reset()
 
-        val request = validRequest.request.copy(
-          date = "ABCD"
-        )
-
-        val authorisationRequestJson = Json.toJson(request)
+        val authorisationRequestJson = Json.toJson(invalidRequest.request)
 
         val result = postRequest(authorisationsUrl, authorisationRequestJson)
 
