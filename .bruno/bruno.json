@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "name": "uknw-auth-checker-api",
+  "name": "NOP API",
   "type": "collection",
   "ignore": [
     "node_modules",

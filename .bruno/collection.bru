@@ -1,0 +1,31 @@
+script:pre-request {
+  const axios = require("axios");
+  
+  const authorizationKey = 'authorization';
+  const bearerTokenKey = 'bearerToken';
+  const clientId = 'd5f3e2ed-7346-4b02-9efb-f48593407810';
+  const authProvider = 'StandardApplication';
+  const applicationId = '87d4dd99-a550-4fe5-90e4-a3d544fa82c8';
+  const applicationName = 'uknw-auth-checker-api';
+  const ttl = 5000;
+  
+  const response = await axios.post(
+    "http://localhost:8585/application/session/login",
+    {
+      clientId: clientId,
+      authProvider: authProvider,
+      applicationId: applicationId,
+      applicationName: applicationName,
+      enrolments: [],
+      ttl: ttl
+    }
+  );
+  
+  bru.setEnvVar(bearerTokenKey, response.headers.get(authorizationKey));
+}
+
+script:post-response {
+  const bearerTokenKey = 'bearerToken';
+  
+  bru.setEnvVar(bearerTokenKey, '');
+}
