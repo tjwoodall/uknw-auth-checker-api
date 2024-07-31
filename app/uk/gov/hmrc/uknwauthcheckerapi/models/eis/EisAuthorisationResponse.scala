@@ -16,11 +16,9 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.models.eis
 
-import java.time.LocalDate
-
 import play.api.libs.json.{Json, OFormat}
 
-case class EisAuthorisationsResponse(processingDate: LocalDate, authType: String, results: Seq[EisAuthorisationResponse])
+case class EisAuthorisationsResponse(processingDate: String, authType: String, results: Seq[EisAuthorisationResponse])
 
 object EisAuthorisationsResponse {
   implicit val format: OFormat[EisAuthorisationsResponse] = Json.format[EisAuthorisationsResponse]

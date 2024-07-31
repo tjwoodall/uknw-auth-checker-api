@@ -16,11 +16,9 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.models
 
-import java.time.LocalDate
-
 import play.api.libs.json.{Json, OFormat}
 
-case class AuthorisationsResponse(date: LocalDate, eoris: Seq[AuthorisationResponse])
+case class AuthorisationsResponse(date: String, eoris: Seq[AuthorisationResponse])
 
 object AuthorisationsResponse {
   implicit val format: OFormat[AuthorisationsResponse] = Json.format[AuthorisationsResponse]

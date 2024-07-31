@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.controllers
 
-import java.time.LocalDate
-
 import com.github.tomakehurst.wiremock.client.WireMock._
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 
@@ -27,7 +25,7 @@ import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.mvc.Http.HeaderNames
 import uk.gov.hmrc.uknwauthcheckerapi.BaseISpec
-import uk.gov.hmrc.uknwauthcheckerapi.generators.{InvalidEorisAuthorisationRequest, TestRegexes, ValidAuthorisationRequest}
+import uk.gov.hmrc.uknwauthcheckerapi.generators.{InvalidEorisAuthorisationRequest, TestRegexes, UtcDateTime, ValidAuthorisationRequest}
 import uk.gov.hmrc.uknwauthcheckerapi.models.eis.EisAuthorisationsResponse
 import uk.gov.hmrc.uknwauthcheckerapi.models.{AuthorisationRequest, CustomHeaderNames}
 import uk.gov.hmrc.uknwauthcheckerapi.utils.{EisAuthTypes, HmrcContentTypes}
@@ -57,7 +55,7 @@ class AuthorisationControllerISpec extends BaseISpec {
 
   "POST /authorisations" should {
     "return OK (200) with authorised eoris when request has valid eoris" in new Setup {
-      forAll { (validRequest: ValidAuthorisationRequest, date: LocalDate) =>
+      forAll { (validRequest: ValidAuthorisationRequest, utcDateTime: UtcDateTime) =>
         reset()
 
         val request = validRequest.request
@@ -65,7 +63,7 @@ class AuthorisationControllerISpec extends BaseISpec {
         val authorisationRequestJson = Json.toJson(request)
 
         val expectedResponse = Json.toJson(
-          EisAuthorisationsResponse(date, EisAuthTypes.nopWaiver, Seq.empty)
+          EisAuthorisationsResponse(utcDateTime.formatted, EisAuthTypes.nopWaiver, Seq.empty)
         )
 
         stubPost(eisAuthorisationsEndpointPath, OK, expectedResponse.toString())

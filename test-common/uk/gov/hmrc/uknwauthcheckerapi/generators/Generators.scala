@@ -16,8 +16,9 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.generators
 
-import java.time.LocalDate
+import java.time.{LocalDate, LocalDateTime}
 
+import org.scalacheck.Gen.chooseNum
 import org.scalacheck.{Arbitrary, Gen}
 import wolfendale.scalacheck.regexp.RegexpGen
 
@@ -37,6 +38,16 @@ trait Generators extends ExtensionHelpers {
       )
       .map(LocalDate.ofEpochDay)
   )
+
+  implicit lazy val arbLocalDateTime: Arbitrary[LocalDateTime] = {
+    import java.time.ZoneOffset.UTC
+    Arbitrary {
+      for {
+        seconds <- chooseNum(LocalDateTime.MIN.toEpochSecond(UTC), LocalDateTime.MAX.toEpochSecond(UTC))
+        nanos   <- chooseNum(LocalDateTime.MIN.getNano, LocalDateTime.MAX.getNano)
+      } yield LocalDateTime.ofEpochSecond(seconds, nanos, UTC)
+    }
+  }
 
   implicit protected val arbAuthorisationRequest: Arbitrary[AuthorisationRequest] = Arbitrary {
     for {

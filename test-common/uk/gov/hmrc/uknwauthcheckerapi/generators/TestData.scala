@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.generators
 
-import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.{LocalDateTime, ZoneId}
 
 import org.scalacheck.Arbitrary
 
@@ -46,15 +47,29 @@ trait TestData extends Generators {
   }
 
   implicit protected val arbValidEisAuthorisationsResponse: Arbitrary[ValidEisAuthorisationsResponse] = Arbitrary {
+
     for {
-      date  <- Arbitrary.arbitrary[LocalDate]
-      eoris <- eoriGenerator()
+      utcDateTime <- Arbitrary.arbitrary[UtcDateTime]
+      eoris       <- eoriGenerator()
     } yield ValidEisAuthorisationsResponse(
       EisAuthorisationsResponse(
-        date,
+        utcDateTime.formatted,
         EisAuthTypes.nopWaiver,
         eoris.map(e => EisAuthorisationResponse(e, valid = true, 0))
       )
+    )
+  }
+
+  implicit protected val arbUtcDateTime: Arbitrary[UtcDateTime] = Arbitrary {
+    val dateTimeFormat: String            = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    val formatter:      DateTimeFormatter = DateTimeFormatter.ofPattern(dateTimeFormat)
+    val utcZone:        String            = "UTC"
+    val utcZoneId = ZoneId.of(utcZone)
+
+    for {
+      dateTime <- Arbitrary.arbitrary[LocalDateTime]
+    } yield UtcDateTime(
+      formatter.format(dateTime.atZone(utcZoneId))
     )
   }
 
@@ -143,4 +158,8 @@ final case class NoEorisAuthorisationRequest(
 
 final case class InvalidEorisAuthorisationRequest(
   request: AuthorisationRequest
+)
+
+final case class UtcDateTime(
+  formatted: String
 )
