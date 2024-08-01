@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uknwauthcheckerapi.generators
+package uk.gov.hmrc.uknwauthcheckerapi.models
 
-import org.scalacheck.Gen
-import wolfendale.scalacheck.regexp.RegexpGen
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
-import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{CustomRegexes, MinMaxValues}
+import play.api.libs.json.Writes
+import play.api.libs.json.Writes.temporalWrites
 
-trait Generators {
-
-  private val eoriGen: Gen[String] = RegexpGen.from(CustomRegexes.eoriPattern)
-
-  protected def eoriGenerator(min: Int = MinMaxValues.minEoriCount, max: Int = MinMaxValues.maxEoriCount): Gen[Seq[String]] =
-    Gen.chooseNum(min, max).flatMap(n => Gen.listOfN(n, eoriGen))
-
+object Iso8601DateTimeWrites {
+  private val iso8601DateTimeFormat:    String                = "yyyy-MM-dd'T'HH:mm:ss.SS'Z'"
+  private val iso8601DateTimeFormatter: DateTimeFormatter     = DateTimeFormatter.ofPattern(iso8601DateTimeFormat)
+  implicit val iso8601DateTimeWrites:   Writes[ZonedDateTime] = temporalWrites[ZonedDateTime, DateTimeFormatter](iso8601DateTimeFormatter)
 }

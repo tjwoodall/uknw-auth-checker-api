@@ -1,0 +1,23 @@
+meta {
+  name: 406-No-Accept-Header
+  type: http
+  seq: 15
+}
+
+post {
+  url: http://localhost:9070/authorisations
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{bearerToken}}
+}
+
+body:json {
+  {
+    "eoris": [
+      "GB000000000200"
+    ]
+  }
+}

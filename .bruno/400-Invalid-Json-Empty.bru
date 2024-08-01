@@ -1,0 +1,21 @@
+meta {
+  name: 400-Invalid-Json-Empty
+  type: http
+  seq: 11
+}
+
+post {
+  url: http://localhost:9070/authorisations
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/vnd.hmrc.1.0+json
+  Authorization: {{bearerToken}}
+}
+
+body:json {
+  {
+  }
+}

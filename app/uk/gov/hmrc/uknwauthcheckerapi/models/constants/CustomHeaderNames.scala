@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uknwauthcheckerapi.utils
+package uk.gov.hmrc.uknwauthcheckerapi.models.constants
 
-object JsonErrors {
-  val expectedJsObject = "error.expected.jsobject"
-  val pathMissing      = "error.path.missing"
+object CustomHeaderNames {
+  val xCorrelationId = "X-Correlation-Id"
 }

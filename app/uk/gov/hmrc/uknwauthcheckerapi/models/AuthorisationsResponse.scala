@@ -16,11 +16,16 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.models
 
-import play.api.libs.json.{Json, OFormat}
+import java.time.ZonedDateTime
 
-case class AuthorisationsResponse(date: String, eoris: Seq[AuthorisationResponse])
+import play.api.libs.json.{Json, OFormat, Writes}
+
+case class AuthorisationsResponse(date: ZonedDateTime, eoris: Seq[AuthorisationResponse])
 
 object AuthorisationsResponse {
+
+  implicit val zonedDateTimeWrites: Writes[ZonedDateTime] = Iso8601DateTimeWrites.iso8601DateTimeWrites
+
   implicit val format: OFormat[AuthorisationsResponse] = Json.format[AuthorisationsResponse]
 }
 

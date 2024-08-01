@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uknwauthcheckerapi.generators
+package uk.gov.hmrc.uknwauthcheckerapi.models
 
-import org.scalacheck.Gen
-import wolfendale.scalacheck.regexp.RegexpGen
+import java.time.format.DateTimeFormatter
+import java.time.{ZoneOffset, ZonedDateTime}
 
-import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{CustomRegexes, MinMaxValues}
+object Rfc7231DateTime {
 
-trait Generators {
+  private val rfc7231DateTimeFormat: DateTimeFormatter =
+    DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss O")
 
-  private val eoriGen: Gen[String] = RegexpGen.from(CustomRegexes.eoriPattern)
-
-  protected def eoriGenerator(min: Int = MinMaxValues.minEoriCount, max: Int = MinMaxValues.maxEoriCount): Gen[Seq[String]] =
-    Gen.chooseNum(min, max).flatMap(n => Gen.listOfN(n, eoriGen))
-
+  def now: String = rfc7231DateTimeFormat.format(ZonedDateTime.now(ZoneOffset.UTC))
 }

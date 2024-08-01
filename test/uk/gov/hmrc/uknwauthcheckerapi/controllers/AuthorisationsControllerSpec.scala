@@ -16,31 +16,27 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.controllers
 
-import java.time.LocalDate
+import java.time.{LocalDate, ZonedDateTime}
 import scala.concurrent.Future
 
 import cats.data.EitherT
 import com.google.inject.AbstractModule
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
-import org.scalatestplus.mockito.MockitoSugar.mock
+import org.mockito.Mockito.{reset, when}
+import org.scalatest.Assertion
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 
-import play.api.libs.json.{JsError, JsPath, Json, JsonValidationError}
+import play.api.libs.json._
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.uknwauthcheckerapi.errors.DataRetrievalError._
 import uk.gov.hmrc.uknwauthcheckerapi.errors._
-import uk.gov.hmrc.uknwauthcheckerapi.generators.{NoEorisAuthorisationRequest, TooManyEorisAuthorisationRequest, UtcDateTime, ValidAuthorisationRequest}
-import uk.gov.hmrc.uknwauthcheckerapi.models.{AuthorisationRequest, AuthorisationResponse, AuthorisationsResponse}
-import uk.gov.hmrc.uknwauthcheckerapi.services.{IntegrationFrameworkService, LocalDateService, ValidationService}
-import uk.gov.hmrc.uknwauthcheckerapi.utils.{ErrorMessages, JsonErrors}
+import uk.gov.hmrc.uknwauthcheckerapi.generators._
+import uk.gov.hmrc.uknwauthcheckerapi.models._
+import uk.gov.hmrc.uknwauthcheckerapi.models.constants._
+import uk.gov.hmrc.uknwauthcheckerapi.services._
 
 class AuthorisationsControllerSpec extends BaseSpec {
-
-  protected val mockLocalDateService: LocalDateService = mock[LocalDateService]
-
-  when(mockLocalDateService.now()).thenReturn(LocalDate.now)
 
   private lazy val controller = injected[AuthorisationsController]
 
@@ -53,310 +49,295 @@ class AuthorisationsControllerSpec extends BaseSpec {
     }
   }
 
-  override protected def beforeEach(): Unit = {
+  override protected def beforeAll(): Unit = {
     stubAuthorization()
-    super.beforeEach()
+    super.beforeAll()
+  }
+
+  trait TestContext {
+    def doTest(
+      validateResponse:       Option[Either[DataRetrievalError, AuthorisationRequest]] = None,
+      authorisationsResponse: Option[EitherT[Future, DataRetrievalError, AuthorisationsResponse]] = None,
+      requestBody:            JsValue,
+      statusCode:             Int,
+      expectedResponse:       JsValue,
+      headers:                Seq[(String, String)] = defaultHeaders
+    ): Assertion = {
+
+      reset(mockLocalDateService)
+      reset(mockValidationService)
+      reset(mockIntegrationFrameworkService)
+
+      when(mockLocalDateService.now()).thenReturn(LocalDate.now)
+
+      validateResponse match {
+        case Some(response) =>
+          when(
+            mockValidationService
+              .validateRequest(any())
+          )
+            .thenReturn(response)
+        case None => ()
+      }
+
+      authorisationsResponse match {
+        case Some(response) =>
+          when(
+            mockIntegrationFrameworkService
+              .getAuthorisations(any())(any())
+          )
+            .thenReturn(response)
+        case None => ()
+      }
+
+      val request = fakeRequestWithJsonBody(requestBody, headers = headers)
+
+      val result = controller.authorisations()(request)
+
+      status(result)        shouldBe statusCode
+      contentAsJson(result) shouldBe Json.toJson(expectedResponse)
+    }
   }
 
   "AuthorisationsController" should {
-    "return OK (200) with authorised eoris when request has valid eoris" in {
-      forAll { (authorisationRequest: AuthorisationRequest, utcDateTime: UtcDateTime) =>
+    "return OK (200) with authorised eoris when request has valid eoris" in new TestContext {
+      forAll { (authorisationRequest: AuthorisationRequest, dateTime: ZonedDateTime) =>
         val expectedResponse = AuthorisationsResponse(
-          utcDateTime.formatted,
+          dateTime,
           authorisationRequest.eoris.map(r => AuthorisationResponse(r, authorised = true))
         )
 
-        when(mockValidationService.validateRequest(any()))
-          .thenReturn(
-            Right(authorisationRequest)
-          )
-
-        when(mockIntegrationFrameworkService.getAuthorisations(any())(any()))
-          .thenReturn(EitherT.rightT(expectedResponse))
-
-        val request = fakeRequestWithJsonBody(Json.toJson(authorisationRequest))
-
-        val result = controller.authorisations()(request)
-
-        status(result)        shouldBe OK
-        contentAsJson(result) shouldBe Json.toJson(expectedResponse)
+        doTest(
+          validateResponse = Some(Right(authorisationRequest)),
+          authorisationsResponse = Some(EitherT.rightT(expectedResponse)),
+          requestBody = Json.toJson(authorisationRequest),
+          statusCode = OK,
+          expectedResponse = Json.toJson(expectedResponse)
+        )
       }
     }
 
-    "return BAD_REQUEST (400) error when request json field is missing" in {
-      val request = fakeRequestWithJsonBody(emptyJson)
-
-      val jsError = JsError(
+    "return BAD_REQUEST (400) error when request json field is missing" in new TestContext {
+      val jsError: JsError = JsError(
         Seq("date", "eoris").map { field =>
-          (JsPath \ field, Seq(JsonValidationError(JsonErrors.pathMissing)))
+          (JsPath \ field, Seq(JsonValidationError(JsonErrorMessages.pathMissing)))
         }
       )
 
-      val expectedResponse = Json.toJson(
+      val expectedResponse: JsValue = Json.toJson(
         JsonValidationApiError(jsError)
       )(ApiErrorResponse.jsonValidationApiErrorWrites)
 
-      when(mockValidationService.validateRequest(any())).thenReturn(
-        Left(ValidationDataRetrievalError(jsError))
+      doTest(
+        validateResponse = Some(Left(ValidationDataRetrievalError(jsError))),
+        requestBody = Json.toJson(emptyJson),
+        statusCode = BAD_REQUEST,
+        expectedResponse = Json.toJson(expectedResponse)
       )
-
-      val result = controller.authorisations()(request)
-
-      status(result)        shouldBe BAD_REQUEST
-      contentAsJson(result) shouldBe expectedResponse
     }
 
-    "return BAD_REQUEST (400) error when request json is malformed" in {
-      val request = fakeRequestWithJsonBody(emptyJson)
-
-      val jsError = JsError(
-        Seq((JsPath \ "", Seq(JsonValidationError(JsonErrors.expectedJsObject))))
+    "return BAD_REQUEST (400) error when request json is malformed" in new TestContext {
+      val jsError: JsError = JsError(
+        Seq((JsPath \ "", Seq(JsonValidationError(JsonErrorMessages.expectedJsObject))))
       )
 
-      val expectedResponse = Json.toJson(
+      val expectedResponse: JsValue = Json.toJson(
         JsonValidationApiError(jsError)
       )(ApiErrorResponse.jsonValidationApiErrorWrites)
 
-      when(mockValidationService.validateRequest(any())).thenReturn(
-        Left(ValidationDataRetrievalError(jsError))
+      doTest(
+        validateResponse = Some(Left(ValidationDataRetrievalError(jsError))),
+        requestBody = Json.toJson(emptyJson),
+        statusCode = BAD_REQUEST,
+        expectedResponse = Json.toJson(expectedResponse)
       )
-
-      val result = controller.authorisations()(request)
-
-      status(result)        shouldBe BAD_REQUEST
-      contentAsJson(result) shouldBe expectedResponse
     }
 
-    "return BAD_REQUEST (400) error when request error is custom" in {
-      val request = fakeRequestWithJsonBody(emptyJson)
-
-      val jsError = JsError(
+    "return BAD_REQUEST (400) error when request error is custom" in new TestContext {
+      val jsError: JsError = JsError(
         Seq((JsPath \ "", Seq(JsonValidationError("test error"))))
       )
 
-      val expectedResponse = Json.toJson(
+      val expectedResponse: JsValue = Json.toJson(
         JsonValidationApiError(jsError)
       )(ApiErrorResponse.jsonValidationApiErrorWrites)
 
-      when(mockValidationService.validateRequest(any())).thenReturn(
-        Left(ValidationDataRetrievalError(jsError))
+      doTest(
+        validateResponse = Some(Left(ValidationDataRetrievalError(jsError))),
+        requestBody = Json.toJson(emptyJson),
+        statusCode = BAD_REQUEST,
+        expectedResponse = Json.toJson(expectedResponse)
       )
-
-      val result = controller.authorisations()(request)
-
-      status(result)        shouldBe BAD_REQUEST
-      contentAsJson(result) shouldBe expectedResponse
     }
   }
 
-  "return BAD_REQUEST (400) error when getAuthorisations call has eori errors" in forAll { (validRequest: ValidAuthorisationRequest) =>
-    val authorisationRequest: AuthorisationRequest = validRequest.request
+  "return BAD_REQUEST (400) error when getAuthorisations call has eori errors" in new TestContext {
+    forAll { (validRequest: ValidAuthorisationRequest) =>
+      val authorisationRequest: AuthorisationRequest = validRequest.request
 
-    val error = BadRequestDataRetrievalError(invalidEorisEisErrorMessage)
+      val error = BadRequestDataRetrievalError(TestConstants.invalidEorisEisErrorMessage)
 
-    val expectedResponse = Json.toJson(
-      BadRequestApiError(invalidEorisEisErrorMessage)
-    )(ApiErrorResponse.badRequestApiErrorWrites)
+      val expectedResponse = Json.toJson(
+        BadRequestApiError(TestConstants.invalidEorisEisErrorMessage)
+      )(ApiErrorResponse.badRequestApiErrorWrites)
 
-    when(mockValidationService.validateRequest(any()))
-      .thenReturn(
-        Right(authorisationRequest)
+      doTest(
+        validateResponse = Some(Right(authorisationRequest)),
+        authorisationsResponse = Some(EitherT.leftT(error)),
+        requestBody = Json.toJson(authorisationRequest),
+        statusCode = BAD_REQUEST,
+        expectedResponse = Json.toJson(expectedResponse)
       )
-
-    when(mockIntegrationFrameworkService.getAuthorisations(any())(any()))
-      .thenReturn(EitherT.leftT(error))
-
-    val request = fakeRequestWithJsonBody(Json.toJson(authorisationRequest))
-
-    val result = controller.authorisations()(request)
-
-    status(result)        shouldBe BAD_REQUEST
-    contentAsJson(result) shouldBe expectedResponse
+    }
   }
 
-  "return SERVICE_UNAVAILABLE (503) when integration framework service returns BadGatewayDataRetrievalError" in {
+  "return SERVICE_UNAVAILABLE (503) when integration framework service returns BadGatewayDataRetrievalError" in new TestContext {
     forAll { (authorisationRequest: AuthorisationRequest) =>
       val expectedResponse = Json.toJson(
         ServiceUnavailableApiError
       )(ApiErrorResponse.writes.writes)
 
-      when(mockValidationService.validateRequest(any()))
-        .thenReturn(
-          Right(authorisationRequest)
-        )
-
-      when(mockIntegrationFrameworkService.getAuthorisations(any())(any()))
-        .thenReturn(EitherT.leftT(BadGatewayDataRetrievalError()))
-
-      val request = fakeRequestWithJsonBody(Json.toJson(authorisationRequest))
-
-      val result = controller.authorisations()(request)
-
-      status(result)        shouldBe SERVICE_UNAVAILABLE
-      contentAsJson(result) shouldBe Json.toJson(expectedResponse)
+      doTest(
+        validateResponse = Some(Right(authorisationRequest)),
+        authorisationsResponse = Some(EitherT.leftT(BadGatewayDataRetrievalError())),
+        requestBody = Json.toJson(authorisationRequest),
+        statusCode = SERVICE_UNAVAILABLE,
+        expectedResponse = Json.toJson(expectedResponse)
+      )
     }
   }
 
-  "return BAD_REQUEST (400) with authorised eoris when request has valid eoris but they exceed the maximum eoris" in {
+  "return BAD_REQUEST (400) with authorised eoris when request has valid eoris but they exceed the maximum eoris" in new TestContext {
 
     forAll { authorisationRequest: TooManyEorisAuthorisationRequest =>
-      val jsError = JsError(JsPath \ "eoris", JsonValidationError(ErrorMessages.invalidEoriCount))
+      val jsError = JsError(JsPath \ "eoris", JsonValidationError(ApiErrorMessages.invalidEoriCount))
 
       val expectedResponse = Json.toJson(
         JsonValidationApiError(jsError)
       )(ApiErrorResponse.jsonValidationApiErrorWrites)
 
-      when(mockValidationService.validateRequest(any())).thenReturn(
-        Left(ValidationDataRetrievalError(jsError))
+      doTest(
+        validateResponse = Some(Left(ValidationDataRetrievalError(jsError))),
+        requestBody = Json.toJson(authorisationRequest.request),
+        statusCode = BAD_REQUEST,
+        expectedResponse = Json.toJson(expectedResponse)
       )
-
-      val request = fakeRequestWithJsonBody(Json.toJson(authorisationRequest.request))
-
-      val result = controller.authorisations()(request)
-
-      status(result)        shouldBe BAD_REQUEST
-      contentAsJson(result) shouldBe Json.toJson(expectedResponse)
     }
   }
 
-  "return BAD_REQUEST (400) when request has no eoris" in {
+  "return BAD_REQUEST (400) when request has no eoris" in new TestContext {
 
     forAll { authorisationRequest: NoEorisAuthorisationRequest =>
-      val jsError = JsError(JsPath \ "eoris", JsonValidationError(ErrorMessages.invalidEoriCount))
+      val jsError = JsError(JsPath \ "eoris", JsonValidationError(ApiErrorMessages.invalidEoriCount))
 
       val expectedResponse = Json.toJson(
         JsonValidationApiError(jsError)
       )(ApiErrorResponse.jsonValidationApiErrorWrites)
 
-      when(mockValidationService.validateRequest(any())).thenReturn(
-        Left(ValidationDataRetrievalError(jsError))
+      doTest(
+        validateResponse = Some(Left(ValidationDataRetrievalError(jsError))),
+        requestBody = Json.toJson(authorisationRequest.request),
+        statusCode = BAD_REQUEST,
+        expectedResponse = Json.toJson(expectedResponse)
       )
-
-      val request = fakeRequestWithJsonBody(Json.toJson(authorisationRequest.request))
-
-      val result = controller.authorisations()(request)
-
-      status(result)        shouldBe BAD_REQUEST
-      contentAsJson(result) shouldBe Json.toJson(expectedResponse)
     }
   }
 
-  "return FORBIDDEN (403) when integration framework service returns ForbiddenDataRetrievalError" in {
+  "return FORBIDDEN (403) when integration framework service returns ForbiddenDataRetrievalError" in new TestContext {
     forAll { (authorisationRequest: AuthorisationRequest) =>
       val expectedResponse = Json.toJson(
         ForbiddenApiError
       )(ApiErrorResponse.writes.writes)
 
-      when(mockValidationService.validateRequest(any()))
-        .thenReturn(
-          Right(authorisationRequest)
-        )
-
-      when(mockIntegrationFrameworkService.getAuthorisations(any())(any()))
-        .thenReturn(EitherT.leftT(ForbiddenDataRetrievalError()))
-
-      val request = fakeRequestWithJsonBody(Json.toJson(authorisationRequest))
-
-      val result = controller.authorisations()(request)
-
-      status(result)        shouldBe FORBIDDEN
-      contentAsJson(result) shouldBe Json.toJson(expectedResponse)
+      doTest(
+        validateResponse = Some(Right(authorisationRequest)),
+        authorisationsResponse = Some(EitherT.leftT(ForbiddenDataRetrievalError())),
+        requestBody = Json.toJson(authorisationRequest),
+        statusCode = FORBIDDEN,
+        expectedResponse = Json.toJson(expectedResponse)
+      )
     }
   }
 
-  "return METHOD_NOT_ALLOWED (405) when integration framework service returns MethodNotAllowedDataRetrievalError" in {
+  "return METHOD_NOT_ALLOWED (405) when integration framework service returns MethodNotAllowedDataRetrievalError" in new TestContext {
     forAll { (authorisationRequest: AuthorisationRequest, errorMessage: String) =>
       val expectedResponse = Json.toJson(
         MethodNotAllowedApiError
       )(ApiErrorResponse.writes.writes)
 
-      when(mockValidationService.validateRequest(any()))
-        .thenReturn(
-          Right(authorisationRequest)
-        )
-
-      when(mockIntegrationFrameworkService.getAuthorisations(any())(any()))
-        .thenReturn(EitherT.leftT(MethodNotAllowedDataRetrievalError(errorMessage)))
-
-      val request = fakeRequestWithJsonBody(Json.toJson(authorisationRequest))
-
-      val result = controller.authorisations()(request)
-
-      status(result)        shouldBe METHOD_NOT_ALLOWED
-      contentAsJson(result) shouldBe Json.toJson(expectedResponse)
+      doTest(
+        validateResponse = Some(Right(authorisationRequest)),
+        authorisationsResponse = Some(EitherT.leftT(MethodNotAllowedDataRetrievalError(errorMessage))),
+        requestBody = Json.toJson(authorisationRequest),
+        statusCode = METHOD_NOT_ALLOWED,
+        expectedResponse = Json.toJson(expectedResponse)
+      )
     }
   }
 
-  "return INTERNAL_SERVER_ERROR (500) when integration framework service returns InternalServerDataRetrievalError" in {
+  "return INTERNAL_SERVER_ERROR (500) when integration framework service returns InternalServerDataRetrievalError" in new TestContext {
     forAll { (authorisationRequest: AuthorisationRequest, errorMessage: String) =>
       val expectedResponse = Json.toJson(
         InternalServerApiError
       )(ApiErrorResponse.writes.writes)
 
-      when(mockValidationService.validateRequest(any()))
-        .thenReturn(
-          Right(authorisationRequest)
-        )
-
-      when(mockIntegrationFrameworkService.getAuthorisations(any())(any()))
-        .thenReturn(EitherT.leftT(InternalServerDataRetrievalError(errorMessage)))
-
-      val request = fakeRequestWithJsonBody(Json.toJson(authorisationRequest))
-
-      val result = controller.authorisations()(request)
-
-      status(result)        shouldBe INTERNAL_SERVER_ERROR
-      contentAsJson(result) shouldBe Json.toJson(expectedResponse)
+      doTest(
+        validateResponse = Some(Right(authorisationRequest)),
+        authorisationsResponse = Some(EitherT.leftT(InternalServerDataRetrievalError(errorMessage))),
+        requestBody = Json.toJson(authorisationRequest),
+        statusCode = INTERNAL_SERVER_ERROR,
+        expectedResponse = Json.toJson(expectedResponse)
+      )
     }
   }
 
-  "return INTERNAL_SERVER_ERROR (500) when integration framework service returns InternalUnexpectedDataRetrievalError" in {
+  "return INTERNAL_SERVER_ERROR (500) when integration framework service returns InternalUnexpectedDataRetrievalError" in new TestContext {
     forAll { (authorisationRequest: AuthorisationRequest, errorMessage: String) =>
       val expectedResponse = Json.toJson(
         InternalServerApiError
       )(ApiErrorResponse.writes.writes)
 
-      when(mockValidationService.validateRequest(any()))
-        .thenReturn(
-          Right(authorisationRequest)
-        )
-
-      when(mockIntegrationFrameworkService.getAuthorisations(any())(any()))
-        .thenReturn(EitherT.leftT(InternalUnexpectedDataRetrievalError(errorMessage, new Exception())))
-
-      val request = fakeRequestWithJsonBody(Json.toJson(authorisationRequest))
-
-      val result = controller.authorisations()(request)
-
-      status(result)        shouldBe INTERNAL_SERVER_ERROR
-      contentAsJson(result) shouldBe Json.toJson(expectedResponse)
+      doTest(
+        validateResponse = Some(Right(authorisationRequest)),
+        authorisationsResponse = Some(EitherT.leftT(InternalUnexpectedDataRetrievalError(errorMessage, new Exception()))),
+        requestBody = Json.toJson(authorisationRequest),
+        statusCode = INTERNAL_SERVER_ERROR,
+        expectedResponse = Json.toJson(expectedResponse)
+      )
     }
   }
 
-  "return NOT_ACCEPTABLE (406) error when accept header is not present" in {
+  "return NOT_ACCEPTABLE (406) error when accept header is not present" in new TestContext {
     forAll { authorisationRequest: AuthorisationRequest =>
+      val expectedResponse = Json.toJson(
+        NotAcceptableApiError
+      )(ApiErrorResponse.writes.writes)
+
       val headers = defaultHeaders.filterNot(_._1.equals(acceptHeader._1))
 
-      val request = fakeRequestWithJsonBody(Json.toJson(authorisationRequest), headers = headers)
-
-      val result = controller.authorisations()(request)
-
-      status(result)        shouldBe NOT_ACCEPTABLE
-      contentAsJson(result) shouldBe contentAsJson(Future.successful(NotAcceptableApiError.toResult))
+      doTest(
+        requestBody = Json.toJson(authorisationRequest),
+        statusCode = NOT_ACCEPTABLE,
+        expectedResponse = expectedResponse,
+        headers = headers
+      )
     }
   }
 
-  "return NOT_ACCEPTABLE (406) error when content type header is not present" in {
+  "return NOT_ACCEPTABLE (406) error when content type header is not present" in new TestContext {
     forAll { authorisationRequest: AuthorisationRequest =>
+      val expectedResponse = Json.toJson(
+        NotAcceptableApiError
+      )(ApiErrorResponse.writes.writes)
+
       val headers = defaultHeaders.filterNot(_._1.equals(contentTypeHeader._1))
 
-      val request = fakeRequestWithJsonBody(Json.toJson(authorisationRequest), headers = headers)
-
-      val result = controller.authorisations()(request)
-
-      status(result)        shouldBe NOT_ACCEPTABLE
-      contentAsJson(result) shouldBe contentAsJson(Future.successful(NotAcceptableApiError.toResult))
+      doTest(
+        requestBody = Json.toJson(authorisationRequest),
+        statusCode = NOT_ACCEPTABLE,
+        expectedResponse = expectedResponse,
+        headers = headers
+      )
     }
   }
-
 }

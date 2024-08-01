@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uknwauthcheckerapi.utils
+package uk.gov.hmrc.uknwauthcheckerapi.models.constants
 
-object ErrorMessages {
-  val invalidEoriCount: String = "The request payload must contain between 1 and 3000 EORI entries"
-  val unauthorized:     String = "The bearer token is invalid, missing, or expired"
+import scala.util.matching.Regex
+
+object CustomRegexes {
+  val eoriPattern:                 String = "^(GB|XI)[0-9]{12}|(GB|XI)[0-9]{15}$"
+  val invalidAuthTypePattern:      String = "^.*(Invalid authorisation type).*$"
+  val invalidFormatOfEorisPattern: String = "^.*(format of EORI).*$"
+
+  val invalidAuthTypePatternRegex: Regex = invalidAuthTypePattern.r
 }

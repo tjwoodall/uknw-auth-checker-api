@@ -23,9 +23,12 @@ import play.api.mvc.Request
 import uk.gov.hmrc.uknwauthcheckerapi.errors.DataRetrievalError
 import uk.gov.hmrc.uknwauthcheckerapi.errors.DataRetrievalError.ValidationDataRetrievalError
 import uk.gov.hmrc.uknwauthcheckerapi.models.AuthorisationRequest
-import uk.gov.hmrc.uknwauthcheckerapi.utils.{CustomRegexes, ErrorMessages}
+import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{ApiErrorMessages, CustomRegexes, JsonPaths, MinMaxValues}
 
 class ValidationService {
+
+  private type ValidationResult[T] = Either[JsError, T]
+
   def validateRequest(request: Request[JsValue]): Either[DataRetrievalError, AuthorisationRequest] =
     request.body.validate[AuthorisationRequest] match {
       case JsSuccess(authorisationRequest: AuthorisationRequest, _) =>
@@ -36,28 +39,38 @@ class ValidationService {
       case errors: JsError => Left(ValidationDataRetrievalError(errors))
     }
 
-  private def validateAuthorisationRequest(request: AuthorisationRequest): Either[JsError, AuthorisationRequest] = {
-    val eoris = request.eoris
+  private def validateAuthorisationRequest(request: AuthorisationRequest): Either[JsError, AuthorisationRequest] =
+    for {
+      _ <- validateEoriCount(request)
+      _ <- validateEoriStructure(request)
+    } yield request
 
-    val eoriErrors: Seq[JsonValidationError] = eoris
-      .filterNot(e => e matches CustomRegexes.eoriPattern)
-      .map(e => JsonValidationError(s"$e is not a supported EORI number"))
+  private def validateEoriCount(request: AuthorisationRequest): ValidationResult[AuthorisationRequest] =
+    if (isEoriSizeInvalid(request.eoris.size)) {
+      Left(JsError(JsPath \ JsonPaths.eoris, ApiErrorMessages.invalidEoriCount))
+    } else {
+      Right(request)
+    }
 
-    (eoriErrors.nonEmpty, isEoriSizeInvalid(eoris.size)) match {
-      case (false, false) => Right(request)
-      case (_, true)      => Left(JsError(JsPath \ "eoris", ErrorMessages.invalidEoriCount))
-      case (true, _) =>
-        Left(
-          JsError(
-            Seq("eoris").map { field =>
-              (JsPath \ field, eoriErrors)
-            }
-          )
+  private def validateEoriStructure(request: AuthorisationRequest): ValidationResult[AuthorisationRequest] = {
+    val eoriErrors = request.eoris.collect {
+      case eori if !(eori matches CustomRegexes.eoriPattern) => JsonValidationError(ApiErrorMessages.invalidEori(eori))
+    }
+
+    if (eoriErrors.nonEmpty) {
+      Left(
+        JsError(
+          Seq(JsonPaths.eoris).map { field =>
+            (JsPath \ field, eoriErrors)
+          }
         )
+      )
+    } else {
+      Right(request)
     }
   }
 
   private def isEoriSizeInvalid(eorisSize: Int): Boolean =
-    if (eorisSize > 3000 || eorisSize < 1) true else false
+    eorisSize > MinMaxValues.maxEoriCount || eorisSize < MinMaxValues.minEoriCount
 
 }

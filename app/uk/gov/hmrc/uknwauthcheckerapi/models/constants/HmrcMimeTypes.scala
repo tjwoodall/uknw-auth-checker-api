@@ -14,15 +14,8 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uknwauthcheckerapi.generators
+package uk.gov.hmrc.uknwauthcheckerapi.models.constants
 
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-
-trait ExtensionHelpers {
-  implicit class StringHelpers(date: LocalDate) {
-
-    def toLocalDateFormatted: String =
-      date.format(DateTimeFormatter.ISO_LOCAL_DATE)
-  }
+object HmrcMimeTypes {
+  val json = "application/vnd.hmrc.1.0+json"
 }

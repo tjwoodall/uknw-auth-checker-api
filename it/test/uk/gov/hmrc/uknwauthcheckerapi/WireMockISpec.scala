@@ -24,18 +24,18 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite}
 
 import play.api.http.Status.OK
+import uk.gov.hmrc.uknwauthcheckerapi.generators.TestConstants
 
 trait WireMockISpec extends BeforeAndAfterAll with BeforeAndAfterEach {
   this: Suite =>
 
-  private val wireMockPort = 9999
-
-  protected val server: WireMockServer = new WireMockServer(wireMockConfig().port(wireMockPort))
+  protected val server: WireMockServer = new WireMockServer(wireMockConfig().port(TestConstants.configWireMockPort))
 
   override def beforeAll(): Unit = {
     server.start()
     super.beforeAll()
-    WireMock.configureFor("localhost", wireMockPort) // https://github.com/wiremock/wiremock/issues/369
+    // https://github.com/wiremock/wiremock/issues/369
+    WireMock.configureFor(TestConstants.configWireMockHost, TestConstants.configWireMockPort)
   }
 
   override def beforeEach(): Unit = {
@@ -55,16 +55,16 @@ trait WireMockISpec extends BeforeAndAfterAll with BeforeAndAfterEach {
 
   protected def setWireMockPort(services: String*): Map[String, Any] =
     services.foldLeft(Map.empty[String, Any]) { case (map, service) =>
-      map + (s"microservice.services.$service.port" -> wireMockPort)
+      map + (s"microservice.services.$service.port" -> TestConstants.configWireMockPort)
     }
 
   protected def stubAuthorised(): StubMapping =
     server.stubFor(
-      post("/auth/authorise")
+      post(TestConstants.serviceEndpointAuth)
         .willReturn(
           aResponse()
             .withStatus(OK)
-            .withBody("{}")
+            .withBody(TestConstants.emptyJson)
         )
     )
 

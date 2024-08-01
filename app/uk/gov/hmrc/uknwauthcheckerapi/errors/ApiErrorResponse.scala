@@ -21,6 +21,7 @@ import play.api.libs.json._
 import play.api.mvc.Result
 import play.api.mvc.Results.Status
 import uk.gov.hmrc.uknwauthcheckerapi.errors.transformers.{BadRequestErrorTransformer, JsErrorTransformer}
+import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{ApiErrorCodes, ApiErrorMessages, JsonPaths}
 
 sealed trait ApiErrorResponse {
   def statusCode: Int
@@ -40,77 +41,78 @@ sealed trait ApiErrorResponse {
 object ApiErrorResponse {
   implicit val jsonValidationApiErrorWrites: Writes[JsonValidationApiError] = Writes { model =>
     Json.obj(
-      "code"    -> model.code,
-      "message" -> model.message,
-      "errors"  -> model.getErrors
+      JsonPaths.code    -> model.code,
+      JsonPaths.message -> model.message,
+      JsonPaths.errors  -> model.getErrors
     )
   }
 
   implicit val badRequestApiErrorWrites: Writes[BadRequestApiError] = Writes { model =>
     Json.obj(
-      "code"    -> model.code,
-      "message" -> model.message,
-      "errors"  -> model.getErrors
+      JsonPaths.code    -> model.code,
+      JsonPaths.message -> model.message,
+      JsonPaths.errors  -> model.getErrors
     )
   }
 
-  implicit val writes: Writes[ApiErrorResponse] = (o: ApiErrorResponse) => JsObject(Seq("code" -> JsString(o.code), "message" -> JsString(o.message)))
+  implicit val writes: Writes[ApiErrorResponse] = (o: ApiErrorResponse) =>
+    JsObject(Seq(JsonPaths.code -> JsString(o.code), JsonPaths.message -> JsString(o.message)))
 }
 
 case object ForbiddenApiError extends ApiErrorResponse {
   val statusCode: Int    = FORBIDDEN
-  val code:       String = "FORBIDDEN"
-  val message:    String = "You are not allowed to access this resource"
+  val code:       String = ApiErrorCodes.forbidden
+  val message:    String = ApiErrorMessages.forbidden
 }
 
 case object InternalServerApiError extends ApiErrorResponse {
   val statusCode: Int    = INTERNAL_SERVER_ERROR
-  val code:       String = "INTERNAL_SERVER_ERROR"
-  val message:    String = "Unexpected internal server error"
+  val code:       String = ApiErrorCodes.internalServerError
+  val message:    String = ApiErrorMessages.internalServerError
 }
 
 case object NotFoundApiError extends ApiErrorResponse {
   val statusCode: Int    = NOT_FOUND
-  val code:       String = "MATCHING_RESOURCE_NOT_FOUND"
-  val message:    String = "Matching resource not found"
+  val code:       String = ApiErrorCodes.matchingResourceNotFound
+  val message:    String = ApiErrorMessages.matchingResourceNotFound
 }
 
 case object MethodNotAllowedApiError extends ApiErrorResponse {
   val statusCode: Int    = METHOD_NOT_ALLOWED
-  val code:       String = "METHOD_NOT_ALLOWED"
-  val message:    String = "This method is not supported"
+  val code:       String = ApiErrorCodes.methodNotAllowed
+  val message:    String = ApiErrorMessages.methodNotAllowed
 }
 
 case object NotAcceptableApiError extends ApiErrorResponse {
   val statusCode: Int    = NOT_ACCEPTABLE
-  val code:       String = "NOT_ACCEPTABLE"
-  val message:    String = "Cannot produce an acceptable response. The Accept or Content-Type header is missing or invalid"
+  val code:       String = ApiErrorCodes.notAcceptable
+  val message:    String = ApiErrorMessages.notAcceptable
 }
 
 case object ServiceUnavailableApiError extends ApiErrorResponse {
   val statusCode: Int    = SERVICE_UNAVAILABLE
-  val code:       String = "SERVICE_UNAVAILABLE"
-  val message:    String = "Server is currently unable to handle the incoming requests"
+  val code:       String = ApiErrorCodes.serviceUnavailable
+  val message:    String = ApiErrorMessages.serviceUnavailable
 }
 
 final case class UnauthorizedApiError(reason: String) extends ApiErrorResponse {
   val statusCode: Int    = UNAUTHORIZED
-  val code:       String = "UNAUTHORIZED"
-  val message:    String = reason
+  val code:       String = ApiErrorCodes.unauthorized
+  val message:    String = ApiErrorMessages.unauthorized
 }
 
 final case class BadRequestApiError(errorMessages: String) extends ApiErrorResponse with BadRequestErrorTransformer {
   val statusCode: Int    = BAD_REQUEST
-  val code:       String = "BAD_REQUEST"
-  val message:    String = "Invalid request"
+  val code:       String = ApiErrorCodes.badRequest
+  val message:    String = ApiErrorMessages.invalidRequest
 
   val getErrors: JsValue = transformBadRequest(errorMessages)
 }
 
 final case class JsonValidationApiError(jsErrors: JsError) extends ApiErrorResponse with JsErrorTransformer {
   val statusCode: Int    = BAD_REQUEST
-  val code:       String = "BAD_REQUEST"
-  val message:    String = "Bad request"
+  val code:       String = ApiErrorCodes.badRequest
+  val message:    String = ApiErrorMessages.badRequest
 
   val getErrors: JsValue = transformJsErrors(jsErrors)
 }

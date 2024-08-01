@@ -1,7 +1,7 @@
 meta {
-  name: 200-multiple-eoris
+  name: 201-No-Bearer-Token
   type: http
-  seq: 3
+  seq: 8
 }
 
 post {
@@ -12,14 +12,12 @@ post {
 
 headers {
   Accept: application/vnd.hmrc.1.0+json
-  Authorization: {{bearerToken}}
 }
 
 body:json {
   {
-      "eoris": [
-        "GB000000000200",
-        "XI000000000200"
-      ]
+    "eoris": [
+      "GB000000000200"
+    ]
   }
 }

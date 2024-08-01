@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uknwauthcheckerapi.models
+package uk.gov.hmrc.uknwauthcheckerapi.models.constants
 
-object CustomHeaderNames {
-  val xCorrelationId = "X-Correlation-Id"
+object MinMaxValues {
+  val maxEoriCount: Int = 3000
+  val minEoriCount: Int = 1
 }

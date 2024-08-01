@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uknwauthcheckerapi.models
+package uk.gov.hmrc.uknwauthcheckerapi.models.constants
 
-import java.time.format.DateTimeFormatter
-import java.time.{ZoneOffset, ZonedDateTime}
-
-object RFC7231DateTime {
-
-  private val rfc7231DateTimeFormat: DateTimeFormatter =
-    DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss O")
-
-  def now: String = rfc7231DateTimeFormat.format(ZonedDateTime.now(ZoneOffset.UTC))
+object JsonErrorMessages {
+  val eorisFieldMissing: String = "eoris field missing from JSON"
+  val expectedJsObject:  String = "error.expected.jsobject"
+  val jsonMalformed:     String = "JSON is malformed"
+  val pathMissing:       String = "error.path.missing"
 }

@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.connectors
 
-import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -26,11 +25,11 @@ import org.apache.pekko.actor.ActorSystem
 import play.api.http.{HeaderNames, MimeTypes}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, Retries, StringContextOps}
+import uk.gov.hmrc.http.{HeaderCarrier, Retries}
 import uk.gov.hmrc.uknwauthcheckerapi.config.AppConfig
+import uk.gov.hmrc.uknwauthcheckerapi.models.Rfc7231DateTime
+import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{CustomHeaderNames, HmrcContentTypes}
 import uk.gov.hmrc.uknwauthcheckerapi.models.eis.{EisAuthorisationRequest, EisAuthorisationsResponse}
-import uk.gov.hmrc.uknwauthcheckerapi.models.{CustomHeaderNames, RFC7231DateTime}
-import uk.gov.hmrc.uknwauthcheckerapi.utils.HmrcContentTypes
 
 @Singleton
 class IntegrationFrameworkConnector @Inject() (
@@ -42,26 +41,19 @@ class IntegrationFrameworkConnector @Inject() (
     extends Retries
     with BaseConnector {
 
-  private def integrationFrameworkHeaders(bearerToken: String)(implicit hc: HeaderCarrier): Seq[(String, String)] = {
-    val correlationId = hc.headers(scala.Seq(CustomHeaderNames.xCorrelationId)) match {
-      case Seq((_, id)) =>
-        id
-      case _ =>
-        UUID.randomUUID().toString
-    }
+  private def integrationFrameworkHeaders(bearerToken: String)(implicit hc: HeaderCarrier): Seq[(String, String)] =
     Seq(
-      (CustomHeaderNames.xCorrelationId, correlationId),
-      (HeaderNames.DATE, RFC7231DateTime.now),
+      (CustomHeaderNames.xCorrelationId, generateCorrelationId()),
+      (HeaderNames.DATE, Rfc7231DateTime.now),
       (HeaderNames.CONTENT_TYPE, HmrcContentTypes.json),
       (HeaderNames.ACCEPT, MimeTypes.JSON),
       (HeaderNames.AUTHORIZATION, s"Bearer $bearerToken")
     )
-  }
 
   def getEisAuthorisationsResponse(eisAuthorisationRequest: EisAuthorisationRequest)(implicit hc: HeaderCarrier): Future[EisAuthorisationsResponse] =
-    retryFor[EisAuthorisationsResponse]("Integration framework Response")(retryCondition) {
+    retryFor[EisAuthorisationsResponse]("Integration Framework Response")(retryCondition) {
       httpClient
-        .post(url"${appConfig.baseUrl("integration-framework")}/cau/validatecustomsauth/v1")
+        .post(appConfig.eisAuthorisationsUrl)
         .setHeader(integrationFrameworkHeaders(appConfig.integrationFrameworkBearerToken): _*)
         .withBody(Json.toJson(eisAuthorisationRequest))
         .executeAndDeserialise[EisAuthorisationsResponse]

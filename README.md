@@ -25,7 +25,7 @@ the UKNW auth checker API.
 
 ### Integration tests
 
-> `sbt it:test`
+> `sbt it/test`
 
 
 ### All tests

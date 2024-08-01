@@ -18,13 +18,12 @@ package uk.gov.hmrc.uknwauthcheckerapi.generators
 
 import play.api.http.MimeTypes
 import play.mvc.Http.HeaderNames
-import uk.gov.hmrc.uknwauthcheckerapi.utils.HmrcMimeTypes
+import uk.gov.hmrc.uknwauthcheckerapi.models.constants.HmrcMimeTypes
 
 trait TestHeaders {
 
-  protected val authorizationHeader: (String, String) = HeaderNames.AUTHORIZATION -> "Bearer PFZBTElEX1RPS0VOPg=="
-  protected val acceptHeader:        (String, String) = HeaderNames.ACCEPT        -> HmrcMimeTypes.json
-  protected val contentTypeHeader:   (String, String) = HeaderNames.CONTENT_TYPE  -> MimeTypes.JSON
-
-  protected val defaultHeaders: Seq[(String, String)] = Seq(acceptHeader, contentTypeHeader, authorizationHeader)
+  protected val authorizationHeader: (String, String)      = HeaderNames.AUTHORIZATION -> TestConstants.bearerToken
+  protected val acceptHeader:        (String, String)      = HeaderNames.ACCEPT        -> HmrcMimeTypes.json
+  protected val contentTypeHeader:   (String, String)      = HeaderNames.CONTENT_TYPE  -> MimeTypes.JSON
+  protected val defaultHeaders:      Seq[(String, String)] = Seq(acceptHeader, contentTypeHeader, authorizationHeader)
 }

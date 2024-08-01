@@ -19,54 +19,57 @@ package uk.gov.hmrc.uknwauthcheckerapi.controllers
 import scala.concurrent.Future
 
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{reset, when}
 
+import play.api.mvc.Result
 import play.api.test.Helpers.await
 import uk.gov.hmrc.auth.core.retrieve.Credentials
 import uk.gov.hmrc.auth.core.{InternalError, MissingBearerToken}
 import uk.gov.hmrc.uknwauthcheckerapi.controllers.actions.AuthAction
 import uk.gov.hmrc.uknwauthcheckerapi.errors.{ServiceUnavailableApiError, UnauthorizedApiError}
-import uk.gov.hmrc.uknwauthcheckerapi.utils.ErrorMessages
+import uk.gov.hmrc.uknwauthcheckerapi.models.constants.ApiErrorMessages
 
 class AuthActionSpec extends BaseSpec {
 
   private lazy val authAction = injected[AuthAction]
 
+  trait TestContext {
+    def doTest(throwable: Throwable): Option[Result] = {
+      reset(mockAuthConnector)
+
+      when(mockAuthConnector.authorise[Credentials](any(), any())(any(), any()))
+        .thenReturn(Future.failed(throwable))
+
+      await(authAction.filter(fakePostRequest))
+    }
+  }
+
   "AuthAction" should {
     "allow a request through if authorized" in {
       stubAuthorization()
 
-      val result = await(authAction.filter(fakePostRequest))
+      val result: Option[Result] = await(authAction.filter(fakePostRequest))
 
       result shouldBe None
     }
 
-    "return ServiceUnavailableApiError when authorised returns an InternalError" in {
+    "return ServiceUnavailableApiError when authorised returns an InternalError" in new TestContext {
 
-      when(mockAuthConnector.authorise[Credentials](any(), any())(any(), any()))
-        .thenReturn(Future.failed(InternalError()))
-
-      val result = await(authAction.filter(fakePostRequest))
+      val result: Option[Result] = doTest(InternalError())
 
       result shouldBe Some(ServiceUnavailableApiError.toResult)
     }
 
-    "return UnauthorizedApiError when authorised returns an AuthorisationException/MissingBearerToken" in {
+    "return UnauthorizedApiError when authorised returns an AuthorisationException/MissingBearerToken" in new TestContext {
 
-      when(mockAuthConnector.authorise[Credentials](any(), any())(any(), any()))
-        .thenReturn(Future.failed(MissingBearerToken()))
+      val result: Option[Result] = doTest(MissingBearerToken())
 
-      val result = await(authAction.filter(fakePostRequest))
-
-      result shouldBe Some(UnauthorizedApiError(ErrorMessages.unauthorized).toResult)
+      result shouldBe Some(UnauthorizedApiError(ApiErrorMessages.unauthorized).toResult)
     }
 
-    "return ServiceUnavailableApiError when authorised returns an unexpected exception" in {
+    "return ServiceUnavailableApiError when authorised returns an unexpected exception" in new TestContext {
 
-      when(mockAuthConnector.authorise[Credentials](any(), any())(any(), any()))
-        .thenReturn(Future.failed(new RuntimeException()))
-
-      val result = await(authAction.filter(fakePostRequest))
+      val result: Option[Result] = doTest(new RuntimeException())
 
       result shouldBe Some(ServiceUnavailableApiError.toResult)
     }

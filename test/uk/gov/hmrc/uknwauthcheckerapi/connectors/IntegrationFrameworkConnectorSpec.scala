@@ -29,166 +29,156 @@ import play.api.libs.json._
 import play.api.test.Helpers.await
 import uk.gov.hmrc.http.{HttpResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.uknwauthcheckerapi.controllers.BaseSpec
-import uk.gov.hmrc.uknwauthcheckerapi.generators.ValidEisAuthorisationsResponse
-import uk.gov.hmrc.uknwauthcheckerapi.models.eis.EisAuthorisationRequest
-import uk.gov.hmrc.uknwauthcheckerapi.utils.JsonErrors
+import uk.gov.hmrc.uknwauthcheckerapi.generators.{TestConstants, ValidEisAuthorisationsResponse}
+import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{ApiErrorCodes, JsonErrorMessages, JsonPaths}
+import uk.gov.hmrc.uknwauthcheckerapi.models.eis.{EisAuthorisationRequest, EisAuthorisationsResponse}
 
 class IntegrationFrameworkConnectorSpec extends BaseSpec {
 
-  private val callAmountWithRetries = 4
-
   private lazy val connector: IntegrationFrameworkConnector = injected[IntegrationFrameworkConnector]
 
-  override def beforeEach(): Unit = {
-    reset(mockHttpClient)
-    reset(mockRequestBuilder)
+  trait TestContext {
+    def doTest(request: EisAuthorisationRequest, statusCode: Int, jsonBody: String): EisAuthorisationsResponse = {
+      reset(mockHttpClient)
+      reset(mockRequestBuilder)
+
+      when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.setHeader(any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
+
+      doReturn(
+        Future.successful(
+          HttpResponse.apply(statusCode, jsonBody)
+        )
+      ).when(mockRequestBuilder).execute[HttpResponse](any(), any())
+
+      await(connector.getEisAuthorisationsResponse(request))
+    }
   }
 
   "getEisAuthorisationsResponse" should {
-    "return EisAuthorisationsResponse when call to integration framework succeeds" in forAll {
-      (eisAuthorisationRequest: EisAuthorisationRequest, validGetAuthorisationsResponse: ValidEisAuthorisationsResponse) =>
+    "return EisAuthorisationsResponse when call to integration framework succeeds" in new TestContext {
+      forAll { (eisAuthorisationRequest: EisAuthorisationRequest, validGetAuthorisationsResponse: ValidEisAuthorisationsResponse) =>
         whenever(eisAuthorisationRequest.validityDate.isDefined) {
-          beforeEach()
 
-          when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
-          when(mockRequestBuilder.setHeader(any())).thenReturn(mockRequestBuilder)
-          when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
+          val response = doTest(
+            eisAuthorisationRequest,
+            OK,
+            Json.stringify(Json.toJson(validGetAuthorisationsResponse.response))
+          )
 
-          doReturn(
-            Future.successful(
-              HttpResponse.apply(OK, Json.stringify(Json.toJson(validGetAuthorisationsResponse.response)))
-            )
-          ).when(mockRequestBuilder).execute[HttpResponse](any(), any())
-
-          val result = await(connector.getEisAuthorisationsResponse(eisAuthorisationRequest))
-
-          result shouldBe validGetAuthorisationsResponse.response
+          response shouldBe validGetAuthorisationsResponse.response
         }
+      }
     }
 
-    "return ERROR when call to integration framework succeeds but deserialisation fails" in forAll {
-      (eisAuthorisationRequest: EisAuthorisationRequest) =>
+    "return ERROR when call to integration framework succeeds but deserialisation fails" in new TestContext {
+      forAll { (eisAuthorisationRequest: EisAuthorisationRequest) =>
         whenever(eisAuthorisationRequest.validityDate.isDefined) {
-          beforeEach()
 
           val expectedError = JsError(
-            Seq("authType", "processingDate", "results").map { field =>
-              (JsPath \ field, Seq(JsonValidationError(JsonErrors.pathMissing)))
+            Seq(JsonPaths.authType, JsonPaths.processingDate, JsonPaths.results).map { field =>
+              (JsPath \ field, Seq(JsonValidationError(JsonErrorMessages.pathMissing)))
             }
           )
 
-          when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
-          when(mockRequestBuilder.setHeader(any())).thenReturn(mockRequestBuilder)
-          when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
-
-          doReturn(
-            Future.successful(
-              HttpResponse.apply(OK, "{}")
+          Try(
+            doTest(
+              eisAuthorisationRequest,
+              OK,
+              TestConstants.emptyJson
             )
-          ).when(mockRequestBuilder).execute[HttpResponse](any(), any())
-
-          Try(await(connector.getEisAuthorisationsResponse(eisAuthorisationRequest))) match {
+          ) match {
             case Failure(exception: JsResult.Exception) => exception.cause shouldBe expectedError
-            case Success(_)                             => fail("expected exception to be thrown")
-            case _                                      => fail("unexpected response")
+            case Success(_)                             => fail(TestConstants.errorExpectedException)
+            case _                                      => fail(TestConstants.errorUnexpectedResponse)
           }
         }
+      }
     }
 
-    "return 400 BAD_REQUEST UpstreamErrorResponse when call to integration framework returns an error" in forAll {
-      (eisAuthorisationRequest: EisAuthorisationRequest) =>
-        beforeEach()
-
-        when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
-        when(mockRequestBuilder.setHeader(any())).thenReturn(mockRequestBuilder)
-        when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
-
-        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
-          .thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, "BAD_REQUEST")))
-
-        Try(await(connector.getEisAuthorisationsResponse(eisAuthorisationRequest))) match {
-          case Failure(UpstreamErrorResponse(_, code, _, _)) =>
-            code shouldEqual BAD_REQUEST
-          case _ => fail("expected UpstreamErrorResponse when error is received")
+    "return 400 BAD_REQUEST UpstreamErrorResponse when call to integration framework returns an error" in new TestContext {
+      forAll { (eisAuthorisationRequest: EisAuthorisationRequest) =>
+        Try(
+          doTest(
+            eisAuthorisationRequest,
+            BAD_REQUEST,
+            ApiErrorCodes.badRequest
+          )
+        ) match {
+          case Failure(UpstreamErrorResponse(_, code, _, _)) => code shouldEqual BAD_REQUEST
+          case _                                             => fail(TestConstants.errorExpectedUpstreamResponse)
         }
+      }
     }
 
-    "return 403 FORBIDDEN UpstreamErrorResponse when call to integration framework returns an error" in forAll {
-      (eisAuthorisationRequest: EisAuthorisationRequest) =>
-        beforeEach()
-
-        when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
-        when(mockRequestBuilder.setHeader(any())).thenReturn(mockRequestBuilder)
-        when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
-
-        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
-          .thenReturn(Future.successful(HttpResponse.apply(FORBIDDEN, "FORBIDDEN")))
-
-        Try(await(connector.getEisAuthorisationsResponse(eisAuthorisationRequest))) match {
-          case Failure(UpstreamErrorResponse(_, code, _, _)) =>
-            code shouldEqual FORBIDDEN
-          case _ => fail("expected UpstreamErrorResponse when error is received")
+    "return 403 FORBIDDEN UpstreamErrorResponse when call to integration framework returns an error" in new TestContext {
+      forAll { (eisAuthorisationRequest: EisAuthorisationRequest) =>
+        Try(
+          doTest(
+            eisAuthorisationRequest,
+            FORBIDDEN,
+            ApiErrorCodes.forbidden
+          )
+        ) match {
+          case Failure(UpstreamErrorResponse(_, code, _, _)) => code shouldEqual FORBIDDEN
+          case _                                             => fail(TestConstants.errorExpectedUpstreamResponse)
         }
+      }
     }
 
-    "return 405 METHOD_NOT_ALLOWED UpstreamErrorResponse when call to integration framework returns an error" in forAll {
-      (eisAuthorisationRequest: EisAuthorisationRequest) =>
-        beforeEach()
-
-        when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
-        when(mockRequestBuilder.setHeader(any())).thenReturn(mockRequestBuilder)
-        when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
-
-        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
-          .thenReturn(Future.successful(HttpResponse.apply(METHOD_NOT_ALLOWED, "METHOD_NOT_ALLOWED")))
-
-        Try(await(connector.getEisAuthorisationsResponse(eisAuthorisationRequest))) match {
+    "return 405 METHOD_NOT_ALLOWED UpstreamErrorResponse when call to integration framework returns an error" in new TestContext {
+      forAll { (eisAuthorisationRequest: EisAuthorisationRequest) =>
+        Try(
+          doTest(
+            eisAuthorisationRequest,
+            METHOD_NOT_ALLOWED,
+            ApiErrorCodes.methodNotAllowed
+          )
+        ) match {
           case Failure(UpstreamErrorResponse(_, code, _, _)) =>
             code shouldEqual METHOD_NOT_ALLOWED
-          case _ => fail("expected UpstreamErrorResponse when error is received")
+          case _ => fail(TestConstants.errorExpectedUpstreamResponse)
         }
+      }
     }
 
-    "return 500 INTERNAL_SERVER_ERROR UpstreamErrorResponse when call to integration framework returns an error" in forAll {
-      (eisAuthorisationRequest: EisAuthorisationRequest) =>
-        beforeEach()
-
-        when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
-        when(mockRequestBuilder.setHeader(any())).thenReturn(mockRequestBuilder)
-        when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
-
-        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
-          .thenReturn(Future.successful(HttpResponse.apply(INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR")))
-
-        Try(await(connector.getEisAuthorisationsResponse(eisAuthorisationRequest))) match {
+    "return 500 INTERNAL_SERVER_ERROR UpstreamErrorResponse when call to integration framework returns an error" in new TestContext {
+      forAll { (eisAuthorisationRequest: EisAuthorisationRequest) =>
+        Try(
+          doTest(
+            eisAuthorisationRequest,
+            INTERNAL_SERVER_ERROR,
+            ApiErrorCodes.internalServerError
+          )
+        ) match {
           case Failure(UpstreamErrorResponse(_, code, _, _)) =>
             code shouldEqual INTERNAL_SERVER_ERROR
-          case _ => fail("expected UpstreamErrorResponse when error is received")
+          case _ => fail(TestConstants.errorExpectedUpstreamResponse)
         }
 
-        verify(mockRequestBuilder, times(callAmountWithRetries))
+        verify(mockRequestBuilder, times(TestConstants.callAmountWithRetries))
           .execute(any(), any())
+      }
     }
 
-    "return 502 SERVICE_UNAVAILABLE UpstreamErrorResponse when call to integration framework returns an error" in forAll {
-      (eisAuthorisationRequest: EisAuthorisationRequest) =>
-        beforeEach()
-
-        when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
-        when(mockRequestBuilder.setHeader(any())).thenReturn(mockRequestBuilder)
-        when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
-
-        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
-          .thenReturn(Future.successful(HttpResponse.apply(SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE")))
-
-        Try(await(connector.getEisAuthorisationsResponse(eisAuthorisationRequest))) match {
+    "return 502 SERVICE_UNAVAILABLE UpstreamErrorResponse when call to integration framework returns an error" in new TestContext {
+      forAll { (eisAuthorisationRequest: EisAuthorisationRequest) =>
+        Try(
+          doTest(
+            eisAuthorisationRequest,
+            SERVICE_UNAVAILABLE,
+            ApiErrorCodes.serviceUnavailable
+          )
+        ) match {
           case Failure(UpstreamErrorResponse(_, code, _, _)) =>
             code shouldEqual SERVICE_UNAVAILABLE
-          case _ => fail("expected UpstreamErrorResponse when error is received")
+          case _ => fail(TestConstants.errorExpectedUpstreamResponse)
         }
 
-        verify(mockRequestBuilder, times(callAmountWithRetries))
+        verify(mockRequestBuilder, times(TestConstants.callAmountWithRetries))
           .execute(any(), any())
+      }
     }
   }
 }

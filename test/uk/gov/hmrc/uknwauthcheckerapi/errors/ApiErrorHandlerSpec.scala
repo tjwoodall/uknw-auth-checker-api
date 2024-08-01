@@ -18,82 +18,100 @@ package uk.gov.hmrc.uknwauthcheckerapi.errors
 
 import scala.concurrent.Future
 
+import org.scalatest.Assertion
+
 import play.api.http.Status._
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsJson, status}
-import uk.gov.hmrc.auth.core.AuthorisationException
-import uk.gov.hmrc.http.HttpVerbs.POST
-import uk.gov.hmrc.http.NotFoundException
+import uk.gov.hmrc.http.{HttpVerbs, NotFoundException}
 import uk.gov.hmrc.uknwauthcheckerapi.controllers.BaseSpec
+import uk.gov.hmrc.uknwauthcheckerapi.generators.TestConstants
 
 class ApiErrorHandlerSpec extends BaseSpec {
 
   private lazy val apiErrorHandler = injected[ApiErrorHandler]
-  private val errorMessage         = "ErrorMessage"
+
+  trait TestContext {
+    def doTestClient(statusCode: Int, response: ApiErrorResponse, request: FakeRequest[AnyContentAsEmpty.type] = fakePostRequest): Assertion = {
+      val result = apiErrorHandler.onClientError(request, statusCode, TestConstants.emptyString)
+
+      status(result) shouldEqual statusCode
+      contentAsJson(result) shouldEqual contentAsJson(Future.successful(response.toResult))
+    }
+
+    def doTestServer(statusCode: Int, throwable: Throwable, response: ApiErrorResponse): Assertion = {
+      val result = apiErrorHandler.onServerError(fakePostRequest, throwable)
+
+      status(result) shouldEqual statusCode
+      contentAsJson(result) shouldEqual contentAsJson(Future.successful(response.toResult))
+    }
+  }
 
   "onClientError" should {
-    "convert a FORBIDDEN to Forbidden (403) response" in {
-      val result = apiErrorHandler.onClientError(fakePostRequest, FORBIDDEN, errorMessage)
-
-      status(result) shouldEqual FORBIDDEN
-      contentAsJson(result) shouldEqual contentAsJson(Future.successful(ForbiddenApiError.toResult))
+    "convert a FORBIDDEN to Forbidden (403) response" in new TestContext {
+      doTestClient(
+        statusCode = FORBIDDEN,
+        response = ForbiddenApiError
+      )
     }
 
-    "convert a INTERNAL_SERVER_ERROR to Internal Server Error (500) response" in {
-      val result = apiErrorHandler.onClientError(fakePostRequest, INTERNAL_SERVER_ERROR, errorMessage)
-
-      status(result) shouldEqual INTERNAL_SERVER_ERROR
-      contentAsJson(result) shouldEqual contentAsJson(Future.successful(InternalServerApiError.toResult))
+    "convert a INTERNAL_SERVER_ERROR to Internal Server Error (500) response" in new TestContext {
+      doTestClient(
+        statusCode = INTERNAL_SERVER_ERROR,
+        response = InternalServerApiError
+      )
     }
 
-    "convert a METHOD_NOT_ALLOWED to Method Not Allowed (405) response" in {
-      val result = apiErrorHandler.onClientError(fakePostRequest, METHOD_NOT_ALLOWED, errorMessage)
-
-      status(result) shouldEqual METHOD_NOT_ALLOWED
-      contentAsJson(result) shouldEqual contentAsJson(Future.successful(MethodNotAllowedApiError.toResult))
+    "convert a METHOD_NOT_ALLOWED to Method Not Allowed (405) response" in new TestContext {
+      doTestClient(
+        statusCode = METHOD_NOT_ALLOWED,
+        response = MethodNotAllowedApiError
+      )
     }
 
-    "convert a NOT_FOUND to Not Found (404) response" in {
-      val result = apiErrorHandler.onClientError(fakePostRequest, NOT_FOUND, errorMessage)
-
-      status(result) shouldEqual NOT_FOUND
-      contentAsJson(result) shouldEqual contentAsJson(Future.successful(NotFoundApiError.toResult))
+    "convert a NOT_FOUND to Not Found (404) response" in new TestContext {
+      doTestClient(
+        statusCode = NOT_FOUND,
+        response = NotFoundApiError
+      )
     }
 
-    "convert a NOT_FOUND with /authorisations url to to Method Not Allowed (405) response" in {
-      val result = apiErrorHandler.onClientError(FakeRequest(POST, "/authorisations"), NOT_FOUND, errorMessage)
-
-      status(result) shouldEqual METHOD_NOT_ALLOWED
-      contentAsJson(result) shouldEqual contentAsJson(Future.successful(MethodNotAllowedApiError.toResult))
+    "convert a NOT_FOUND with /authorisations url to to Method Not Allowed (405) response" in new TestContext {
+      doTestClient(
+        statusCode = METHOD_NOT_ALLOWED,
+        response = MethodNotAllowedApiError,
+        request = FakeRequest(HttpVerbs.POST, "/authorisations")
+      )
     }
 
-    "convert a SERVICE_UNAVAILABLE to Service Unavailable (503) response" in {
-      val result = apiErrorHandler.onClientError(fakePostRequest, SERVICE_UNAVAILABLE, errorMessage)
-
-      status(result) shouldEqual SERVICE_UNAVAILABLE
-      contentAsJson(result) shouldEqual contentAsJson(Future.successful(ServiceUnavailableApiError.toResult))
+    "convert a SERVICE_UNAVAILABLE to Service Unavailable (503) response" in new TestContext {
+      doTestClient(
+        statusCode = SERVICE_UNAVAILABLE,
+        response = ServiceUnavailableApiError
+      )
     }
   }
 
   "onServerError" should {
-    case class TestAuthorisationException(msg: String = errorMessage) extends AuthorisationException(msg)
+    "convert a NotFoundException to Not Found response" in new TestContext {
+      val notfoundException = new NotFoundException(TestConstants.emptyString)
 
-    "convert a NotFoundException to Not Found response" in {
-      val notfoundException = new NotFoundException(errorMessage)
-
-      val result = apiErrorHandler.onServerError(fakePostRequest, notfoundException)
-
-      status(result) shouldEqual NOT_FOUND
-      contentAsJson(result) shouldEqual contentAsJson(Future.successful(NotFoundApiError.toResult))
+      doTestServer(
+        statusCode = NOT_FOUND,
+        throwable = notfoundException,
+        response = NotFoundApiError
+      )
     }
 
-    "convert a RuntimeException to Internal Server Error response" in {
-      val runtimeException = new RuntimeException(errorMessage)
+    "convert a RuntimeException to Internal Server Error response" in new TestContext {
+      val runtimeException = new RuntimeException(TestConstants.emptyString)
 
-      val result = apiErrorHandler.onServerError(fakePostRequest, runtimeException)
-
-      status(result) shouldEqual INTERNAL_SERVER_ERROR
-      contentAsJson(result) shouldEqual contentAsJson(Future.successful(InternalServerApiError.toResult))
+      doTestServer(
+        statusCode = INTERNAL_SERVER_ERROR,
+        throwable = runtimeException,
+        response = InternalServerApiError
+      )
     }
   }
 }

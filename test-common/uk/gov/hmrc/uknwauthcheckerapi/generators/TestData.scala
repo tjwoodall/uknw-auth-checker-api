@@ -16,25 +16,93 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.generators
 
-import java.time.format.DateTimeFormatter
-import java.time.{LocalDateTime, ZoneId}
+import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
 
-import org.scalacheck.Arbitrary
+import org.scalacheck.Gen.chooseNum
+import org.scalacheck.{Arbitrary, Gen}
 
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.uknwauthcheckerapi.models.AuthorisationRequest
+import uk.gov.hmrc.uknwauthcheckerapi.models.constants.MinMaxValues
 import uk.gov.hmrc.uknwauthcheckerapi.models.eis._
-import uk.gov.hmrc.uknwauthcheckerapi.utils.EisAuthTypes
 
 trait TestData extends Generators {
 
-  protected val authorisationEndpoint = "authorisation"
-  protected val bearerToken           = "Bearer PFZBTElEX1RPS0VOPg=="
-  protected val emptyJson: JsValue = Json.parse("{}")
+  protected val emptyJson: JsValue = Json.parse(TestConstants.emptyJson)
 
-  protected val invalidAuthTypeEisErrorMessage: String = """Invalid authorisation type : UKNW""".stripMargin
-  protected val invalidEorisEisErrorMessage:    String = """Invalid format of EORI(s): 0000000001,0000000003""".stripMargin
+  implicit protected val arbAuthorisationRequest: Arbitrary[AuthorisationRequest] = Arbitrary {
+    for {
+      eoris <- eoriGenerator()
+    } yield AuthorisationRequest(eoris)
+  }
+
+  implicit protected val arbEisAuthorisationRequest: Arbitrary[EisAuthorisationRequest] = Arbitrary {
+    for {
+      localDate  <- Arbitrary.arbitrary[LocalDate]
+      dateOption <- Gen.option(localDate)
+      eoris      <- eoriGenerator()
+    } yield EisAuthorisationRequest(dateOption, EisAuthTypes.nopWaiver, eoris)
+  }
+
+  implicit protected val arbEisAuthorisationResponseError: Arbitrary[EisAuthorisationResponseError] = Arbitrary {
+    for {
+      errorCode    <- Arbitrary.arbitrary[Int]
+      errorMessage <- Arbitrary.arbitrary[String]
+    } yield EisAuthorisationResponseError(
+      errorDetail = EisAuthorisationResponseErrorDetail(
+        errorCode = errorCode,
+        errorMessage = errorMessage
+      )
+    )
+  }
+
+  implicit protected val arbInvalidEorisAuthorisationRequest: Arbitrary[InvalidEorisAuthorisationRequest] = Arbitrary {
+    for {
+      randomString <- Arbitrary.arbitrary[String].filterNot(_.isEmpty)
+    } yield InvalidEorisAuthorisationRequest(
+      AuthorisationRequest(
+        Seq(randomString)
+      )
+    )
+  }
+
+  implicit protected val arbLocalDate: Arbitrary[LocalDate] = Arbitrary(
+    Gen
+      .choose(
+        min = LocalDate.MIN.toEpochDay,
+        max = LocalDate.MAX.toEpochDay
+      )
+      .map(LocalDate.ofEpochDay)
+  )
+
+  implicit lazy val arbLocalDateTime: Arbitrary[LocalDateTime] = {
+    import java.time.ZoneOffset.UTC
+    Arbitrary {
+      for {
+        seconds <- chooseNum(LocalDateTime.MIN.toEpochSecond(UTC), LocalDateTime.MAX.toEpochSecond(UTC))
+        nanos   <- chooseNum(LocalDateTime.MIN.getNano, LocalDateTime.MAX.getNano)
+      } yield LocalDateTime.ofEpochSecond(seconds, nanos, UTC)
+    }
+  }
+
+  implicit protected val arbNoEorisAuthorisationRequest: Arbitrary[NoEorisAuthorisationRequest] = Arbitrary {
+    NoEorisAuthorisationRequest(
+      AuthorisationRequest(
+        Seq.empty
+      )
+    )
+  }
+
+  implicit protected val arbTooManyEorisAuthorisationRequest: Arbitrary[TooManyEorisAuthorisationRequest] = Arbitrary {
+    for {
+      eoris <- eoriGenerator(MinMaxValues.maxEoriCount + 1, MinMaxValues.maxEoriCount + 5)
+    } yield TooManyEorisAuthorisationRequest(
+      AuthorisationRequest(
+        eoris
+      )
+    )
+  }
 
   implicit protected val arbValidAuthorisationRequest: Arbitrary[ValidAuthorisationRequest] = Arbitrary {
     for {
@@ -47,54 +115,14 @@ trait TestData extends Generators {
   }
 
   implicit protected val arbValidEisAuthorisationsResponse: Arbitrary[ValidEisAuthorisationsResponse] = Arbitrary {
-
     for {
-      utcDateTime <- Arbitrary.arbitrary[UtcDateTime]
-      eoris       <- eoriGenerator()
+      dateTime <- Arbitrary.arbitrary[ZonedDateTime]
+      eoris    <- eoriGenerator()
     } yield ValidEisAuthorisationsResponse(
       EisAuthorisationsResponse(
-        utcDateTime.formatted,
+        dateTime,
         EisAuthTypes.nopWaiver,
         eoris.map(e => EisAuthorisationResponse(e, valid = true, 0))
-      )
-    )
-  }
-
-  implicit protected val arbUtcDateTime: Arbitrary[UtcDateTime] = Arbitrary {
-    val dateTimeFormat: String            = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-    val formatter:      DateTimeFormatter = DateTimeFormatter.ofPattern(dateTimeFormat)
-    val utcZone:        String            = "UTC"
-    val utcZoneId = ZoneId.of(utcZone)
-
-    for {
-      dateTime <- Arbitrary.arbitrary[LocalDateTime]
-    } yield UtcDateTime(
-      formatter.format(dateTime.atZone(utcZoneId))
-    )
-  }
-
-  implicit protected val arbTooManyEorisAuthorisationRequest: Arbitrary[TooManyEorisAuthorisationRequest] = Arbitrary {
-    for {
-      eoris <- eoriGenerator(3001, 3005)
-    } yield TooManyEorisAuthorisationRequest(
-      AuthorisationRequest(
-        eoris
-      )
-    )
-  }
-
-  implicit protected val arbNoEorisAuthorisationRequest: Arbitrary[NoEorisAuthorisationRequest] = Arbitrary {
-    NoEorisAuthorisationRequest(
-      AuthorisationRequest(
-        Seq.empty
-      )
-    )
-  }
-
-  implicit protected val arbInvalidEorisAuthorisationRequest: Arbitrary[InvalidEorisAuthorisationRequest] = Arbitrary {
-    InvalidEorisAuthorisationRequest(
-      AuthorisationRequest(
-        Seq("garbage")
       )
     )
   }
@@ -103,7 +131,7 @@ trait TestData extends Generators {
     EisAuthorisationResponseError(
       errorDetail = EisAuthorisationResponseErrorDetail(
         errorCode = BAD_REQUEST,
-        errorMessage = invalidEorisEisErrorMessage
+        errorMessage = TestConstants.invalidEorisEisErrorMessage
       )
     )
 
@@ -111,7 +139,7 @@ trait TestData extends Generators {
     EisAuthorisationResponseError(
       errorDetail = EisAuthorisationResponseErrorDetail(
         errorCode = FORBIDDEN,
-        errorMessage = ""
+        errorMessage = TestConstants.emptyString
       )
     )
 
@@ -119,15 +147,7 @@ trait TestData extends Generators {
     EisAuthorisationResponseError(
       errorDetail = EisAuthorisationResponseErrorDetail(
         errorCode = IM_A_TEAPOT,
-        errorMessage = ""
-      )
-    )
-
-  protected val internalServerErrorEisAuthorisationResponseError: EisAuthorisationResponseError =
-    EisAuthorisationResponseError(
-      errorDetail = EisAuthorisationResponseErrorDetail(
-        errorCode = INTERNAL_SERVER_ERROR,
-        errorMessage = ""
+        errorMessage = TestConstants.emptyString
       )
     )
 
@@ -135,31 +155,21 @@ trait TestData extends Generators {
     EisAuthorisationResponseError(
       errorDetail = EisAuthorisationResponseErrorDetail(
         errorCode = METHOD_NOT_ALLOWED,
-        errorMessage = ""
+        errorMessage = TestConstants.emptyString
+      )
+    )
+
+  protected val internalServerErrorEisAuthorisationResponseError: EisAuthorisationResponseError =
+    EisAuthorisationResponseError(
+      errorDetail = EisAuthorisationResponseErrorDetail(
+        errorCode = INTERNAL_SERVER_ERROR,
+        errorMessage = TestConstants.emptyString
       )
     )
 }
 
-final case class ValidAuthorisationRequest(
-  request: AuthorisationRequest
-)
-
-final case class ValidEisAuthorisationsResponse(
-  response: EisAuthorisationsResponse
-)
-
-final case class TooManyEorisAuthorisationRequest(
-  request: AuthorisationRequest
-)
-
-final case class NoEorisAuthorisationRequest(
-  request: AuthorisationRequest
-)
-
-final case class InvalidEorisAuthorisationRequest(
-  request: AuthorisationRequest
-)
-
-final case class UtcDateTime(
-  formatted: String
-)
+final case class InvalidEorisAuthorisationRequest(request: AuthorisationRequest)
+final case class NoEorisAuthorisationRequest(request: AuthorisationRequest)
+final case class TooManyEorisAuthorisationRequest(request: AuthorisationRequest)
+final case class ValidAuthorisationRequest(request: AuthorisationRequest)
+final case class ValidEisAuthorisationsResponse(response: EisAuthorisationsResponse)

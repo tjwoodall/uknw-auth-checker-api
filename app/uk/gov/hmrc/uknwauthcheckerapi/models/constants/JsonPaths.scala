@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uknwauthcheckerapi.generators
+package uk.gov.hmrc.uknwauthcheckerapi.models.constants
 
-import org.scalacheck.Gen
-import wolfendale.scalacheck.regexp.RegexpGen
-
-import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{CustomRegexes, MinMaxValues}
-
-trait Generators {
-
-  private val eoriGen: Gen[String] = RegexpGen.from(CustomRegexes.eoriPattern)
-
-  protected def eoriGenerator(min: Int = MinMaxValues.minEoriCount, max: Int = MinMaxValues.maxEoriCount): Gen[Seq[String]] =
-    Gen.chooseNum(min, max).flatMap(n => Gen.listOfN(n, eoriGen))
-
+object JsonPaths {
+  val authType:       String = "authType"
+  val code:           String = "code"
+  val eoris:          String = "eoris"
+  val errorDetail:    String = "errorDetail"
+  val errors:         String = "errors"
+  val message:        String = "message"
+  val path:           String = "path"
+  val processingDate: String = "processingDate"
+  val results:        String = "results"
 }

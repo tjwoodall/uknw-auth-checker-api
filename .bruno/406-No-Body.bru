@@ -1,0 +1,22 @@
+meta {
+  name: 406-No-Body
+  type: http
+  seq: 14
+}
+
+post {
+  url: http://localhost:9070/authorisations
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/vnd.hmrc.1.0+json
+  Authorization: {{bearerToken}}
+}
+
+body:json {
+  {
+      "eoris": []
+  }
+}

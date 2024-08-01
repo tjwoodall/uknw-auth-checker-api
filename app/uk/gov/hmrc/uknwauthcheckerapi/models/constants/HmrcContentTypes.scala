@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uknwauthcheckerapi.utils
+package uk.gov.hmrc.uknwauthcheckerapi.models.constants
 
-object EisAuthTypes {
-  val nopWaiver = "UKNW"
+object HmrcContentTypes {
+  val json = "application/json;charset=utf-8"
 }

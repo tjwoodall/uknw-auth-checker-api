@@ -30,5 +30,5 @@ lazy val it = project
 
 addCommandAlias("fmtAll", ";scalafmtAll;it/scalafmtAll")
 addCommandAlias("fixAll", ";scalafixAll;it/scalafixAll")
-addCommandAlias("preCommit", ";clean;compile;scalafmtSbt;fmtAll;fixAll;coverage;test;it/test;scalastyle;coverageReport")
+addCommandAlias("preCommit", ";clean;compile;scalafmtSbt;fixAll;fmtAll;coverage;test;it/test;scalastyle;coverageReport")
 addCommandAlias("runAllChecks", ";clean;compile;scalafmtCheckAll;coverage;test;it/test;scalastyle;coverageReport")

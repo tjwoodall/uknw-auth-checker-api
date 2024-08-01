@@ -17,22 +17,23 @@
 package uk.gov.hmrc.uknwauthcheckerapi.errors.transformers
 
 import play.api.libs.json.{JsError, JsValue, Json}
-import uk.gov.hmrc.uknwauthcheckerapi.utils.JsonErrors
+import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{ApiErrorCodes, JsonErrorMessages, JsonPaths}
 
 trait JsErrorTransformer {
+
+  private val errorsMap = Map(
+    JsonErrorMessages.expectedJsObject -> JsonErrorMessages.jsonMalformed,
+    JsonErrorMessages.pathMissing      -> JsonErrorMessages.eorisFieldMissing
+  )
 
   def transformJsErrors(errors: JsError): JsValue = Json.toJson(errors.errors.flatMap { case (jsPath, pathErrors) =>
     val dropObjDot = 4
     val path       = jsPath.toJsonString.drop(dropObjDot)
     pathErrors.map(validationError =>
       Json.obj(
-        "code" -> "INVALID_FORMAT",
-        "message" -> (validationError.message match {
-          case message if message == JsonErrors.expectedJsObject               => "JSON is malformed"
-          case message if message == JsonErrors.pathMissing && path == "eoris" => "eoris field missing from JSON"
-          case message                                                         => message
-        }),
-        "path" -> path
+        JsonPaths.code    -> ApiErrorCodes.invalidFormat,
+        JsonPaths.message -> errorsMap.getOrElse(validationError.message, validationError.message).toString,
+        JsonPaths.path    -> path
       )
     )
   })

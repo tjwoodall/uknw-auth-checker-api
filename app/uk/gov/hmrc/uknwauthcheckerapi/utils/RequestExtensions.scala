@@ -16,12 +16,11 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.utils
 
-import scala.util.matching.Regex
+import play.api.mvc.Request
 
-object CustomRegexes {
-  val eoriPattern:                 String = "^(GB|XI)[0-9]{12}|(GB|XI)[0-9]{15}$"
-  val invalidAuthTypePattern:      String = "^.*(Invalid authorisation type).*$"
-  val invalidFormatOfEorisPattern: String = "^.*(format of EORI).*$"
-
-  val invalidAuthTypePatternRegex: Regex = invalidAuthTypePattern.r
+trait RequestExtensions {
+  implicit class RequestExtension[T](request: Request[T]) {
+    def hasHeaderValue(key: String, value: String): Boolean =
+      request.headers.get(key).contains(value)
+  }
 }

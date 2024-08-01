@@ -25,7 +25,7 @@ import org.apache.pekko.actor.ActorSystem
 import org.apache.pekko.stream.Materializer
 import org.mockito.ArgumentMatchers.{any, eq => matching}
 import org.mockito.Mockito.when
-import org.scalatest.BeforeAndAfterEach
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar.mock
@@ -44,20 +44,19 @@ import uk.gov.hmrc.http.HttpVerbs.POST
 import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 import uk.gov.hmrc.uknwauthcheckerapi.config.AppConfig
 import uk.gov.hmrc.uknwauthcheckerapi.connectors.IntegrationFrameworkConnector
-import uk.gov.hmrc.uknwauthcheckerapi.generators.{ExtensionHelpers, Generators, TestData, TestHeaders}
-import uk.gov.hmrc.uknwauthcheckerapi.services.{IntegrationFrameworkService, ValidationService}
+import uk.gov.hmrc.uknwauthcheckerapi.generators._
+import uk.gov.hmrc.uknwauthcheckerapi.services.{IntegrationFrameworkService, LocalDateService, ValidationService}
 
 class BaseSpec
     extends AnyWordSpec
     with Matchers
     with Generators
     with GuiceOneAppPerSuite
-    with BeforeAndAfterEach
+    with BeforeAndAfterAll
     with DefaultAwaitTimeout
     with HeaderNames
     with TestData
-    with TestHeaders
-    with ExtensionHelpers {
+    with TestHeaders {
 
   implicit lazy val ec:           ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
   implicit lazy val hc:           HeaderCarrier    = HeaderCarrier()
@@ -66,19 +65,24 @@ class BaseSpec
 
   @annotation.nowarn
   protected val additionalAppConfig: Map[String, Any] = Map(
-    "metrics.enabled"              -> false,
-    "auditing.enabled"             -> false,
-    "http-verbs.retries.intervals" -> List("1ms", "1ms", "1ms")
+    TestConstants.configMetricsKey  -> false,
+    TestConstants.configAuditingKey -> false,
+    TestConstants.configRetriesKey -> List(
+      TestConstants.configOverrideRetryInterval,
+      TestConstants.configOverrideRetryInterval,
+      TestConstants.configOverrideRetryInterval
+    )
   ) ++ configOverrides
-  protected val actorSystem:                            ActorSystem                         = ActorSystem("actor")
+  protected val actorSystem:                            ActorSystem                         = ActorSystem(TestConstants.actorName)
   protected lazy val appConfig:                         AppConfig                           = injected[AppConfig]
   protected lazy val config:                            Config                              = injected[Config]
   protected val fakePostRequest:                        FakeRequest[AnyContentAsEmpty.type] = FakeRequest(POST, "")
   protected lazy val mockAuthConnector:                 AuthConnector                       = mock[AuthConnector]
   protected lazy val mockHttpClient:                    HttpClientV2                        = mock[HttpClientV2]
-  protected lazy val mockRequestBuilder:                RequestBuilder                      = mock[RequestBuilder]
   protected lazy val mockIntegrationFrameworkConnector: IntegrationFrameworkConnector       = mock[IntegrationFrameworkConnector]
   protected lazy val mockIntegrationFrameworkService:   IntegrationFrameworkService         = mock[IntegrationFrameworkService]
+  protected lazy val mockLocalDateService:              LocalDateService                    = mock[LocalDateService]
+  protected lazy val mockRequestBuilder:                RequestBuilder                      = mock[RequestBuilder]
   protected lazy val mockValidationService:             ValidationService                   = mock[ValidationService]
 
   override def fakeApplication(): Application =
@@ -89,7 +93,6 @@ class BaseSpec
 
   protected def configOverrides: Map[String, Any] = Map()
 
-  protected def injected[T](c:                 Class[T]):    T = app.injector.instanceOf(c)
   protected def injected[T](implicit evidence: ClassTag[T]): T = app.injector.instanceOf[T]
 
   protected def fakeRequestWithJsonBody(
@@ -97,7 +100,7 @@ class BaseSpec
     verb:    String = HttpVerbs.POST,
     headers: Seq[(String, String)] = defaultHeaders
   ): FakeRequest[JsValue] =
-    FakeRequest(verb, authorisationEndpoint, FakeHeaders(headers), json)
+    FakeRequest(verb, TestConstants.authorisationEndpoint, FakeHeaders(headers), json)
 
   def moduleOverrides: AbstractModule = new AbstractModule {
     override def configure(): Unit = {
@@ -111,7 +114,7 @@ class BaseSpec
   }
 
   protected def stubAuthorization(): Unit = {
-    val retrievalResult = Future.successful(Credentials("id", "StandardApplication"))
+    val retrievalResult = Future.successful(Credentials(TestConstants.credentialProviderId, TestConstants.credentialProviderType))
 
     when(mockAuthConnector.authorise[Credentials](any(), any())(any(), any()))
       .thenReturn(retrievalResult)

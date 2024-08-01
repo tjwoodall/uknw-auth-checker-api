@@ -19,28 +19,25 @@ package uk.gov.hmrc.uknwauthcheckerapi.config
 import javax.inject.{Inject, Singleton}
 
 import play.api.Configuration
+import uk.gov.hmrc.http.StringContextOps
 
 @Singleton
 class AppConfig @Inject() (config: Configuration) {
 
-  val authType: String = config.get[String]("authType")
+  private lazy val rootServices = "microservice.services"
 
+  val authorisationsEndpoint = "/authorisations"
+  val authType: String = config.get[String]("authType")
+  val eisAuthorisationsUrl = url"${baseUrl("integration-framework")}/cau/validatecustomsauth/v1"
   val integrationFrameworkBearerToken: String =
     config.get[String]("microservice.services.integration-framework.bearerToken")
 
   def baseUrl(serviceName: String): String = {
-    val protocol = getConfString(s"$serviceName.protocol", defaultProtocol)
+    val protocol = getConfString(s"$serviceName.protocol", "http")
     val host     = getConfString(s"$serviceName.host", throwConfigNotFoundError(s"$serviceName.host"))
     val port     = getConfInt(s"$serviceName.port", throwConfigNotFoundError(s"$serviceName.port"))
     s"$protocol://$host:$port"
   }
-
-  protected lazy val rootServices = "microservice.services"
-
-  protected lazy val defaultProtocol: String =
-    config
-      .getOptional[String](s"$rootServices.protocol")
-      .getOrElse("http")
 
   private def getConfString(confKey: String, defString: => String): String =
     config

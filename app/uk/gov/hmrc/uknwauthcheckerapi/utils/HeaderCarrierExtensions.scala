@@ -16,6 +16,18 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.utils
 
-object HmrcMimeTypes {
-  val json = "application/vnd.hmrc.1.0+json"
+import java.util.UUID
+
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.uknwauthcheckerapi.models.constants.CustomHeaderNames
+
+trait HeaderCarrierExtensions {
+
+  def generateCorrelationId()(implicit hc: HeaderCarrier): String =
+    hc.headers(scala.Seq(CustomHeaderNames.xCorrelationId)) match {
+      case Seq((_, id)) =>
+        id
+      case _ =>
+        UUID.randomUUID().toString
+    }
 }
