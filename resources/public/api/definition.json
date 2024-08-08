@@ -3,7 +3,7 @@
   ],
   "api": {
     "name": "Notification of Presentation Waiver Checker",
-    "description": "This API allows Community System Providers (CSPs) to verify traders' Notification of Presentation (NOP) Waiver using their Economic Operators Registration and Identification (EORI) number.",
+    "description": "This API allows Community System Providers (CSPs) to verify traders' Notification of Presentation (NOP) waiver using their Economic Operators Registration and Identification (EORI) number.",
     "context": "customs/uk-notice-of-presentation-waiver",
     "categories": ["CUSTOMS"],
     "versions": [
