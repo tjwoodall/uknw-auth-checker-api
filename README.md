@@ -266,33 +266,33 @@ the UKNW auth checker API.
 
 > `sbt it/test`
 
-### Custom commands
+## Custom commands
 
-#### All tests
+### All tests
 
 This is a sbt command alias specific to this project. It will run a scala format
 check, run a scala style check, run unit tests, run integration tests, and produce a coverage report.
 > `sbt runAllChecks`
 
-#### Pre-Commit
+### Pre-Commit
 
 This is a sbt command alias specific to this project. It will run a scala format , run a scala fix, 
 run unit tests, run integration tests and produce a coverage report.
-> `sbt runAllChecks`
+> `sbt preCommit`
 
-#### Format all
+### Format all
 
 This is a sbt command alias specific to this project. It will run a scala format
 check in the app, tests, and integration tests
 > `sbt fmtAll`
 
-#### Fix all
+### Fix all
 
 This is a sbt command alias specific to this project. It will run the scala fix 
 linter/reformatter in the app, tests, and integration tests
 > `sbt fixAll`
 
-### Requesting data from the Stub API
+## Requesting data from the Stub API
 
 To request data from the stub API please use the `.bru` files that
 can be found in `.bruno`. Do not change any of the .bru files, as the stub API
@@ -325,6 +325,6 @@ To add a new expected request please refer to the [uknw-auth-checker-api-stub
 | 406-No-Accept-Header     | Invalid request with no `application/vnd.hmrc.1.0+json` Accept header set                     | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/406-No-Accept-Header.bru     |
 | 406-No-Body.bru          | Invalid request with no JSON body                                                             | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/406-No-Body.bru              |
 
-### License
+## License
 
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").
