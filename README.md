@@ -89,7 +89,6 @@ has been set up to validate the fake token in each request, so not including it 
 | 403         | FORBIDDEN             | Forbidden                                             |
 | 405         | METHOD_NOT_ALLOWED    | HTTP verb is not POST                                 |
 | 406         | NOT_ACCEPTABLE        | Accept or Content Type headers are missing or invalid |
-| 429         | TOO_MANY_REQUESTS     | Rate limit violation                                  |
 | 500         | INTERNAL_SERVER_ERROR | Unexpected internal server error                      |
 | 503         | SERVICE_UNAVAILABLE   | Server is unable to handle requests                   |
 
@@ -196,15 +195,6 @@ has been set up to validate the fake token in each request, so not including it 
 {
   "code": "NOT_ACCEPTABLE",
   "message": "Cannot produce an acceptable response. The Accept or Content-Type header is missing or invalid"
-}
-```
-
-### 429 TOO_MANY_REQUESTS response
-
-```json
-{
-  "code": "RATE_LIMIT_VIOLATION",
-  "message": "Request count from application in excess of rate limit"
 }
 ```
 

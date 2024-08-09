@@ -28,7 +28,7 @@ lazy val it = project
   .settings(DefaultBuildSettings.itSettings())
   .settings(libraryDependencies ++= AppDependencies.it)
 
-addCommandAlias("fmtAll", ";scalafmtAll;it/scalafmtAll")
+addCommandAlias("fmtAll", ";scalafmtSbt;scalafmtAll;it/scalafmtAll")
 addCommandAlias("fixAll", ";scalafixAll;it/scalafixAll")
-addCommandAlias("preCommit", ";clean;compile;scalafmtSbt;fixAll;fmtAll;coverage;test;it/test;scalastyle;coverageReport")
+addCommandAlias("preCommit", ";clean;compile;fixAll;fmtAll;coverage;test;it/test;scalastyle;coverageReport")
 addCommandAlias("runAllChecks", ";clean;compile;scalafmtCheckAll;coverage;test;it/test;scalastyle;coverageReport")
