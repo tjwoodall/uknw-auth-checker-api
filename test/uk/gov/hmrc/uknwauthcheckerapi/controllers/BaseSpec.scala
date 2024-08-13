@@ -18,6 +18,7 @@ package uk.gov.hmrc.uknwauthcheckerapi.controllers
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
+
 import com.google.inject.AbstractModule
 import com.typesafe.config.Config
 import org.apache.pekko.actor.ActorSystem
@@ -29,6 +30,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar.mock
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+
 import play.api.Application
 import play.api.http.{HeaderNames, HttpVerbs}
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -62,6 +64,8 @@ class BaseSpec
   implicit lazy val system:       ActorSystem      = ActorSystem()
   implicit lazy val materializer: Materializer     = Materializer(system)
 
+  protected val configOverrides: Map[String, Any] = Map()
+
   @annotation.nowarn
   protected val additionalAppConfig: Map[String, Any] = Map(
     TestConstants.configMetricsKey  -> false,
@@ -90,8 +94,6 @@ class BaseSpec
       .configure(additionalAppConfig)
       .overrides(moduleOverrides)
       .build()
-
-  protected def configOverrides: Map[String, Any] = Map()
 
   protected def injected[T](implicit evidence: ClassTag[T]): T = app.injector.instanceOf[T]
 

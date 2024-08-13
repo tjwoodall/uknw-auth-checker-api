@@ -16,8 +16,9 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.models.constants
 
-import uk.gov.hmrc.uknwauthcheckerapi.config.AppConfig
 import javax.inject.{Inject, Singleton}
+
+import uk.gov.hmrc.uknwauthcheckerapi.config.AppConfig
 
 @Singleton
 class MinMaxValues @Inject() (appConfig: AppConfig) {

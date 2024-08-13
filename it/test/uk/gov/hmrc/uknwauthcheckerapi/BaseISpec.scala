@@ -17,10 +17,8 @@
 package uk.gov.hmrc.uknwauthcheckerapi
 
 import scala.reflect.ClassTag
-
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsValue, Json}
@@ -28,6 +26,7 @@ import play.api.libs.ws.{EmptyBody, WSClient, WSRequest, WSResponse}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import uk.gov.hmrc.uknwauthcheckerapi.config.AppConfig
 import uk.gov.hmrc.uknwauthcheckerapi.generators.{TestConstants, TestData, TestHeaders}
+import uk.gov.hmrc.uknwauthcheckerapi.models.constants.MinMaxValues
 
 class BaseISpec extends PlaySpec with GuiceOneServerPerSuite with WireMockISpec with TestData with TestHeaders {
 
@@ -44,12 +43,16 @@ class BaseISpec extends PlaySpec with GuiceOneServerPerSuite with WireMockISpec 
     TestConstants.serviceNameAuth,
     TestConstants.serviceNameIntegrationFramework
   )
+
   override lazy val app: Application = GuiceApplicationBuilder()
     .configure(additionalAppConfig)
     .build()
+
   protected lazy val authorisationsUrl = s"http://localhost:$port/authorisations"
   protected lazy val appConfig: AppConfig = injected[AppConfig]
   private lazy val wsClient:    WSClient  = injected[WSClient]
+
+  override protected lazy val minMaxValues: MinMaxValues = injected[MinMaxValues]
 
   protected def injected[T](implicit evidence: ClassTag[T]): T = app.injector.instanceOf[T]
 
