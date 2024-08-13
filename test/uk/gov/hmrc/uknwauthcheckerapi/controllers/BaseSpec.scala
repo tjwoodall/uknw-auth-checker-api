@@ -64,8 +64,6 @@ class BaseSpec
   implicit lazy val system:       ActorSystem      = ActorSystem()
   implicit lazy val materializer: Materializer     = Materializer(system)
 
-  protected val configOverrides: Map[String, Any] = Map()
-
   @annotation.nowarn
   protected val additionalAppConfig: Map[String, Any] = Map(
     TestConstants.configMetricsKey  -> false,
@@ -94,6 +92,8 @@ class BaseSpec
       .configure(additionalAppConfig)
       .overrides(moduleOverrides)
       .build()
+
+  protected def configOverrides: Map[String, Any] = Map()
 
   protected def injected[T](implicit evidence: ClassTag[T]): T = app.injector.instanceOf[T]
 
