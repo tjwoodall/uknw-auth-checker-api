@@ -23,9 +23,10 @@ import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{CustomRegexes, MinMaxVal
 
 trait Generators {
 
+  protected val minMaxValues: MinMaxValues
+
   private val eoriGen: Gen[String] = RegexpGen.from(CustomRegexes.eoriPattern)
 
-  protected def eoriGenerator(min: Int = MinMaxValues.minEoriCount, max: Int = MinMaxValues.maxEoriCount): Gen[Seq[String]] =
+  protected def eoriGenerator(min: Int = minMaxValues.minEoriCount, max: Int = minMaxValues.maxEoriCount): Gen[Seq[String]] =
     Gen.chooseNum(min, max).flatMap(n => Gen.listOfN(n, eoriGen))
-
 }

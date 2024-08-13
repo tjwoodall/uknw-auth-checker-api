@@ -18,7 +18,6 @@ package uk.gov.hmrc.uknwauthcheckerapi.controllers
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
-
 import com.google.inject.AbstractModule
 import com.typesafe.config.Config
 import org.apache.pekko.actor.ActorSystem
@@ -30,7 +29,6 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar.mock
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-
 import play.api.Application
 import play.api.http.{HeaderNames, HttpVerbs}
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -45,6 +43,7 @@ import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 import uk.gov.hmrc.uknwauthcheckerapi.config.AppConfig
 import uk.gov.hmrc.uknwauthcheckerapi.connectors.IntegrationFrameworkConnector
 import uk.gov.hmrc.uknwauthcheckerapi.generators._
+import uk.gov.hmrc.uknwauthcheckerapi.models.constants.MinMaxValues
 import uk.gov.hmrc.uknwauthcheckerapi.services.{IntegrationFrameworkService, LocalDateService, ValidationService}
 
 class BaseSpec
@@ -76,6 +75,7 @@ class BaseSpec
   protected val actorSystem:                            ActorSystem                         = ActorSystem(TestConstants.actorName)
   protected lazy val appConfig:                         AppConfig                           = injected[AppConfig]
   protected lazy val config:                            Config                              = injected[Config]
+  override protected lazy val minMaxValues: MinMaxValues = injected[MinMaxValues]
   protected val fakePostRequest:                        FakeRequest[AnyContentAsEmpty.type] = FakeRequest(POST, "")
   protected lazy val mockAuthConnector:                 AuthConnector                       = mock[AuthConnector]
   protected lazy val mockHttpClient:                    HttpClientV2                        = mock[HttpClientV2]

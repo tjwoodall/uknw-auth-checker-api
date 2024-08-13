@@ -17,17 +17,16 @@
 package uk.gov.hmrc.uknwauthcheckerapi.services
 
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
-
 import play.api.libs.json.{JsError, JsPath, Json, JsonValidationError}
 import uk.gov.hmrc.uknwauthcheckerapi.controllers.BaseSpec
 import uk.gov.hmrc.uknwauthcheckerapi.errors.DataRetrievalError.ValidationDataRetrievalError
 import uk.gov.hmrc.uknwauthcheckerapi.generators.{NoEorisAuthorisationRequest, TooManyEorisAuthorisationRequest}
 import uk.gov.hmrc.uknwauthcheckerapi.models.AuthorisationRequest
-import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{ApiErrorMessages, JsonErrorMessages, JsonPaths}
+import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{ApiErrorMessages, JsonErrorMessages, JsonPaths, MinMaxValues}
 
 class ValidationServiceSpec extends BaseSpec {
 
-  private lazy val service = new ValidationService()
+  private lazy val service = new ValidationService(minMaxValues)
 
   "validateRequest" should {
     "return AuthorisationRequest when AuthorisationRequest is valid" in {

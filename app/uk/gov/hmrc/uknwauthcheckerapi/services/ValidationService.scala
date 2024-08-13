@@ -17,7 +17,6 @@
 package uk.gov.hmrc.uknwauthcheckerapi.services
 
 import scala.collection.Seq
-
 import play.api.libs.json._
 import play.api.mvc.Request
 import uk.gov.hmrc.uknwauthcheckerapi.errors.DataRetrievalError
@@ -25,7 +24,9 @@ import uk.gov.hmrc.uknwauthcheckerapi.errors.DataRetrievalError.ValidationDataRe
 import uk.gov.hmrc.uknwauthcheckerapi.models.AuthorisationRequest
 import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{ApiErrorMessages, CustomRegexes, JsonPaths, MinMaxValues}
 
-class ValidationService {
+import javax.inject.Inject
+
+class ValidationService @Inject() (minMaxValues: MinMaxValues) {
 
   private type ValidationResult[T] = Either[JsError, T]
 
@@ -71,6 +72,6 @@ class ValidationService {
   }
 
   private def isEoriSizeInvalid(eorisSize: Int): Boolean =
-    eorisSize > MinMaxValues.maxEoriCount || eorisSize < MinMaxValues.minEoriCount
+    eorisSize > minMaxValues.maxEoriCount || eorisSize < minMaxValues.minEoriCount
 
 }

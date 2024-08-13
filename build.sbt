@@ -22,6 +22,8 @@ lazy val microservice = Project("uknw-auth-checker-api", file("."))
     Test / unmanagedSourceDirectories := (Test / baseDirectory)(base => Seq(base / "test", base / "test-common")).value
   )
 
+Test / javaOptions += "-Dlogger.resource=logback-test.xml"
+
 lazy val it = project
   .enablePlugins(PlayScala)
   .dependsOn(microservice % "test->test")
