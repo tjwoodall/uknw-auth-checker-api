@@ -137,7 +137,7 @@ class ValidationServiceSpec extends BaseSpec {
 class ValidationServiceOverwrittenMaxEoriSpec extends BaseSpec {
 
   private val maxEori = 10
-  private val configValue:      Map[String, Int] = Map("microservice.services.self.eoriMax" -> maxEori)
+  private val configValue: Map[String, Int] = Map("microservice.services.self.eoriMax" -> maxEori)
 
   override def fakeApplication(): Application =
     GuiceApplicationBuilder()
