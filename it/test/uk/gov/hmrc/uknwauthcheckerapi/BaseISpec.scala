@@ -17,8 +17,10 @@
 package uk.gov.hmrc.uknwauthcheckerapi
 
 import scala.reflect.ClassTag
+
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsValue, Json}

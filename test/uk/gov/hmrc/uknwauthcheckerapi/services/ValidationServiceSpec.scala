@@ -25,7 +25,7 @@ import uk.gov.hmrc.uknwauthcheckerapi.controllers.BaseSpec
 import uk.gov.hmrc.uknwauthcheckerapi.errors.DataRetrievalError.ValidationDataRetrievalError
 import uk.gov.hmrc.uknwauthcheckerapi.generators.{NoEorisAuthorisationRequest, TooManyEorisAuthorisationRequest}
 import uk.gov.hmrc.uknwauthcheckerapi.models.AuthorisationRequest
-import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{JsonErrorMessages, JsonPaths}
+import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{ApiErrorMessages, JsonErrorMessages, JsonPaths}
 
 class ValidationServiceSpec extends BaseSpec {
 
@@ -75,8 +75,8 @@ class ValidationServiceSpec extends BaseSpec {
                 (
                   JsPath \ field,
                   Seq(
-                    JsonValidationError(s"ABCD is not a supported EORI number"),
-                    JsonValidationError(s"EFGH is not a supported EORI number")
+                    JsonValidationError(ApiErrorMessages.invalidEori("ABCD")),
+                    JsonValidationError(ApiErrorMessages.invalidEori("EFGH"))
                   )
                 )
               }
@@ -99,7 +99,7 @@ class ValidationServiceSpec extends BaseSpec {
           val expectedResponse =
             ValidationDataRetrievalError(
               JsError(
-                Seq((JsPath \ JsonPaths.eoris, Seq(JsonValidationError("The request payload must contain between 1 and 3000 EORI entries"))))
+                Seq((JsPath \ JsonPaths.eoris, Seq(JsonValidationError(ApiErrorMessages.invalidEoriCount(appConfig.eoriMax)))))
               )
             )
 
@@ -118,7 +118,7 @@ class ValidationServiceSpec extends BaseSpec {
           val expectedResponse =
             ValidationDataRetrievalError(
               JsError(
-                Seq((JsPath \ JsonPaths.eoris, Seq(JsonValidationError("The request payload must contain between 1 and 3000 EORI entries"))))
+                Seq((JsPath \ JsonPaths.eoris, Seq(JsonValidationError(ApiErrorMessages.invalidEoriCount(appConfig.eoriMax)))))
               )
             )
 
@@ -161,7 +161,7 @@ class ValidationServiceOverwrittenMaxEoriSpec extends BaseSpec {
                 Seq(
                   (
                     JsPath \ JsonPaths.eoris,
-                    Seq(JsonValidationError(s"The request payload must contain between 1 and $maxEori EORI entries"))
+                    Seq(JsonValidationError(ApiErrorMessages.invalidEoriCount(maxEori)))
                   )
                 )
               )
@@ -185,7 +185,7 @@ class ValidationServiceOverwrittenMaxEoriSpec extends BaseSpec {
                 Seq(
                   (
                     JsPath \ JsonPaths.eoris,
-                    Seq(JsonValidationError(s"The request payload must contain between 1 and $maxEori EORI entries"))
+                    Seq(JsonValidationError(ApiErrorMessages.invalidEoriCount(maxEori)))
                   )
                 )
               )
