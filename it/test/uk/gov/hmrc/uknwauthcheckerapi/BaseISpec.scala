@@ -24,7 +24,7 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsValue, Json}
-import play.api.libs.ws.{EmptyBody, WSClient, WSRequest, WSResponse}
+import play.api.libs.ws._
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import uk.gov.hmrc.uknwauthcheckerapi.config.AppConfig
 import uk.gov.hmrc.uknwauthcheckerapi.generators.{TestConstants, TestData, TestHeaders}
@@ -32,7 +32,6 @@ import uk.gov.hmrc.uknwauthcheckerapi.models.constants.MinMaxValues
 
 class BaseISpec extends PlaySpec with GuiceOneServerPerSuite with WireMockISpec with TestData with TestHeaders {
 
-  @annotation.nowarn
   protected val additionalAppConfig: Map[String, Any] = Map(
     TestConstants.configMetricsKey  -> false,
     TestConstants.configAuditingKey -> false,
@@ -59,11 +58,7 @@ class BaseISpec extends PlaySpec with GuiceOneServerPerSuite with WireMockISpec 
   protected def injected[T](implicit evidence: ClassTag[T]): T = app.injector.instanceOf[T]
 
   private def createRequest(url: String, headers: Seq[(String, String)] = defaultHeaders): WSRequest =
-    wsClient
-      .url(url)
-      .addHttpHeaders(
-        headers: _*
-      )
+    wsClient.url(url).addHttpHeaders(headers*)
 
   protected def deleteRequest(url: String, headers: Seq[(String, String)] = defaultHeaders): WSResponse =
     await(createRequest(url, headers).delete())

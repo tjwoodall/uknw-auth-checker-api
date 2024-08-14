@@ -34,7 +34,7 @@ class ValidationServiceSpec extends BaseSpec {
   "validateRequest without overwritten config" should {
 
     "return AuthorisationRequest when AuthorisationRequest is valid" in {
-      forAll { authorisationRequest: AuthorisationRequest =>
+      forAll { (authorisationRequest: AuthorisationRequest) =>
         val json = Json.toJson(authorisationRequest)
 
         val request = fakeRequestWithJsonBody(json)
@@ -65,7 +65,7 @@ class ValidationServiceSpec extends BaseSpec {
     }
 
     "return JsError when AuthorisationRequest eoris are invalid" in {
-      forAll { authorisationRequest: AuthorisationRequest =>
+      forAll { (authorisationRequest: AuthorisationRequest) =>
         val json = Json.toJson(authorisationRequest.copy(eoris = Seq("ABCD", "EFGH")))
 
         val expectedResponse =

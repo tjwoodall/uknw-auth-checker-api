@@ -55,7 +55,7 @@ class ValidationService @Inject() (minMaxValues: MinMaxValues) {
 
   private def validateEoriStructure(request: AuthorisationRequest): ValidationResult[AuthorisationRequest] = {
     val eoriErrors = request.eoris.collect {
-      case eori if !(eori matches CustomRegexes.eoriPattern) => JsonValidationError(ApiErrorMessages.invalidEori(eori))
+      case eori if !eori.matches(CustomRegexes.eoriPattern) => JsonValidationError(ApiErrorMessages.invalidEori(eori))
     }
 
     if (eoriErrors.nonEmpty) {

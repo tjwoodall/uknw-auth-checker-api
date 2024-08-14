@@ -24,6 +24,7 @@ import org.apache.pekko.actor.ActorSystem
 
 import play.api.http.{HeaderNames, MimeTypes}
 import play.api.libs.json.Json
+import play.api.libs.ws.writeableOf_JsValue
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, Retries}
 import uk.gov.hmrc.uknwauthcheckerapi.config.AppConfig
@@ -54,7 +55,7 @@ class IntegrationFrameworkConnector @Inject() (
     retryFor[EisAuthorisationsResponse]("Integration Framework Response")(retryCondition) {
       httpClient
         .post(appConfig.eisAuthorisationsUrl)
-        .setHeader(integrationFrameworkHeaders(appConfig.integrationFrameworkBearerToken): _*)
+        .setHeader(integrationFrameworkHeaders(appConfig.integrationFrameworkBearerToken)*)
         .withBody(Json.toJson(eisAuthorisationRequest))
         .executeAndDeserialise[EisAuthorisationsResponse]
     }

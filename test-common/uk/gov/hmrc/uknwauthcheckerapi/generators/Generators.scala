@@ -23,7 +23,7 @@ import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{CustomRegexes, MinMaxVal
 
 trait Generators {
 
-  protected val minMaxValues: MinMaxValues
+  protected lazy val minMaxValues: MinMaxValues
 
   private val eoriGen: Gen[String] = RegexpGen.from(CustomRegexes.eoriPattern)
 

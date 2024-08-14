@@ -44,13 +44,13 @@ class IntegrationFrameworkConnectorSpec extends BaseSpec {
 
       when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
       when(mockRequestBuilder.setHeader(any())).thenReturn(mockRequestBuilder)
-      when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.withBody(any())(using any(), any(), any())).thenReturn(mockRequestBuilder)
 
       doReturn(
         Future.successful(
           HttpResponse.apply(statusCode, jsonBody)
         )
-      ).when(mockRequestBuilder).execute[HttpResponse](any(), any())
+      ).when(mockRequestBuilder).execute[HttpResponse](using any(), any())
 
       await(connector.getEisAuthorisationsResponse(request))
     }
@@ -77,7 +77,7 @@ class IntegrationFrameworkConnectorSpec extends BaseSpec {
         whenever(eisAuthorisationRequest.validityDate.isDefined) {
 
           val expectedError = JsError(
-            Seq(JsonPaths.authType, JsonPaths.processingDate, JsonPaths.results).map { field =>
+            Seq(JsonPaths.results, JsonPaths.authType, JsonPaths.processingDate).map { field =>
               (JsPath \ field, Seq(JsonValidationError(JsonErrorMessages.pathMissing)))
             }
           )
@@ -158,7 +158,7 @@ class IntegrationFrameworkConnectorSpec extends BaseSpec {
         }
 
         verify(mockRequestBuilder, times(TestConstants.callAmountWithRetries))
-          .execute(any(), any())
+          .execute(using any(), any())
       }
     }
 
@@ -177,7 +177,7 @@ class IntegrationFrameworkConnectorSpec extends BaseSpec {
         }
 
         verify(mockRequestBuilder, times(TestConstants.callAmountWithRetries))
-          .execute(any(), any())
+          .execute(using any(), any())
       }
     }
   }

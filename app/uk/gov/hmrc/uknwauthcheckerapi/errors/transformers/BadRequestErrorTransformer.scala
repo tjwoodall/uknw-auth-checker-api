@@ -31,7 +31,7 @@ trait BadRequestErrorTransformer {
 
   private def transformEoriErrors(errorMessages: String): Option[Array[JsObject]] = errorMessages
     .split(errorMessagePrefix)
-    .filter(_ matches invalidFormatOfEorisPattern)
+    .filter(_.matches(invalidFormatOfEorisPattern))
     .map(_.trim)
     .headOption
     .map { errorMessage =>

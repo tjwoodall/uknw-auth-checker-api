@@ -29,7 +29,7 @@ import uk.gov.hmrc.uknwauthcheckerapi.models.eis._
 
 trait TestData extends Generators {
 
-  protected val minMaxValues: MinMaxValues
+  protected lazy val minMaxValues: MinMaxValues
 
   protected val emptyJson: JsValue = Json.parse(TestConstants.emptyJson)
 
