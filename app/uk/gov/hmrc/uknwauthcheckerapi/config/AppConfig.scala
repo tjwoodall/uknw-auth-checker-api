@@ -32,6 +32,9 @@ class AppConfig @Inject() (config: Configuration) {
   val integrationFrameworkBearerToken: String =
     config.get[String]("microservice.services.integration-framework.bearerToken")
 
+  val eoriMax: Int =
+    config.get[Int]("microservice.services.self.eoriMax")
+
   def baseUrl(serviceName: String): String = {
     val protocol = getConfString(s"$serviceName.protocol", "http")
     val host     = getConfString(s"$serviceName.host", throwConfigNotFoundError(s"$serviceName.host"))

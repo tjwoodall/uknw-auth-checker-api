@@ -16,7 +16,12 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.models.constants
 
-object MinMaxValues {
-  val maxEoriCount: Int = 3000
+import javax.inject.{Inject, Singleton}
+
+import uk.gov.hmrc.uknwauthcheckerapi.config.AppConfig
+
+@Singleton
+class MinMaxValues @Inject() (appConfig: AppConfig) {
+  val maxEoriCount: Int = appConfig.eoriMax
   val minEoriCount: Int = 1
 }

@@ -18,7 +18,7 @@ package uk.gov.hmrc.uknwauthcheckerapi.errors.transformers
 
 import play.api.libs.json.{JsObject, JsValue, Json}
 import uk.gov.hmrc.uknwauthcheckerapi.models.constants.CustomRegexes.invalidFormatOfEorisPattern
-import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{ApiErrorCodes, JsonPaths}
+import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{ApiErrorCodes, ApiErrorMessages, JsonPaths}
 
 trait BadRequestErrorTransformer {
 
@@ -42,7 +42,7 @@ trait BadRequestErrorTransformer {
         .map(_.trim) map { eori =>
         Json.obj(
           JsonPaths.code    -> ApiErrorCodes.invalidFormat,
-          JsonPaths.message -> s"$eori is not a supported EORI number",
+          JsonPaths.message -> ApiErrorMessages.invalidEori(eori),
           JsonPaths.path    -> JsonPaths.eoris
         )
       }

@@ -29,6 +29,8 @@ import uk.gov.hmrc.uknwauthcheckerapi.models.eis._
 
 trait TestData extends Generators {
 
+  protected val minMaxValues: MinMaxValues
+
   protected val emptyJson: JsValue = Json.parse(TestConstants.emptyJson)
 
   implicit protected val arbAuthorisationRequest: Arbitrary[AuthorisationRequest] = Arbitrary {
@@ -96,7 +98,7 @@ trait TestData extends Generators {
 
   implicit protected val arbTooManyEorisAuthorisationRequest: Arbitrary[TooManyEorisAuthorisationRequest] = Arbitrary {
     for {
-      eoris <- eoriGenerator(MinMaxValues.maxEoriCount + 1, MinMaxValues.maxEoriCount + 5)
+      eoris <- eoriGenerator(minMaxValues.maxEoriCount + 1, minMaxValues.maxEoriCount + 5)
     } yield TooManyEorisAuthorisationRequest(
       AuthorisationRequest(
         eoris

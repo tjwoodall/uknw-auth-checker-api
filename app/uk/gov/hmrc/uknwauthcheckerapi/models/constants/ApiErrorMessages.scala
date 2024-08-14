@@ -21,7 +21,7 @@ object ApiErrorMessages {
   val forbidden:                String           = "You are not allowed to access this resource"
   val internalServerError:      String           = "Unexpected internal server error"
   val invalidEori:              String => String = eori => s"$eori is not a supported EORI number"
-  val invalidEoriCount:         String           = "The request payload must contain between 1 and 3000 EORI entries"
+  val invalidEoriCount:         Int => String    = eoriMax => s"The request payload must contain between 1 and $eoriMax EORI entries"
   val invalidRequest:           String           = "Invalid request"
   val matchingResourceNotFound: String           = "Matching resource not found"
   val methodNotAllowed:         String           = "This method is not supported"

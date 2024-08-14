@@ -45,6 +45,7 @@ import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 import uk.gov.hmrc.uknwauthcheckerapi.config.AppConfig
 import uk.gov.hmrc.uknwauthcheckerapi.connectors.IntegrationFrameworkConnector
 import uk.gov.hmrc.uknwauthcheckerapi.generators._
+import uk.gov.hmrc.uknwauthcheckerapi.models.constants.MinMaxValues
 import uk.gov.hmrc.uknwauthcheckerapi.services.{IntegrationFrameworkService, LocalDateService, ValidationService}
 
 class BaseSpec
@@ -73,10 +74,12 @@ class BaseSpec
       TestConstants.configOverrideRetryInterval
     )
   ) ++ configOverrides
+
   protected val actorSystem:                            ActorSystem                         = ActorSystem(TestConstants.actorName)
   protected lazy val appConfig:                         AppConfig                           = injected[AppConfig]
   protected lazy val config:                            Config                              = injected[Config]
   protected val fakePostRequest:                        FakeRequest[AnyContentAsEmpty.type] = FakeRequest(POST, "")
+  protected lazy val minMaxValues:                      MinMaxValues                        = injected[MinMaxValues]
   protected lazy val mockAuthConnector:                 AuthConnector                       = mock[AuthConnector]
   protected lazy val mockHttpClient:                    HttpClientV2                        = mock[HttpClientV2]
   protected lazy val mockIntegrationFrameworkConnector: IntegrationFrameworkConnector       = mock[IntegrationFrameworkConnector]
