@@ -147,16 +147,6 @@ paths:
                   "code": "FORBIDDEN",
                   "message": "You are not allowed to access this resource",
                 }
-        "405":
-          description: |
-            Method not allowed. A 405 usually means the client implemented a GET on a service that only allows POST, or vice-versa, or tried http: on a method that requires https.
-          content:
-            application/json:
-              example:
-                {
-                  "code": "METHOD_NOT_ALLOWED",
-                  "message": "This method is not supported",
-                }
         "406":
           description: |
             Not acceptable. This response is sent when the incoming request desires an accept header for a content we cannot support. Primary way to fix 406 errors is as follows:

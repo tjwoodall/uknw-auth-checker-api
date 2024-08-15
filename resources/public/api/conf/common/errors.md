@@ -4,7 +4,6 @@ We use standard HTTP status codes to show whether an API request succeeded or no
 - 400 for Validation failure
 - 401 for Authorisation failure
 - 403 for Forbidden request
-- 405 for Method Not Allowed
 - 406 for Not Acceptable
 - 429 for request in excess of rate limit
 - 500 for Internal Server error
