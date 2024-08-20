@@ -3,9 +3,9 @@ info:
   version: 1.0.0
   title: Notification of Presentation (NOP) waiver checker API
   description: |
-    This API enables Community System Providers (CSPs) and software developers to check if traders have a valid Notification of Presentation (NOP) waiver authorisation using their Economic Operators Registration and Identification (EORI) number. 
+    This API enables Community System Providers (CSPs) and software developers to check if traders have a valid Notification of Presentation (NOP) waiver authorisation using their EORI number. 
     This waiver is necessary to enable the transit of Not At Risk (NAR) goods moving through from Great Britain (GB) to Northern Ireland (NI). 
-    The API follows REST principles and has a single POST method endpoint that returns the data in JSON format. It uses standard HTTP error response codes.
+    The API follows RESTful principles and has a single POST method endpoint that returns the data in JSON format. It uses standard HTTP error response codes.
 
     Use this API to request the NOP waiver authorisation status of between 1 and 3000 EORI numbers passed as an array. 
 
@@ -22,11 +22,11 @@ paths:
   /customs/uk-notice-of-presentation-waiver/authorisations:
     post:
       tags:
-        - Endpoint for authorisations
+        - Endpoint for Authorisations
       summary: |
         Request NOP waiver authorisation status for provided EORI numbers
       description: |
-        Use this method to request the NOP waiver authorisation status of between 1 and 3000 EORIs.
+        Use this method to request the NOP waiver authorisation status of between 1 and 3000 EORI numbers.
 
       operationId: requestAuth
       parameters:
@@ -49,7 +49,7 @@ paths:
       responses:
         "200":
           description: |
-            Success - Authorised. A list of EORI Numbers provided with their authorised status as boolean 'true'.
+            Success - Authorised. A list of EORI numbers provided with their authorised status as boolean 'true'.
           content:
             application/json:
               schema:
@@ -59,7 +59,7 @@ paths:
             Validation failure. The server cannot or will not process the request due to something that is perceived to be a client error. Possible causes could be:
 
             <ul>
-              <li>unsupported country code in EORI (GB and XI are supported)</li>
+              <li>unsupported country code in EORI number (GB and XI are supported)</li>
               <li>invalid format for EORI number</li>
             </ul>
           content:
