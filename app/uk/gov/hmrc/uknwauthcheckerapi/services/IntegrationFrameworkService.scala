@@ -91,7 +91,6 @@ class IntegrationFrameworkService @Inject() (
               errorCode match {
                 case BAD_REQUEST           => handleBadRequest(errorMessage)
                 case INTERNAL_SERVER_ERROR => InternalServerDataRetrievalError(errorMessage)
-                case METHOD_NOT_ALLOWED    => MethodNotAllowedDataRetrievalError(errorMessage)
                 case _                     => InternalServerDataRetrievalError(errorMessage)
               }
             )

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.errors
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Singleton
 import scala.concurrent.Future
 
 import play.api.Logging
@@ -24,10 +24,9 @@ import play.api.http.HttpErrorHandler
 import play.api.http.Status._
 import play.api.mvc.{RequestHeader, Result}
 import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.uknwauthcheckerapi.config.AppConfig
 
 @Singleton
-class ApiErrorHandler @Inject() (appConfig: AppConfig) extends HttpErrorHandler with Logging {
+class ApiErrorHandler extends HttpErrorHandler with Logging {
 
   override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] = {
     logger.warn(
@@ -37,13 +36,8 @@ class ApiErrorHandler @Inject() (appConfig: AppConfig) extends HttpErrorHandler 
 
     Future.successful(
       statusCode match {
-        case FORBIDDEN          => ForbiddenApiError.toResult
-        case METHOD_NOT_ALLOWED => MethodNotAllowedApiError.toResult
-        case NOT_FOUND =>
-          request.path match {
-            case appConfig.authorisationsEndpoint => MethodNotAllowedApiError.toResult
-            case _                                => NotFoundApiError.toResult
-          }
+        case FORBIDDEN              => ForbiddenApiError.toResult
+        case NOT_FOUND              => NotFoundApiError.toResult
         case SERVICE_UNAVAILABLE    => ServiceUnavailableApiError.toResult
         case UNSUPPORTED_MEDIA_TYPE => NotAcceptableApiError.toResult
         case _ =>

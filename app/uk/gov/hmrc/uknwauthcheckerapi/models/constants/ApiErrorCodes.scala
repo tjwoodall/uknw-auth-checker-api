@@ -22,7 +22,6 @@ object ApiErrorCodes {
   val internalServerError:      String = "INTERNAL_SERVER_ERROR"
   val invalidFormat:            String = "INVALID_FORMAT"
   val matchingResourceNotFound: String = "MATCHING_RESOURCE_NOT_FOUND"
-  val methodNotAllowed:         String = "METHOD_NOT_ALLOWED"
   val notAcceptable:            String = "NOT_ACCEPTABLE"
   val serviceUnavailable:       String = "SERVICE_UNAVAILABLE"
   val unauthorized:             String = "UNAUTHORIZED"

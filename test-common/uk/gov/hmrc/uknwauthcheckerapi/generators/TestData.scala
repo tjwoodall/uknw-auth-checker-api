@@ -153,14 +153,6 @@ trait TestData extends Generators {
       )
     )
 
-  protected val methodNotAllowedEisAuthorisationResponseError: EisAuthorisationResponseError =
-    EisAuthorisationResponseError(
-      errorDetail = EisAuthorisationResponseErrorDetail(
-        errorCode = METHOD_NOT_ALLOWED,
-        errorMessage = TestConstants.emptyString
-      )
-    )
-
   protected val internalServerErrorEisAuthorisationResponseError: EisAuthorisationResponseError =
     EisAuthorisationResponseError(
       errorDetail = EisAuthorisationResponseErrorDetail(

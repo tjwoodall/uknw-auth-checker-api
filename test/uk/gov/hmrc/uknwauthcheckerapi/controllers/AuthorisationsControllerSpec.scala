@@ -259,22 +259,6 @@ class AuthorisationsControllerSpec extends BaseSpec {
     }
   }
 
-  "return METHOD_NOT_ALLOWED (405) when integration framework service returns MethodNotAllowedDataRetrievalError" in new TestContext {
-    forAll { (authorisationRequest: AuthorisationRequest, errorMessage: String) =>
-      val expectedResponse = Json.toJson(
-        MethodNotAllowedApiError
-      )(ApiErrorResponse.writes)
-
-      doTest(
-        validateResponse = Some(Right(authorisationRequest)),
-        authorisationsResponse = Some(EitherT.leftT(MethodNotAllowedDataRetrievalError(errorMessage))),
-        requestBody = Json.toJson(authorisationRequest),
-        statusCode = METHOD_NOT_ALLOWED,
-        expectedResponse = Json.toJson(expectedResponse)
-      )
-    }
-  }
-
   "return INTERNAL_SERVER_ERROR (500) when integration framework service returns InternalServerDataRetrievalError" in new TestContext {
     forAll { (authorisationRequest: AuthorisationRequest, errorMessage: String) =>
       val expectedResponse = Json.toJson(

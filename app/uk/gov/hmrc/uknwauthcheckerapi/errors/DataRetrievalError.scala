@@ -24,7 +24,6 @@ object DataRetrievalError {
   final case class BadGatewayDataRetrievalError() extends DataRetrievalError
   final case class BadRequestDataRetrievalError(message: String) extends DataRetrievalError
   final case class ForbiddenDataRetrievalError() extends DataRetrievalError
-  final case class MethodNotAllowedDataRetrievalError(message: String) extends DataRetrievalError
   final case class InternalServerDataRetrievalError(message: String) extends DataRetrievalError
   final case class InternalUnexpectedDataRetrievalError(message: String, cause: Throwable) extends DataRetrievalError
   final case class UnableToDeserialiseDataRetrievalError(jsError: JsError) extends DataRetrievalError

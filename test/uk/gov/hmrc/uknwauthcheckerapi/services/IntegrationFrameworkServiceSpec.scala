@@ -176,26 +176,6 @@ class IntegrationFrameworkServiceSpec extends BaseSpec {
       }
     }
 
-    "return MethodNotAllowedDataRetrievalError error when call to the integration framework fails with a METHOD_NOT_ALLOWED" in new TestContext {
-      forAll { (validRequest: ValidAuthorisationRequest, eisErrorResponse: EisAuthorisationResponseError) =>
-        val request = validRequest.request
-
-        val eisError = eisErrorResponse.copy(errorDetail =
-          eisErrorResponse.errorDetail
-            .copy(errorCode = METHOD_NOT_ALLOWED)
-        )
-
-        val expectedEisResponse: UpstreamErrorResponse              = UpstreamErrorResponse(Json.stringify(Json.toJson(eisError)), METHOD_NOT_ALLOWED)
-        val expectedResponse:    MethodNotAllowedDataRetrievalError = MethodNotAllowedDataRetrievalError(eisError.errorDetail.errorMessage)
-
-        doTest(
-          request = request,
-          eisResponse = Future.failed(expectedEisResponse),
-          response = Left(expectedResponse)
-        )
-      }
-    }
-
     "return InternalServerDataRetrievalError error when call to the integration framework fails with invalid auth type error" in new TestContext {
       forAll { (validRequest: ValidAuthorisationRequest, eisErrorResponse: EisAuthorisationResponseError) =>
         val request = validRequest.request
