@@ -319,6 +319,7 @@ To add a new expected request please refer to the [uknw-auth-checker-api-stub
 | 400-Invalid-Json-Format  | Invalid request with invalid JSON                                                             | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/400-Invalid-Json-Format.bru  |
 | 406-No-Accept-Header     | Invalid request with no `application/vnd.hmrc.1.0+json` Accept header set                     | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/406-No-Accept-Header.bru     |
 | 406-No-Body.bru          | Invalid request with no JSON body                                                             | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/406-No-Body.bru              |
+| 406-Entity-Too-Large.bru | Invalid request with which has a size over 100 KB                                             | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/413-Entity-Too-Large.bru     |
 
 ## License
 
