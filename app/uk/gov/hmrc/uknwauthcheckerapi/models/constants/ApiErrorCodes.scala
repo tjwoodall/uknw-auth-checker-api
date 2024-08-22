@@ -23,6 +23,7 @@ object ApiErrorCodes {
   val invalidFormat:            String = "INVALID_FORMAT"
   val matchingResourceNotFound: String = "MATCHING_RESOURCE_NOT_FOUND"
   val notAcceptable:            String = "NOT_ACCEPTABLE"
+  val requestEntityTooLarge:    String = "REQUEST_ENTITY_TOO_LARGE"
   val serviceUnavailable:       String = "SERVICE_UNAVAILABLE"
   val unauthorized:             String = "UNAUTHORIZED"
 }

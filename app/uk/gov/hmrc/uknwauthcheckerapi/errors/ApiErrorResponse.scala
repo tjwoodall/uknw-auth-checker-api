@@ -95,6 +95,12 @@ final case class UnauthorizedApiError(reason: String) extends ApiErrorResponse {
   val message:    String = ApiErrorMessages.unauthorized
 }
 
+case object RequestEntityTooLargeError extends ApiErrorResponse {
+  val statusCode: Int    = REQUEST_ENTITY_TOO_LARGE
+  val code:       String = ApiErrorCodes.requestEntityTooLarge
+  val message:    String = ApiErrorMessages.requestEntityTooLarge
+}
+
 final case class BadRequestApiError(errorMessages: String) extends ApiErrorResponse with BadRequestErrorTransformer {
   val statusCode: Int    = BAD_REQUEST
   val code:       String = ApiErrorCodes.badRequest
