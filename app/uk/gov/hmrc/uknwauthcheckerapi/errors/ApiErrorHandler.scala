@@ -37,12 +37,10 @@ class ApiErrorHandler @Inject() (appConfig: AppConfig) extends HttpErrorHandler 
 
     Future.successful(
       statusCode match {
-        case FORBIDDEN          => ForbiddenApiError.toResult
-        case METHOD_NOT_ALLOWED => MethodNotAllowedApiError.toResult
+        case FORBIDDEN => ForbiddenApiError.toResult
         case NOT_FOUND =>
           request.path match {
-            case appConfig.authorisationsEndpoint => MethodNotAllowedApiError.toResult
-            case _                                => NotFoundApiError.toResult
+            case _ => NotFoundApiError.toResult
           }
         case SERVICE_UNAVAILABLE    => ServiceUnavailableApiError.toResult
         case UNSUPPORTED_MEDIA_TYPE => NotAcceptableApiError.toResult

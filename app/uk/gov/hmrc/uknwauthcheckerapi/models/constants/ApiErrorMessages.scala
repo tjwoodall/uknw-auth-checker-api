@@ -24,7 +24,6 @@ object ApiErrorMessages {
   val invalidEoriCount:         Int => String    = eoriMax => s"The request payload must contain between 1 and $eoriMax EORI entries"
   val invalidRequest:           String           = "Invalid request"
   val matchingResourceNotFound: String           = "Matching resource not found"
-  val methodNotAllowed:         String           = "This method is not supported"
   val notAcceptable:            String           = "Cannot produce an acceptable response. The Accept or Content-Type header is missing or invalid"
   val serviceUnavailable:       String           = "Server is currently unable to handle the incoming requests"
 

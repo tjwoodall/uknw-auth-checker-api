@@ -127,22 +127,6 @@ class IntegrationFrameworkConnectorSpec extends BaseSpec {
       }
     }
 
-    "return 405 METHOD_NOT_ALLOWED UpstreamErrorResponse when call to integration framework returns an error" in new TestContext {
-      forAll { (eisAuthorisationRequest: EisAuthorisationRequest) =>
-        Try(
-          doTest(
-            eisAuthorisationRequest,
-            METHOD_NOT_ALLOWED,
-            ApiErrorCodes.methodNotAllowed
-          )
-        ) match {
-          case Failure(UpstreamErrorResponse(_, code, _, _)) =>
-            code shouldEqual METHOD_NOT_ALLOWED
-          case _ => fail(TestConstants.errorExpectedUpstreamResponse)
-        }
-      }
-    }
-
     "return 500 INTERNAL_SERVER_ERROR UpstreamErrorResponse when call to integration framework returns an error" in new TestContext {
       forAll { (eisAuthorisationRequest: EisAuthorisationRequest) =>
         Try(

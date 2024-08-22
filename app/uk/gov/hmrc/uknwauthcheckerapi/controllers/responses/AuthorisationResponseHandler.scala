@@ -48,10 +48,6 @@ trait AuthorisationResponseHandler extends Logging {
             logger.error(toLogMessage(FORBIDDEN))
             ForbiddenApiError.toResult
 
-          case MethodNotAllowedDataRetrievalError(_) =>
-            logger.warn(toLogMessage(METHOD_NOT_ALLOWED))
-            MethodNotAllowedApiError.toResult
-
           case ValidationDataRetrievalError(errors) =>
             logger.warn(toLogMessage(BAD_REQUEST, Some(Json.stringify(toJson(errors)))))
             JsonValidationApiError(errors).toResult

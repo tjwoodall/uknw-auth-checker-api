@@ -77,12 +77,6 @@ case object NotFoundApiError extends ApiErrorResponse {
   val message:    String = ApiErrorMessages.matchingResourceNotFound
 }
 
-case object MethodNotAllowedApiError extends ApiErrorResponse {
-  val statusCode: Int    = METHOD_NOT_ALLOWED
-  val code:       String = ApiErrorCodes.methodNotAllowed
-  val message:    String = ApiErrorMessages.methodNotAllowed
-}
-
 case object NotAcceptableApiError extends ApiErrorResponse {
   val statusCode: Int    = NOT_ACCEPTABLE
   val code:       String = ApiErrorCodes.notAcceptable

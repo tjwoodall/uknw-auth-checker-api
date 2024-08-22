@@ -24,7 +24,7 @@ import play.api.http.Status._
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsJson, status}
-import uk.gov.hmrc.http.{HttpVerbs, NotFoundException}
+import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.uknwauthcheckerapi.controllers.BaseSpec
 import uk.gov.hmrc.uknwauthcheckerapi.generators.TestConstants
 
@@ -63,25 +63,10 @@ class ApiErrorHandlerSpec extends BaseSpec {
       )
     }
 
-    "convert a METHOD_NOT_ALLOWED to Method Not Allowed (405) response" in new TestContext {
-      doTestClient(
-        statusCode = METHOD_NOT_ALLOWED,
-        response = MethodNotAllowedApiError
-      )
-    }
-
     "convert a NOT_FOUND to Not Found (404) response" in new TestContext {
       doTestClient(
         statusCode = NOT_FOUND,
         response = NotFoundApiError
-      )
-    }
-
-    "convert a NOT_FOUND with /authorisations url to to Method Not Allowed (405) response" in new TestContext {
-      doTestClient(
-        statusCode = METHOD_NOT_ALLOWED,
-        response = MethodNotAllowedApiError,
-        request = FakeRequest(HttpVerbs.POST, "/authorisations")
       )
     }
 
