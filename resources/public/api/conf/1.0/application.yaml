@@ -24,7 +24,7 @@ paths:
       tags:
         - Endpoint for Authorisations
       summary: |
-        Request NOP waiver authorisation status for provided EORI numbers
+        Get NOP Waiver Authorisation Status 
       description: |
         Use this method to request the NOP waiver authorisation status of between 1 and 3000 EORI numbers.
 
