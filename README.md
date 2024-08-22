@@ -87,7 +87,6 @@ has been set up to validate the fake token in each request, so not including it 
 | 400         | BAD_REQUEST           | EORI path missing                                     |
 | 401         | UNAUTHORIZED          | Unauthorized                                          |
 | 403         | FORBIDDEN             | Forbidden                                             |
-| 405         | METHOD_NOT_ALLOWED    | HTTP verb is not POST                                 |
 | 406         | NOT_ACCEPTABLE        | Accept or Content Type headers are missing or invalid |
 | 500         | INTERNAL_SERVER_ERROR | Unexpected internal server error                      |
 | 503         | SERVICE_UNAVAILABLE   | Server is unable to handle requests                   |
@@ -177,15 +176,6 @@ has been set up to validate the fake token in each request, so not including it 
 {
   "code": "FORBIDDEN",
   "message": "You are not allowed to access this resource"
-}
-```
-
-### 405 METHOD_NOT_ALLOWED resposne
-
-```json
-{
-  "code": "METHOD_NOT_ALLOWED",
-  "message": "This method is not supported"
 }
 ```
 
