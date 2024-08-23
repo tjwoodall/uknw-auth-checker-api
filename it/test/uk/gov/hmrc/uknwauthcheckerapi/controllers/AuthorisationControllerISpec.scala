@@ -86,6 +86,18 @@ class AuthorisationControllerISpec extends BaseISpec {
       }
     }
 
+    "return REQUEST_ENTITY_TOO_LARGE when request validation is invalid" in new TestContext {
+      forAll { (invalidRequest: TooLargeAuthorisationRequest) =>
+        reset()
+
+        val authorisationRequestJson: JsValue = Json.toJson(invalidRequest.request)
+
+        val result: WSResponse = postRequest(authorisationsUrl, authorisationRequestJson)
+
+        result.status mustBe REQUEST_ENTITY_TOO_LARGE
+      }
+    }
+
     "return BAD_REQUEST when integration framework returns BAD_REQUEST" in new TestContext {
       forAll { (validRequest: ValidAuthorisationRequest) =>
         reset()

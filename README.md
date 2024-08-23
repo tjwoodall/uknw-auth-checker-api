@@ -1,4 +1,3 @@
-
 # uknw-auth-checker-api
 
 This is the API microservice that provides service to CSPs to check that trader holds NOP waiver.
@@ -10,7 +9,9 @@ This service should be used in the [Developer Hub](https://developer.service.hmr
 Access to this service requires:
 
 * Sandbox or Production application on the [Developer Hub](https://developer.service.hmrc.gov.uk/api-documentation).
-* An OAuth access token from the [API platform](https://developer.service.hmrc.gov.uk/api-documentation/docs/authorisation/application-restricted-endpoints#getting-access-token) with the client credentials grant type.
+* An OAuth access token from
+  the [API platform](https://developer.service.hmrc.gov.uk/api-documentation/docs/authorisation/application-restricted-endpoints#getting-access-token)
+  with the client credentials grant type.
 
 ## Internals
 
@@ -30,7 +31,9 @@ Internally the service consists of several types of components:
 
 ## Open API specification
 
-There is a OpenAPI 3.0.3 specification file available for the API, located in the [application.yaml](https://github.com/hmrc/uknw-auth-checker-api/blob/main/resources/public/api/conf/1.0/application.yaml) file.
+There is a OpenAPI 3.0.3 specification file available for the API, located in
+the [application.yaml](https://github.com/hmrc/uknw-auth-checker-api/blob/main/resources/public/api/conf/1.0/application.yaml)
+file.
 
 ## Requests
 
@@ -52,7 +55,7 @@ Each EORI must match the following pattern:
 ^(GB|XI)[0-9]{12}|(GB|XI)[0-9]{15}$
 ```
 
-You also must include an Accept header of `application/vnd.hmrc.1.0+json` as it is validated by 
+You also must include an Accept header of `application/vnd.hmrc.1.0+json` as it is validated by
 the API. Not including it will result in a 406 `NOT_ACCEPTABLE` response.
 
 #### Curl sample
@@ -79,17 +82,18 @@ has been set up to validate the fake token in each request, so not including it 
 
 ## Responses
 
-| Status code | Name                  | Description                                           |
-|-------------|-----------------------|-------------------------------------------------------|
-| 200         | OK                    |                                                       |
-| 400         | BAD_REQUEST           | Malformed json                                        |
-| 400         | BAD_REQUEST           | Invalid EORI format                                   |
-| 400         | BAD_REQUEST           | EORI path missing                                     |
-| 401         | UNAUTHORIZED          | Unauthorized                                          |
-| 403         | FORBIDDEN             | Forbidden                                             |
-| 406         | NOT_ACCEPTABLE        | Accept or Content Type headers are missing or invalid |
-| 500         | INTERNAL_SERVER_ERROR | Unexpected internal server error                      |
-| 503         | SERVICE_UNAVAILABLE   | Server is unable to handle requests                   |
+| Status code | Name                     | Description                                            |
+|-------------|--------------------------|--------------------------------------------------------|
+| 200         | OK                       |                                                        |
+| 400         | BAD_REQUEST              | Malformed json                                         |
+| 400         | BAD_REQUEST              | Invalid EORI format                                    |
+| 400         | BAD_REQUEST              | EORI path missing                                      |
+| 401         | UNAUTHORIZED             | Unauthorized                                           |
+| 403         | FORBIDDEN                | Forbidden                                              |
+| 406         | NOT_ACCEPTABLE           | Accept or Content Type headers are missing or invalid  |
+| 413         | REQUEST_ENTITY_TOO_LARGE | Request Entity Too Large (Request greater than 100 KB) |
+| 500         | INTERNAL_SERVER_ERROR    | Unexpected internal server error                       |
+| 503         | SERVICE_UNAVAILABLE      | Server is unable to handle requests                    |
 
 ### 200 OK json response
 
@@ -145,6 +149,7 @@ has been set up to validate the fake token in each request, so not including it 
   ]
 }
 ```
+
 ### 400 BAD_REQUEST EORI path missing response
 
 ```json
@@ -188,6 +193,15 @@ has been set up to validate the fake token in each request, so not including it 
 }
 ```
 
+### 413 REQUEST_ENTITY_TOO_LARGE response
+
+```json
+{
+  "code": "REQUEST_ENTITY_TOO_LARGE",
+  "message": "Request Entity Too Large"
+}
+```
+
 ### 500 INTERNAL_SERVER_ERROR response
 
 ```json
@@ -198,6 +212,7 @@ has been set up to validate the fake token in each request, so not including it 
 ```
 
 ### 503 SERVICE_UNAVAILABLE response
+
 ```json
 {
   "code": "SERVICE_UNAVAILABLE",
@@ -210,7 +225,7 @@ has been set up to validate the fake token in each request, so not including it 
 The service calls the following external APIs:
 
 * PDS via EIS/IF
-  * `/cau/validatecustomsauth/v1`
+    * `/cau/validatecustomsauth/v1`
 
 ## Development
 
@@ -256,7 +271,7 @@ check, run a scala style check, run unit tests, run integration tests, and produ
 
 ### Pre-Commit
 
-This is a sbt command alias specific to this project. It will run a scala format , run a scala fix, 
+This is a sbt command alias specific to this project. It will run a scala format , run a scala fix,
 run unit tests, run integration tests and produce a coverage report.
 > `sbt preCommit`
 
@@ -268,7 +283,7 @@ check in the app, tests, and integration tests
 
 ### Fix all
 
-This is a sbt command alias specific to this project. It will run the scala fix 
+This is a sbt command alias specific to this project. It will run the scala fix
 linter/reformatter in the app, tests, and integration tests
 > `sbt fixAll`
 
@@ -288,23 +303,26 @@ To add a new expected request please refer to the [uknw-auth-checker-api-stub
 
 ### Bruno files
 
-| Bruno file               | Description                                                                                   | Location                                                                                    |
-|--------------------------|-----------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|
-| 200-1-Eori               | Valid request with 1 EORI matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`       | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/200-1-Eori.bru               |
-| 200-100-Eori             | Valid request with 100 EORI matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`     | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/200-100-Eori.bru             |
-| 200-500-Eori             | Valid request with 500 EORI matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`     | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/200-500-Eori.bru             |
-| 200-1000-Eori            | Valid request with 1000 EORI matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`    | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/200-1000-Eori.bru            |
-| 200-3000-Eori            | Valid request with 3000 EORI matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`    | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/200-3000-Eori.bru            |
-| 201-Invalid-Bearer-Token | Unauthorized request with an invalid bearer token                                             | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/201-Invalid-Bearer-Token.bru |
-| 201-No-Bearer-Token      | Unauthorized request with no bearer token                                                     | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/201-No-Bearer-Token.bru      |
-| 400-0-Eori               | Invalid request with zero EORI                                                                | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/400-0-Eori.bru               |
-| 400-3001-Eori            | Invalid request with greater than 3000 EORI                                                   | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/400-3001-Eori.bru            |
-| 400-Invalid-Eori         | Invalid request with 1 EORI not matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$` | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/400-Invalid-Eori.bru         |
-| 400-Invalid-Json-Empty   | Invalid request with an empty JSON object                                                     | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/400-Invalid-Json-Empty.bru   |
-| 400-Invalid-Json-Format  | Invalid request with invalid JSON                                                             | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/400-Invalid-Json-Format.bru  |
-| 406-No-Accept-Header     | Invalid request with no `application/vnd.hmrc.1.0+json` Accept header set                     | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/406-No-Accept-Header.bru     |
-| 406-No-Body.bru          | Invalid request with no JSON body                                                             | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/406-No-Body.bru              |
+| Bruno file               | Description                                                                                         | Location                                                                                    |
+|--------------------------|-----------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|
+| 200-1-Eori               | Valid request with 1 EORI matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`             | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/200-1-Eori.bru               |
+| 200-100-Eori             | Valid request with 100 EORI matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`           | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/200-100-Eori.bru             |
+| 200-500-Eori             | Valid request with 500 EORI matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`           | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/200-500-Eori.bru             |
+| 200-1000-Eori            | Valid request with 1000 EORI matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`          | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/200-1000-Eori.bru            |
+| 200-3000-Eori            | Valid request with 3000 EORI matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`          | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/200-3000-Eori.bru            |
+| 200-duplicate-Eori       | Valid request with two duplicate EORI matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$` | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/200-duplicate-Eori.bru       |
+| 201-Invalid-Bearer-Token | Unauthorized request with an invalid bearer token                                                   | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/201-Invalid-Bearer-Token.bru |
+| 201-No-Bearer-Token      | Unauthorized request with no bearer token                                                           | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/201-No-Bearer-Token.bru      |
+| 400-0-Eori               | Invalid request with zero EORI                                                                      | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/400-0-Eori.bru               |
+| 400-3001-Eori            | Invalid request with greater than 3000 EORI                                                         | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/400-3001-Eori.bru            |
+| 400-Invalid-Eori         | Invalid request with 1 EORI not matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`       | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/400-Invalid-Eori.bru         |
+| 400-Invalid-Json-Empty   | Invalid request with an empty JSON object                                                           | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/400-Invalid-Json-Empty.bru   |
+| 400-Invalid-Json-Format  | Invalid request with invalid JSON                                                                   | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/400-Invalid-Json-Format.bru  |
+| 406-No-Accept-Header     | Invalid request with no `application/vnd.hmrc.1.0+json` Accept header set                           | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/406-No-Accept-Header.bru     |
+| 406-No-Body.bru          | Invalid request with no JSON body                                                                   | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/406-No-Body.bru              |
+| 406-Entity-Too-Large.bru | Invalid request with which has a size over 100 KB                                                   | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/413-Entity-Too-Large.bru     |
 
 ## License
 
-This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").
+This code is open source software licensed under
+the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").

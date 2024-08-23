@@ -70,6 +70,13 @@ class ApiErrorHandlerSpec extends BaseSpec {
       )
     }
 
+    "convert a REQUEST_ENTITY_TOO_LARGE to Request Entity Too Large (413) response" in new TestContext {
+      doTestClient(
+        statusCode = REQUEST_ENTITY_TOO_LARGE,
+        response = RequestEntityTooLargeApiError
+      )
+    }
+
     "convert a SERVICE_UNAVAILABLE to Service Unavailable (503) response" in new TestContext {
       doTestClient(
         statusCode = SERVICE_UNAVAILABLE,

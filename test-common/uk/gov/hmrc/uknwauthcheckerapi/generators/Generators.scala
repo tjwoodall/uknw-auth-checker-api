@@ -29,4 +29,6 @@ trait Generators {
 
   protected def eoriGenerator(min: Int = minMaxValues.minEoriCount, max: Int = minMaxValues.maxEoriCount): Gen[Seq[String]] =
     Gen.chooseNum(min, max).flatMap(n => Gen.listOfN(n, eoriGen))
+
+  protected def amountOfEorisGenerator(max: Int = minMaxValues.maxEoriCount): Gen[Seq[String]] = Gen.listOfN(max, eoriGen)
 }
