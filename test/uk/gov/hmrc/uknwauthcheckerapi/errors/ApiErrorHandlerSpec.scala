@@ -73,7 +73,7 @@ class ApiErrorHandlerSpec extends BaseSpec {
     "convert a REQUEST_ENTITY_TOO_LARGE to Request Entity Too Large (413) response" in new TestContext {
       doTestClient(
         statusCode = REQUEST_ENTITY_TOO_LARGE,
-        response = RequestEntityTooLargeError
+        response = RequestEntityTooLargeApiError
       )
     }
 

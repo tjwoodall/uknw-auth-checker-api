@@ -83,7 +83,7 @@ case object NotFoundApiError extends ApiErrorResponse {
   val message:    String = ApiErrorMessages.matchingResourceNotFound
 }
 
-case object RequestEntityTooLargeError extends ApiErrorResponse {
+case object RequestEntityTooLargeApiError extends ApiErrorResponse {
   val statusCode: Int    = REQUEST_ENTITY_TOO_LARGE
   val code:       String = ApiErrorCodes.requestEntityTooLarge
   val message:    String = ApiErrorMessages.requestEntityTooLarge

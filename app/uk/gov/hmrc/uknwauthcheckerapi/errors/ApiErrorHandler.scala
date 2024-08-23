@@ -38,7 +38,7 @@ class ApiErrorHandler extends HttpErrorHandler with Logging {
       statusCode match {
         case FORBIDDEN                => ForbiddenApiError.toResult
         case NOT_FOUND                => NotFoundApiError.toResult
-        case REQUEST_ENTITY_TOO_LARGE => RequestEntityTooLargeError.toResult
+        case REQUEST_ENTITY_TOO_LARGE => RequestEntityTooLargeApiError.toResult
         case SERVICE_UNAVAILABLE      => ServiceUnavailableApiError.toResult
         case UNSUPPORTED_MEDIA_TYPE   => NotAcceptableApiError.toResult
         case _ =>
