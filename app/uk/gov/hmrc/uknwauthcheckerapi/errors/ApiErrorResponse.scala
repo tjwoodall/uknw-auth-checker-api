@@ -72,9 +72,9 @@ case object InternalServerApiError extends ApiErrorResponse {
 }
 
 case object NotAcceptableApiError extends ApiErrorResponse {
-  val statusCode: Int = NOT_ACCEPTABLE
-  val code: String = ApiErrorCodes.notAcceptable
-  val message: String = ApiErrorMessages.notAcceptable
+  val statusCode: Int    = NOT_ACCEPTABLE
+  val code:       String = ApiErrorCodes.notAcceptable
+  val message:    String = ApiErrorMessages.notAcceptable
 }
 
 case object NotFoundApiError extends ApiErrorResponse {
@@ -84,9 +84,9 @@ case object NotFoundApiError extends ApiErrorResponse {
 }
 
 case object RequestEntityTooLargeError extends ApiErrorResponse {
-  val statusCode: Int = REQUEST_ENTITY_TOO_LARGE
-  val code: String = ApiErrorCodes.requestEntityTooLarge
-  val message: String = ApiErrorMessages.requestEntityTooLarge
+  val statusCode: Int    = REQUEST_ENTITY_TOO_LARGE
+  val code:       String = ApiErrorCodes.requestEntityTooLarge
+  val message:    String = ApiErrorMessages.requestEntityTooLarge
 }
 
 case object ServiceUnavailableApiError extends ApiErrorResponse {

@@ -96,6 +96,16 @@ trait TestData extends Generators {
     )
   }
 
+  implicit protected val arbTooLargeAuthorisationRequest: Arbitrary[TooLargeAuthorisationRequest] = Arbitrary {
+    for {
+      eoris <- amountOfEorisGenerator(10000)
+    } yield TooLargeAuthorisationRequest(
+      AuthorisationRequest(
+        eoris
+      )
+    )
+  }
+
   implicit protected val arbTooManyEorisAuthorisationRequest: Arbitrary[TooManyEorisAuthorisationRequest] = Arbitrary {
     for {
       eoris <- eoriGenerator(minMaxValues.maxEoriCount + 1, minMaxValues.maxEoriCount + 5)
@@ -164,6 +174,7 @@ trait TestData extends Generators {
 
 final case class InvalidEorisAuthorisationRequest(request: AuthorisationRequest)
 final case class NoEorisAuthorisationRequest(request: AuthorisationRequest)
+final case class TooLargeAuthorisationRequest(request: AuthorisationRequest)
 final case class TooManyEorisAuthorisationRequest(request: AuthorisationRequest)
 final case class ValidAuthorisationRequest(request: AuthorisationRequest)
 final case class ValidEisAuthorisationsResponse(response: EisAuthorisationsResponse)
