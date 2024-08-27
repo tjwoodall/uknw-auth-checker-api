@@ -16,12 +16,22 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.utils
 
-import play.api.mvc.Request
+import play.api.libs.json.{JsResult, Reads}
+import uk.gov.hmrc.http.{HttpResponse, UpstreamErrorResponse}
 
-trait RequestExtensions {
+import scala.concurrent.Future
 
-  implicit class RequestExtension[T](request: Request[T]) {
-    def hasHeaderValue(key: String, value: String): Boolean =
-      request.headers.get(key).contains(value)
+trait HttpResponseExtensions {
+
+  implicit class HttpResponseExtensions(response: HttpResponse) {
+
+    def error[A]: Future[A] =
+      Future.failed(UpstreamErrorResponse(response.body, response.status))
+
+    def as[A](implicit reads: Reads[A]): Future[A] =
+      response.json
+        .validate[A]
+        .map(result => Future.successful(result))
+        .recoverTotal(error => Future.failed(JsResult.Exception(error)))
   }
 }

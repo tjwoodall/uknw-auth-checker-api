@@ -16,21 +16,21 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.connectors
 
-import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
-
 import com.typesafe.config.Config
 import org.apache.pekko.actor.ActorSystem
-
 import play.api.http.{HeaderNames, MimeTypes}
 import play.api.libs.json.Json
 import play.api.libs.ws.writeableOf_JsValue
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, Retries}
+import uk.gov.hmrc.http.{HeaderCarrier, Retries, UpstreamErrorResponse}
 import uk.gov.hmrc.uknwauthcheckerapi.config.AppConfig
 import uk.gov.hmrc.uknwauthcheckerapi.models.Rfc7231DateTime
 import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{CustomHeaderNames, HmrcContentTypes}
 import uk.gov.hmrc.uknwauthcheckerapi.models.eis.{EisAuthorisationRequest, EisAuthorisationsResponse}
+import uk.gov.hmrc.uknwauthcheckerapi.utils.{HeaderCarrierExtensions, RequestBuilderExtensions}
+
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class IntegrationFrameworkConnector @Inject() (
@@ -40,7 +40,17 @@ class IntegrationFrameworkConnector @Inject() (
   override val actorSystem:   ActorSystem
 )(implicit ec: ExecutionContext)
     extends Retries
-    with BaseConnector {
+    with RequestBuilderExtensions
+    with HeaderCarrierExtensions {
+
+  def getEisAuthorisationsResponse(eisAuthorisationRequest: EisAuthorisationRequest)(implicit hc: HeaderCarrier): Future[EisAuthorisationsResponse] =
+    retryFor[EisAuthorisationsResponse]("Integration Framework Response")(retryCondition) {
+      httpClient
+        .post(appConfig.eisAuthorisationsUrl)
+        .setHeader(integrationFrameworkHeaders(appConfig.integrationFrameworkBearerToken)*)
+        .withBody(Json.toJson(eisAuthorisationRequest))
+        .executeAndDeserialise[EisAuthorisationsResponse]
+    }
 
   private def integrationFrameworkHeaders(bearerToken: String)(implicit hc: HeaderCarrier): Seq[(String, String)] =
     Seq(
@@ -51,12 +61,7 @@ class IntegrationFrameworkConnector @Inject() (
       (HeaderNames.AUTHORIZATION, s"Bearer $bearerToken")
     )
 
-  def getEisAuthorisationsResponse(eisAuthorisationRequest: EisAuthorisationRequest)(implicit hc: HeaderCarrier): Future[EisAuthorisationsResponse] =
-    retryFor[EisAuthorisationsResponse]("Integration Framework Response")(retryCondition) {
-      httpClient
-        .post(appConfig.eisAuthorisationsUrl)
-        .setHeader(integrationFrameworkHeaders(appConfig.integrationFrameworkBearerToken)*)
-        .withBody(Json.toJson(eisAuthorisationRequest))
-        .executeAndDeserialise[EisAuthorisationsResponse]
-    }
+  private def retryCondition: PartialFunction[Exception, Boolean] = { case UpstreamErrorResponse.Upstream5xxResponse(_) =>
+    true
+  }
 }
