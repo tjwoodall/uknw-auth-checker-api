@@ -23,6 +23,7 @@ lazy val microservice = Project("uknw-auth-checker-api", file("."))
   )
 
 Test / javaOptions += "-Dlogger.resource=logback-test.xml"
+Test / classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.Flat
 
 lazy val it = project
   .enablePlugins(PlayScala)

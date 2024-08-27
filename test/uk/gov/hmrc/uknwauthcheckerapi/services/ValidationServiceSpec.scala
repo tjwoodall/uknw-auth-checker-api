@@ -64,7 +64,7 @@ class ValidationServiceSpec extends BaseSpec {
       }
     }
 
-    "return JsError when AuthorisationRequest eoris are invalid" in {
+    "return JsError when AuthorisationRequest eoris are invalid and no duplicates" in {
       forAll { (authorisationRequest: AuthorisationRequest) =>
         val json = Json.toJson(authorisationRequest.copy(eoris = Seq("ABCD", "EFGH")))
 
@@ -77,6 +77,32 @@ class ValidationServiceSpec extends BaseSpec {
                   Seq(
                     JsonValidationError(ApiErrorMessages.invalidEori("ABCD")),
                     JsonValidationError(ApiErrorMessages.invalidEori("EFGH"))
+                  )
+                )
+              }
+            )
+          )
+
+        val request = fakeRequestWithJsonBody(json)
+
+        val response = service.validateRequest(request)
+
+        response shouldBe Left(expectedResponse)
+      }
+    }
+
+    "return JsError when AuthorisationRequest eoris are invalid and duplicates must be flattened" in {
+      forAll { (authorisationRequest: AuthorisationRequest) =>
+        val json = Json.toJson(authorisationRequest.copy(eoris = Seq("ABCD", "ABCD")))
+
+        val expectedResponse =
+          ValidationDataRetrievalError(
+            JsError(
+              Seq(JsonPaths.eoris).map { field =>
+                (
+                  JsPath \ field,
+                  Seq(
+                    JsonValidationError(ApiErrorMessages.invalidEori("ABCD"))
                   )
                 )
               }

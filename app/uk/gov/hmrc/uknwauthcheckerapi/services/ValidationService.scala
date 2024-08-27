@@ -47,31 +47,30 @@ class ValidationService @Inject() (minMaxValues: MinMaxValues) {
     } yield request
 
   private def validateEoriCount(request: AuthorisationRequest): ValidationResult[AuthorisationRequest] =
-    if (isEoriSizeInvalid(request.eoris.size)) {
-      Left(JsError(JsPath \ JsonPaths.eoris, ApiErrorMessages.invalidEoriCount(minMaxValues.maxEoriCount)))
-    } else {
-      Right(request)
-    }
+    Either.cond(
+      isEoriSizeValid(request.eoris.size),
+      request,
+      JsError(JsPath \ JsonPaths.eoris, ApiErrorMessages.invalidEoriCount(minMaxValues.maxEoriCount))
+    )
 
   private def validateEoriStructure(request: AuthorisationRequest): ValidationResult[AuthorisationRequest] = {
-    val eoriErrors = request.eoris.collect {
-      case eori if !eori.matches(CustomRegexes.eoriPattern) => JsonValidationError(ApiErrorMessages.invalidEori(eori))
-    }
-
-    if (eoriErrors.nonEmpty) {
-      Left(
-        JsError(
-          Seq(JsonPaths.eoris).map { field =>
-            (JsPath \ field, eoriErrors)
-          }
-        )
+    val invalidEoriErrors = getInvalidEoriErrors(request.eoris)
+    Either.cond(
+      invalidEoriErrors.isEmpty,
+      request,
+      JsError(
+        Seq(JsonPaths.eoris).map { field =>
+          (JsPath \ field, invalidEoriErrors)
+        }
       )
-    } else {
-      Right(request)
-    }
+    )
   }
 
-  private def isEoriSizeInvalid(eorisSize: Int): Boolean =
-    eorisSize > minMaxValues.maxEoriCount || eorisSize < minMaxValues.minEoriCount
+  private def isEoriSizeValid(eorisSize: Int): Boolean =
+    eorisSize <= minMaxValues.maxEoriCount && eorisSize >= minMaxValues.minEoriCount
 
+  private def getInvalidEoriErrors(eoris: Seq[String]): Seq[JsonValidationError] =
+    eoris.collect {
+      case eori if !eori.matches(CustomRegexes.eoriPattern) => JsonValidationError(ApiErrorMessages.invalidEori(eori))
+    }.distinct
 }
