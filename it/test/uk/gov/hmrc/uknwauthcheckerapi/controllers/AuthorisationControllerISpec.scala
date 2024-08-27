@@ -86,6 +86,18 @@ class AuthorisationControllerISpec extends BaseISpec {
       }
     }
 
+    "return BAD_REQUEST when request validation is invalid and duplicates passed" in new TestContext {
+      forAll { (invalidRequest: DuplicateInvalidEorisAuthorisationRequest) =>
+        reset()
+
+        val authorisationRequestJson: JsValue = Json.toJson(invalidRequest.request)
+
+        val result: WSResponse = postRequest(authorisationsUrl, authorisationRequestJson)
+
+        result.status mustBe BAD_REQUEST
+      }
+    }
+
     "return REQUEST_ENTITY_TOO_LARGE when request validation is invalid" in new TestContext {
       forAll { (invalidRequest: TooLargeAuthorisationRequest) =>
         reset()

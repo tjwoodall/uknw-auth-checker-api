@@ -69,6 +69,16 @@ trait TestData extends Generators {
     )
   }
 
+  implicit protected val arbDuplicateInvalidEorisAuthorisationRequest: Arbitrary[DuplicateInvalidEorisAuthorisationRequest] = Arbitrary {
+    for {
+      randomString <- Arbitrary.arbitrary[String].filterNot(_.isEmpty)
+    } yield DuplicateInvalidEorisAuthorisationRequest(
+      AuthorisationRequest(
+        Seq(randomString, randomString)
+      )
+    )
+  }
+
   implicit protected val arbLocalDate: Arbitrary[LocalDate] = Arbitrary(
     Gen
       .choose(
@@ -172,6 +182,7 @@ trait TestData extends Generators {
     )
 }
 
+final case class DuplicateInvalidEorisAuthorisationRequest(request: AuthorisationRequest)
 final case class InvalidEorisAuthorisationRequest(request: AuthorisationRequest)
 final case class NoEorisAuthorisationRequest(request: AuthorisationRequest)
 final case class TooLargeAuthorisationRequest(request: AuthorisationRequest)
