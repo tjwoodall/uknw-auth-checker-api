@@ -1,7 +1,7 @@
 meta {
   name: 200-1000-Eori
   type: http
-  seq: 7
+  seq: 4
 }
 
 post {
@@ -1020,4 +1020,17 @@ body:json {
       "GB954679234432477"
     ]
   }
+}
+
+tests {
+  test("should have only 1000 EORI results", function() {
+    const data = res.getBody();
+    expect(res.getStatus()).to.equal(200);
+    expect(data.eoris).to.be.an('array').that.has.lengthOf(1000);
+  });
+  
+  test("all EORI results should be unauthorised", function() {
+    const data = res.getBody();
+    data.eoris.map(json => expect(json.authorised).to.equal(false))
+  });
 }

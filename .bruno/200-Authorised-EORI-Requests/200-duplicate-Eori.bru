@@ -1,7 +1,7 @@
 meta {
   name: 200-duplicate-Eori
   type: http
-  seq: 4
+  seq: 6
 }
 
 post {
@@ -17,7 +17,10 @@ headers {
 
 body:json {
   {
-    "eoris" : ["GB837826880909874","GB837826880909874"]
+    "eoris": [
+      "GB837826880909874",
+      "GB837826880909874"
+    ]
   }
 }
 
@@ -26,5 +29,10 @@ tests {
     const data = res.getBody();
     expect(res.getStatus()).to.equal(200);
     expect(data.eoris).to.be.an('array').that.has.lengthOf(1);
+  });
+  
+  test("all EORI results should be authorised", function() {
+    const data = res.getBody();
+    data.eoris.map(json => expect(json.authorised).to.equal(true))
   });
 }

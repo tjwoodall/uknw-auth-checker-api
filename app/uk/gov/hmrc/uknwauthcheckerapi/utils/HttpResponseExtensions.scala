@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.utils
 
+import scala.concurrent.Future
+
 import play.api.libs.json.{JsResult, Reads}
 import uk.gov.hmrc.http.{HttpResponse, UpstreamErrorResponse}
-
-import scala.concurrent.Future
 
 trait HttpResponseExtensions {
 

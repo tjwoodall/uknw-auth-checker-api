@@ -1,0 +1,38 @@
+meta {
+  name: 200-duplicate-Eori
+  type: http
+  seq: 6
+}
+
+post {
+  url: http://localhost:9070/authorisations
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/vnd.hmrc.1.0+json
+  Authorization: {{bearerToken}}
+}
+
+body:json {
+  {
+    "eoris": [
+      "GB702601139907",
+      "GB702601139907"
+    ]
+  }
+}
+
+tests {
+  test("should have only one EORI result", function() {
+    const data = res.getBody();
+    expect(res.getStatus()).to.equal(200);
+    expect(data.eoris).to.be.an('array').that.has.lengthOf(1);
+  });
+  
+  test("all EORI results should be unauthorised", function() {
+    const data = res.getBody();
+    data.eoris.map(json => expect(json.authorised).to.equal(false))
+  });
+}

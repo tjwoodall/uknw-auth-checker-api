@@ -1,7 +1,7 @@
 meta {
-  name: 406-No-Accept-Header
+  name: 400-Invalid-with-authorised-unauthorised-Eori
   type: http
-  seq: 11
+  seq: 4
 }
 
 post {
@@ -11,13 +11,16 @@ post {
 }
 
 headers {
+  Accept: application/vnd.hmrc.1.0+json
   Authorization: {{bearerToken}}
 }
 
 body:json {
   {
     "eoris": [
-      "GB000000000200"
+      "JsdbuwnNN%$400",
+      "GB837826880909874",
+      "GB702601139907"
     ]
   }
 }

@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.utils
 
+import java.util.UUID
+
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.uknwauthcheckerapi.controllers.BaseSpec
 import uk.gov.hmrc.uknwauthcheckerapi.generators.TestRegexes
 import uk.gov.hmrc.uknwauthcheckerapi.models.constants.CustomHeaderNames
-
-import java.util.UUID
 
 class HeaderCarrierExtensionsSpec extends BaseSpec with HeaderCarrierExtensions {
 

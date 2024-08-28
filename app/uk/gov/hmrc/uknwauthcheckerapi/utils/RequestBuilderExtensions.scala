@@ -16,13 +16,13 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.utils
 
+import scala.concurrent.{ExecutionContext, Future}
+
 import play.api.http.Status.OK
 import play.api.libs.json.Reads
-import uk.gov.hmrc.http.HttpReads.Implicits.*
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.http.client.RequestBuilder
-
-import scala.concurrent.{ExecutionContext, Future}
 
 trait RequestBuilderExtensions extends HttpResponseExtensions {
 
