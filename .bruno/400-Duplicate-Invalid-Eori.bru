@@ -1,11 +1,11 @@
 meta {
   name: 400-Duplicate-Invalid-Eori
   type: http
-  seq: 5
+  seq: 2
 }
 
 post {
-  url: http://localhost:9070/authorisations
+  url: {{apiEndpoint}}
   body: json
   auth: none
 }

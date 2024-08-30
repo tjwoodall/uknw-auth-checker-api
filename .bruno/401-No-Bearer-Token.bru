@@ -1,18 +1,17 @@
 meta {
-  name: 201-Invalid-Bearer-Token
+  name: 401-No-Bearer-Token
   type: http
-  seq: 3
+  seq: 8
 }
 
 post {
-  url: http://localhost:9070/authorisations
+  url: {{apiEndpoint}}
   body: json
   auth: none
 }
 
 headers {
   Accept: application/vnd.hmrc.1.0+json
-  Authorization: Bearer INVALID_TOKEN
 }
 
 body:json {

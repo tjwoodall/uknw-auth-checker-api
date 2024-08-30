@@ -1,11 +1,11 @@
 meta {
   name: 400-Invalid-Json-Format
   type: http
-  seq: 7
+  seq: 4
 }
 
 post {
-  url: http://localhost:9070/authorisations
+  url: {{apiEndpoint}}
   body: json
   auth: none
 }

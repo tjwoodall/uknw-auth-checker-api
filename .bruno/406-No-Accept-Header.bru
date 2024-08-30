@@ -1,11 +1,11 @@
 meta {
   name: 406-No-Accept-Header
   type: http
-  seq: 11
+  seq: 10
 }
 
 post {
-  url: http://localhost:9070/authorisations
+  url: {{apiEndpoint}}
   body: json
   auth: none
 }
