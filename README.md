@@ -249,7 +249,7 @@ Using [service manager](https://github.com/hmrc/service-manager)
 with the service manager profile `UKNW_AUTH_CHECKER_API` will start
 the UKNW auth checker API.
 
-> `sm --start UKNW_AUTH_CHECKER_API`
+> `sm2 --start UKNW_AUTH_CHECKER_API`
 
 ## Running tests
 
