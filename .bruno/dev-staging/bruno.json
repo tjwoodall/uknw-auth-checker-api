@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "NOP Staging & Dev",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

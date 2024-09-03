@@ -77,7 +77,7 @@ The fake bearer token (base64 decoded as `<VALID_TOKEN>`) is stored in the
 [application.conf](https://github.com/hmrc/uknw-auth-checker-api-stub/blob/main/conf/application.conf)
 file under `microservices.services.integration-framework.bearerToken`.
 
-The stub [uknw-auth-checker-api-stub](https://github.com/hmrc/uknw-auth-checker-api-stub)
+The [uknw-auth-checker-api-stub](https://github.com/hmrc/uknw-auth-checker-api-stub)
 has been set up to validate the fake token in each request, so not including it will respond with 401 `UNAUTHORIZED`.
 
 ## Responses
@@ -287,10 +287,10 @@ This is a sbt command alias specific to this project. It will run the scala fix
 linter/reformatter in the app, tests, and integration tests
 > `sbt fixAll`
 
-## Requesting data from the Stub API
+## Requesting data from the API
 
-To request data from the stub API please use the `.bru` files that
-can be found in `.bruno`. Do not change any of the .bru files, as the stub API
+To request data from the API please use the `.bru` files that
+can be found in `.bruno`. Do not change any of the .bru files, as the API
 returns an error `500` INTERNAL_SERVER_ERROR on any unexpected requests.
 
 Furthermore, the `Local` environment in bruno should be used, which enables a pre-script
@@ -301,38 +301,73 @@ the `bearerToken` environment variable.
 To add a new expected request please refer to the [uknw-auth-checker-api-stub
 /README.md](https://github.com/hmrc/uknw-auth-checker-api-stub/blob/main/README.md)
 
-### Bruno files //TODO: Update with new scripts, descriptions and locations
+### EORI regular expression
 
-| Bruno file                                        | Description                                                                                                                                                                                               | Location                                                                                                                          |
-|---------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
-| 200-1-Eori                                        | Valid request with 1 stub authorised EORI matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`                                                                                                   | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/200-Authorised-EORI-Requests/200-1-Eori.bru                        |
-| 200-100-Eori                                      | Valid request with 100 stub authorised EORIs matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`                                                                                                | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/200-Authorised-EORI-Requests/200-100-Eori.bru                      |
-| 200-500-Eori                                      | Valid request with 500 stub authorised EORIs matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`                                                                                                | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/200-Authorised-EORI-Requests/200-500-Eori.bru                      |
-| 200-1000-Eori                                     | Valid request with 1000 stub authorised EORIs matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`                                                                                               | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/200-Authorised-EORI-Requests/200-1000-Eori.bru                     |
-| 200-3000-Eori                                     | Valid request with 3000 stub authorised EORIs matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`                                                                                               | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/200-Authorised-EORI-Requests/200-3000-Eori.bru                     |
-| 200-duplicate-Eori                                | Valid request with 2 stub authorised duplicate EORI matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`                                                                                         | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/200-Authorised-EORI-Requests/200-duplicate-Eori.bru                |
-| 200-1-Eori                                        | Valid request with 1 stub unauthorised EORI matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`                                                                                                 | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/200-Unauthorised-EORI-Requests/200-1-Eori.bru                      |
-| 200-100-Eori                                      | Valid request with 100 stub unauthorised EORIs matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`                                                                                              | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/200-Unauthorised-EORI-Requests/200-100-Eori.bru                    |
-| 200-500-Eori                                      | Valid request with 500 stub unauthorised EORIs matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`                                                                                              | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/200-Unauthorised-EORI-Requests/200-500-Eori.bru                    |
-| 200-1000-Eori                                     | Valid request with 1000 stub unauthorised EORIs matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`                                                                                             | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/200-Unauthorised-EORI-Requests/200-1000-Eori.bru                   |
-| 200-3000-Eori                                     | Valid request with 3000 stub unauthorised EORIs matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`                                                                                             | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/200-Unauthorised-EORI-Requests/200-3000-Eori.bru                   |
-| 200-duplicate-Eori                                | Valid request with 2 stub unauthorised duplicate EORI matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`                                                                                       | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/200-Unauthorised-EORI-Requests/200-duplicate-Eori.bru              |
-| 200-1-authorised-unauthorised-Eori                | Valid request with 1 stub authorised and unauthorised EORI matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`                                                                                  | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/200-Mixed-Requests/200-1-authorised-unauthorised-Eori.bru          |
-| 200-100-authorised-unauthorised-Eori              | Valid request with 100 stub authorised and 100 unauthorised EORI matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`                                                                            | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/200-Mixed-Requests/200-100-authorised-unauthorised-Eori.bru        |
-| 401-Invalid-Bearer-Token                          | Unauthorized request with an invalid bearer token                                                                                                                                                         | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/401-Invalid-Bearer-Token.bru                                       |
-| 401-No-Bearer-Token                               | Unauthorized request with no bearer token                                                                                                                                                                 | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/401-No-Bearer-Token.bru                                            |
-| 400-0-Eori                                        | Invalid request with zero EORI                                                                                                                                                                            | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/400-0-Eori.bru                                                     |
-| 400-3001-Eori                                     | Invalid request with greater than 3000 EORI                                                                                                                                                               | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/400-3001-Eori.bru                                                  |
-| 400-Invalid-Eori                                  | Invalid request with 1 EORI not matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`                                                                                                             | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/400-Invalid-EORI/400-Invalid-Eori.bru                              |
-| 400-Invalid-with-authorised-Eori.bru              | Invalid request with invalid EORIs matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$` and stub authorised EORIs matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`                  | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/400-Invalid-EORI/400-Invalid-with-authorised-Eori.bru              |
-| 400-Invalid-with-unauthorised-Eori.bru            | Invalid request with invalid EORIs matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$` and stub unauthorised EORIs matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`                | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/400-Invalid-EORI/400-Invalid-with-unauthorised-Eori.bru            |
-| 400-Invalid-with-authorised-unauthorised-Eori.bru | Invalid request with invalid EORIs matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$` and stub authorised and unauthorised EORIs matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$` | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/400-Invalid-EORI/400-Invalid-with-authorised-unauthorised-Eori.bru |
-| 400-Duplicate-Invalid-Eori                        | Invalid request with two EORI which are duplicates not matching `^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$`                                                                                      | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/400-Duplicate-Invalid-Eori.bru                                     |
-| 400-Invalid-Json-Empty                            | Invalid request with an empty JSON object                                                                                                                                                                 | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/400-Invalid-Json-Empty.bru                                         |
-| 400-Invalid-Json-Format                           | Invalid request with invalid JSON                                                                                                                                                                         | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/400-Invalid-Json-Format.bru                                        |
-| 406-No-Accept-Header                              | Invalid request with no `application/vnd.hmrc.1.0+json` Accept header set                                                                                                                                 | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/406-No-Accept-Header.bru                                           |
-| 406-No-Body.bru                                   | Invalid request with no JSON body                                                                                                                                                                         | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/406-No-Body.bru                                                    |
-| 406-Entity-Too-Large.bru                          | Invalid request with which has a size over 100 KB                                                                                                                                                         | https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/413-Entity-Too-Large.bru                                           |
+The regular expression for EORIs to be matched against is as follows:
+
+```text
+^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$
+```
+
+Any bruno request which states invalid EORI will have one or more EORIs which do not match the EORI regular explression pattern.
+
+### Local, Dev & Staging Bruno files
+
+Located in either `.bruno/local` or `./bruno/dev-staging`
+
+| Bruno file                                    | Folder                         | Description                                                               |
+|-----------------------------------------------|--------------------------------|---------------------------------------------------------------------------|
+| 200-1-Eori                                    | 200-Authorised-EORI-Requests   | Valid request with 1 authorised EORI                                      |
+| 200-100-Eori                                  | 200-Authorised-EORI-Requests   | Valid request with 100 authorised EORIs                                   |
+| 200-500-Eori                                  | 200-Authorised-EORI-Requests   | Valid request with 500 authorised EORIs                                   |
+| 200-1000-Eori                                 | 200-Authorised-EORI-Requests   | Valid request with 1000 authorised EORIs                                  |
+| 200-3000-Eori                                 | 200-Authorised-EORI-Requests   | Valid request with 3000 authorised EORIs                                  |
+| 200-duplicate-Eori                            | 200-Authorised-EORI-Requests   | Valid request with 2 authorised duplicate EORI                            |
+| 200-1-Eori                                    | 200-Unauthorised-EORI-Requests | Valid request with 1 unauthorised EORI                                    |
+| 200-100-Eori                                  | 200-Unauthorised-EORI-Requests | Valid request with 100 unauthorised EORIs                                 |
+| 200-500-Eori                                  | 200-Unauthorised-EORI-Requests | Valid request with 500 unauthorised EORIs                                 |
+| 200-1000-Eori                                 | 200-Unauthorised-EORI-Requests | Valid request with 1000 unauthorised EORIs                                |
+| 200-3000-Eori                                 | 200-Unauthorised-EORI-Requests | Valid request with 3000 unauthorised EORIs                                |
+| 200-duplicate-Eori                            | 200-Unauthorised-EORI-Requests | Valid request with 2 unauthorised duplicate EORI                          |
+| 200-1-authorised-unauthorised-Eori            | 200-Mixed-Requests             | Valid request with 1 authorised and unauthorised EORI                     |
+| 200-100-authorised-unauthorised-Eori          | 200-Mixed-Requests             | Valid request with 100 authorised and 100 unauthorised EORI               |
+| 401-Invalid-Bearer-Token                      |                                | Unauthorized request with an invalid bearer token                         |
+| 401-No-Bearer-Token                           |                                | Unauthorized request with no bearer token                                 |
+| 400-0-Eori                                    |                                | Invalid request with zero EORI                                            |
+| 400-3001-Eori                                 |                                | Invalid request with greater than 3000 EORI                               |
+| 400-Invalid-Eori                              | 400-Invalid-EORI               | Invalid request with 1 EORI not                                           |
+| 400-Invalid-with-authorised-Eori              | 400-Invalid-EORI               | Invalid request with invalid EORIs and authorised EORIs                   |
+| 400-Invalid-with-unauthorised-Eori            | 400-Invalid-EORI               | Invalid request with invalid EORIs and unauthorised EORIs                 |
+| 400-Invalid-with-authorised-unauthorised-Eori | 400-Invalid-EORI               | Invalid request with invalid EORIs and authorised and unauthorised EORIs  |
+| 400-Duplicate-Invalid-Eori                    |                                | Invalid request with two EORI which are duplicates                        |
+| 400-Invalid-Json-Empty                        |                                | Invalid request with an empty JSON object                                 |
+| 400-Invalid-Json-Format                       |                                | Invalid request with invalid JSON                                         |
+| 406-No-Accept-Header                          |                                | Invalid request with no `application/vnd.hmrc.1.0+json` Accept header set |
+| 406-No-Body.bru                               |                                | Invalid request with no JSON body                                         |
+| 413-Entity-Too-Large.bru                      |                                | Invalid request with which has a size over 100 KB                         |
+
+### QA Bruno files
+
+| Bruno file                                       | Description                                                               |
+|--------------------------------------------------|---------------------------------------------------------------------------|
+| 200-1-Eori                                       | Valid request with 1 authorised EORI                                      |
+| 200-1-Expired-Eoris-Valid-Auth                   | Valid request with 1 unauthorised (expired) EORI                          |
+| 200-2-Same-Eoris-1-Different-Eori                | Valid request 3 (2 are duplicates) EORIs                                  |
+| 200-5-Same-Eoris-5-Different-Eori                | Valid request with 10 (5 are duplicates) authorised EORIs                 |
+| 200-19-Valid-Same-Eoris-1-Valid-Different-Eori   | Valid request with 20 (19 are duplicates) authorised EORIs                |
+| 200-20-Valid-Eoris-Valid-Auth                    | Valid request with 20 authorised EORIs                                    |
+| 400-Invalid-Eori                                 | Invalid request with 2 invalid EORIs                                      |
+| 400-Invalid-Json-Format                          | Invalid request with invalid JSON                                         |
+| 400-Invalid-Json-Empty                           | Invalid request with an empty JSON object                                 |
+| 400-0-Eori                                       | Invalid request with zero EORI                                            |
+| 400-2-Valid-Eoris-2-Expired-Eori-2-Invalid-Eoris | Invalid request with 4 valid EORIs and 2 invalid EORIs                    |
+| 400-19-Valid-Eoris-1-Invalid-EORI                | Invalid request with 19 valid EORIs and 1 invalid EORI                    |
+| 400-21-Eori                                      | Valid request with 21 EORI (limit in QA is 20)                            |
+| 401-Invalid-Bearer-Token                         | Unauthorized request with an invalid bearer token                         |
+| 401-No-Bearer-Token                              | Unauthorized request with an invalid bearer token                         |
+| 406-No-Body                                      | Unauthorized request with no bearer token                                 |
+| 406-No-Accept-Header                             | Invalid request with no `application/vnd.hmrc.1.0+json` Accept header set |
+| Get Bearer Token Manual                          | Invalid request with no JSON body                                         |
 
 ## License
 

@@ -1,0 +1,45 @@
+meta {
+  name: 400-21-Eori
+  type: http
+  seq: 13
+}
+
+post {
+  url: {{apiEndpoint}}
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/vnd.hmrc.1.0+json
+  Authorization: Bearer {{bearerToken}}
+  X-Correlation-Id: {{correlationId}}
+}
+
+body:json {
+  {
+    "eoris": [
+      "GB473815539404392",
+      "GB837826880909874",
+      "XI968840631629",
+      "XI436105828614",
+      "XI670738444417",
+      "XI299090776708",
+      "XI991478748583180",
+      "GB664747832914",
+      "GB845942880618380",
+      "GB698422523946525",
+      "XI424550299466",
+      "GB944107196831",
+      "XI876202322763652",
+      "XI954761792185551",
+      "XI705873897754",
+      "XI030464530763",
+      "GB138229072434544",
+      "XI561521218783",
+      "XI699827953498",
+      "GB431532672087862",
+      "XI640240976078"
+    ]
+  }
+}

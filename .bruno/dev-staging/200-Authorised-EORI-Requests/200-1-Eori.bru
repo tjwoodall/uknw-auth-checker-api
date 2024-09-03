@@ -1,0 +1,37 @@
+meta {
+  name: 200-1-Eori
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{apiEndpoint}}
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/vnd.hmrc.1.0+json
+  Authorization: Bearer {{bearerToken}}
+}
+
+body:json {
+  {
+    "eoris": [
+      "GB837826880909874"
+    ]
+  }
+}
+
+tests {
+  test("should have 1 EORI result", function() {
+    const data = res.getBody();
+    expect(res.getStatus()).to.equal(200);
+    expect(data.eoris).to.be.an('array').that.has.lengthOf(1);
+  });
+  
+  test("all EORI results should be authorised", function() {
+    const data = res.getBody();
+    data.eoris.map(json => expect(json.authorised).to.equal(true))
+  });
+}

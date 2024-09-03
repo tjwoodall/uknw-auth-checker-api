@@ -1,0 +1,23 @@
+meta {
+  name: 406-No-Accept-Header
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{apiEndpoint}}
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{bearerToken}}
+}
+
+body:json {
+  {
+    "eoris": [
+      "GB000000000200"
+    ]
+  }
+}

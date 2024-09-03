@@ -1,0 +1,25 @@
+meta {
+  name: 401-Invalid-Bearer-Token
+  type: http
+  seq: 14
+}
+
+post {
+  url: {{apiEndpoint}}
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/vnd.hmrc.1.0+json
+  Authorization: Bearer INVALID_TOKEN
+  X-Correlation-Id: {{correlationId}}
+}
+
+body:json {
+  {
+    "eoris": [
+      "GB000000000200"
+    ]
+  }
+}

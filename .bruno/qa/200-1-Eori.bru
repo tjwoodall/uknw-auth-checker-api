@@ -1,0 +1,25 @@
+meta {
+  name: 200-1-Eori
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{apiEndpoint}}
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/vnd.hmrc.1.0+json
+  Authorization: Bearer {{bearerToken}}
+  X-Correlation-Id: {{correlationId}}
+}
+
+body:json {
+  {
+    "eoris": [
+      "GB567891011121"
+    ]
+  }
+}

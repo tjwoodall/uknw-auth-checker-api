@@ -1,0 +1,30 @@
+meta {
+  name: 400-2-Valid-Eoris-2-Expired-Eori-2-Invalid-Eoris
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{apiEndpoint}}
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/vnd.hmrc.1.0+json
+  Authorization: Bearer {{bearerToken}}
+  X-Correlation-Id: {{correlationId}}
+}
+
+body:json {
+  {
+    "eoris": [
+      "GB567891011121",
+      "GB567891011122",
+      "GB567891011153",
+      "GB567891011154",
+      "GBXX567891011153",
+      "GBZZ567891011153"
+    ]
+  }
+}

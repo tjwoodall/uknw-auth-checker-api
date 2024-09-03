@@ -1,0 +1,33 @@
+meta {
+  name: 400-Duplicate-Invalid-Eori
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{apiEndpoint}}
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/vnd.hmrc.1.0+json
+  Authorization: Bearer {{bearerToken}}
+}
+
+body:json {
+  {
+      "eoris": [
+        "JsdbuwnNN%$400",
+        "JsdbuwnNN%$400"
+      ]
+  }
+}
+
+tests {
+  test("should have only one EORI result", function() {
+    const data = res.getBody();
+    expect(res.getStatus()).to.equal(400);
+    expect(data.errors).to.be.an('array').that.has.lengthOf(1);
+  });
+}

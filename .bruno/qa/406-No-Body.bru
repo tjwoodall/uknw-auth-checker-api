@@ -1,0 +1,17 @@
+meta {
+  name: 406-No-Body
+  type: http
+  seq: 16
+}
+
+post {
+  url: {{apiEndpoint}}
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/vnd.hmrc.1.0+json
+  Authorization: Bearer {{bearerToken}}
+  X-Correlation-Id: {{correlationId}}
+}

@@ -1,0 +1,17 @@
+meta {
+  name: Get Bearer Token Manual
+  type: http
+  seq: 18
+}
+
+post {
+  url: {{oauthEndpoint}}
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  client_id: 
+  client_secret: 
+  grant_type: client_credentials
+}

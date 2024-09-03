@@ -1,0 +1,26 @@
+meta {
+  name: 400-Invalid-Eori
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{apiEndpoint}}
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/vnd.hmrc.1.0+json
+  Authorization: Bearer {{bearerToken}}
+  X-Correlation-Id: {{correlationId}}
+}
+
+body:json {
+  {
+      "eoris": [
+        "JsdbuwnNN%$400",
+        "ABASDE£245cS!@"
+      ]
+  }
+}

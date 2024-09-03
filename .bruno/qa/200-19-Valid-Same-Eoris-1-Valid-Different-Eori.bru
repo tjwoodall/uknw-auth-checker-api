@@ -1,0 +1,44 @@
+meta {
+  name: 200-19-Valid-Same-Eoris-1-Valid-Different-Eori
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{apiEndpoint}}
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/vnd.hmrc.1.0+json
+  Authorization: Bearer {{bearerToken}}
+  X-Correlation-Id: {{correlationId}}
+}
+
+body:json {
+  {
+    "eoris": [
+      "GB567891011121",
+      "GB567891011121",
+      "GB567891011121",
+      "GB567891011121",
+      "GB567891011121",
+      "GB567891011121",
+      "GB567891011121",
+      "GB567891011121",
+      "GB567891011121",
+      "GB567891011121",
+      "GB567891011121",
+      "GB567891011121",
+      "GB567891011121",
+      "GB567891011121",
+      "GB567891011121",
+      "GB567891011121",
+      "GB567891011121",
+      "GB567891011121",
+      "GB567891011121",
+      "GB567891011122"
+    ]
+  }
+}

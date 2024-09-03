@@ -1,0 +1,24 @@
+meta {
+  name: 400-Invalid-Json-Format
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{apiEndpoint}}
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/vnd.hmrc.1.0+json
+  Authorization: Bearer {{bearerToken}}
+}
+
+body:json {
+  {
+      "eoris": [
+        "JsdbuwnNN%$400"
+      ]
+  
+}
