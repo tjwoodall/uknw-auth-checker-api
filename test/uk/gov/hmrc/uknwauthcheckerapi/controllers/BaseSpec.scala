@@ -46,7 +46,7 @@ import uk.gov.hmrc.uknwauthcheckerapi.config.AppConfig
 import uk.gov.hmrc.uknwauthcheckerapi.connectors.IntegrationFrameworkConnector
 import uk.gov.hmrc.uknwauthcheckerapi.generators._
 import uk.gov.hmrc.uknwauthcheckerapi.models.constants.MinMaxValues
-import uk.gov.hmrc.uknwauthcheckerapi.services.{IntegrationFrameworkService, LocalDateService, ValidationService}
+import uk.gov.hmrc.uknwauthcheckerapi.services.{IntegrationFrameworkService, LocalDateService, ValidationService, ZonedDateTimeService}
 
 class BaseSpec
     extends AnyWordSpec
@@ -59,10 +59,11 @@ class BaseSpec
     with TestData
     with TestHeaders {
 
-  implicit lazy val ec:           ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
-  implicit lazy val hc:           HeaderCarrier    = HeaderCarrier()
-  implicit lazy val system:       ActorSystem      = ActorSystem()
-  implicit lazy val materializer: Materializer     = Materializer(system)
+  implicit lazy val ec:           ExecutionContext     = scala.concurrent.ExecutionContext.Implicits.global
+  implicit lazy val hc:           HeaderCarrier        = HeaderCarrier()
+  implicit lazy val system:       ActorSystem          = ActorSystem()
+  implicit lazy val materializer: Materializer         = Materializer(system)
+  implicit lazy val zs:           ZonedDateTimeService = injected[ZonedDateTimeService]
 
   protected val additionalAppConfig: Map[String, Any] = Map(
     TestConstants.configMetricsKey  -> false,
@@ -95,7 +96,7 @@ class BaseSpec
 
   protected def configOverrides: Map[String, Any] = Map()
 
-  protected def injected[T](implicit evidence: ClassTag[T]): T = app.injector.instanceOf[T]
+  protected def injected[T](using evidence: ClassTag[T]): T = app.injector.instanceOf[T]
 
   protected def fakeRequestWithJsonBody(
     json:    JsValue,

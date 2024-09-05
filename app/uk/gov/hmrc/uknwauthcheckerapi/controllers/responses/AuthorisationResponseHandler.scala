@@ -28,12 +28,14 @@ import play.api.mvc.{Request, Result, Results}
 import uk.gov.hmrc.uknwauthcheckerapi.errors.DataRetrievalError._
 import uk.gov.hmrc.uknwauthcheckerapi.errors._
 import uk.gov.hmrc.uknwauthcheckerapi.models.AuthorisationsResponse
+import uk.gov.hmrc.uknwauthcheckerapi.models.constants.CustomHeaderNames
+import uk.gov.hmrc.uknwauthcheckerapi.services.ZonedDateTimeService
 
 trait AuthorisationResponseHandler extends Logging {
 
   implicit class AuthorisationsResponseHelper(response: EitherT[Future, DataRetrievalError, AuthorisationsResponse]) {
 
-    def toResult(implicit ec: ExecutionContext, request: Request[JsValue]): Future[Result] =
+    def toResult(using ec: ExecutionContext, request: Request[JsValue], zs: ZonedDateTimeService): Future[Result] =
       response.fold(
         {
           case BadGatewayDataRetrievalError() =>
@@ -60,11 +62,14 @@ trait AuthorisationResponseHandler extends Logging {
             logger.error(toLogMessage(INTERNAL_SERVER_ERROR))
             InternalServerApiError.toResult
         },
-        authorisationsResponse => Results.Status(OK)(Json.toJson(authorisationsResponse))
+        authorisationsResponse =>
+          Results
+            .Status(OK)(Json.toJson(authorisationsResponse))
+            .withHeaders((CustomHeaderNames.xTimestamp, zs.nowAsIsoUtc8601String()))
       )
   }
 
-  private def toLogMessage(statusCode: Int, errorMessage: Option[String] = None)(implicit request: Request[JsValue]): String = {
+  private def toLogMessage(statusCode: Int, errorMessage: Option[String] = None)(using request: Request[JsValue]): String = {
     val logMessage = s"[AuthorisationResponseHandler][toResult] error for (${request.method}) [${request.uri}] with status: $statusCode"
     errorMessage match {
       case Some(message) => s"$logMessage and message $message"

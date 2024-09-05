@@ -21,7 +21,8 @@ import play.api.libs.json._
 import play.api.mvc.Result
 import play.api.mvc.Results.Status
 import uk.gov.hmrc.uknwauthcheckerapi.errors.transformers.{BadRequestErrorTransformer, JsErrorTransformer}
-import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{ApiErrorCodes, ApiErrorMessages, JsonPaths}
+import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{ApiErrorCodes, ApiErrorMessages, CustomHeaderNames, JsonPaths}
+import uk.gov.hmrc.uknwauthcheckerapi.services.ZonedDateTimeService
 
 sealed trait ApiErrorResponse {
   def statusCode: Int
@@ -35,7 +36,8 @@ sealed trait ApiErrorResponse {
       case _ => Json.toJson(this)
     }
 
-  def toResult: Result = Status(statusCode)(Json.toJson(convertErrorsToReadableFormat))
+  def toResult(using zs: ZonedDateTimeService): Result = Status(statusCode)(Json.toJson(convertErrorsToReadableFormat))
+    .withHeaders((CustomHeaderNames.xTimestamp, zs.nowAsIsoUtc8601String()))
 }
 
 object ApiErrorResponse {

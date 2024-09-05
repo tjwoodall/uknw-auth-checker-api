@@ -27,9 +27,10 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import uk.gov.hmrc.uknwauthcheckerapi.errors.{ServiceUnavailableApiError, UnauthorizedApiError}
 import uk.gov.hmrc.uknwauthcheckerapi.models.constants.ApiErrorMessages
+import uk.gov.hmrc.uknwauthcheckerapi.services.ZonedDateTimeService
 
 @Singleton
-class AuthAction @Inject() (ac: AuthConnector)(implicit val executionContext: ExecutionContext) extends ActionFilter[Request] with Logging {
+class AuthAction @Inject() (ac: AuthConnector)(using ec: ExecutionContext, zs: ZonedDateTimeService) extends ActionFilter[Request] with Logging {
   private val auth = new AuthorisedFunctions {
     def authConnector: AuthConnector = ac
   }
@@ -50,4 +51,6 @@ class AuthAction @Inject() (ac: AuthConnector)(implicit val executionContext: Ex
           Some(ServiceUnavailableApiError.toResult)
       }
   }
+
+  override protected def executionContext: ExecutionContext = ec
 }

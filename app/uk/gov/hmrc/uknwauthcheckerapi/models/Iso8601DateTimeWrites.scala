@@ -23,7 +23,5 @@ import play.api.libs.json.Writes
 import play.api.libs.json.Writes.temporalWrites
 
 object Iso8601DateTimeWrites {
-  private val iso8601DateTimeFormat:    String                = "yyyy-MM-dd'T'HH:mm:ss.SS'Z'"
-  private val iso8601DateTimeFormatter: DateTimeFormatter     = DateTimeFormatter.ofPattern(iso8601DateTimeFormat)
-  implicit val iso8601DateTimeWrites:   Writes[ZonedDateTime] = temporalWrites[ZonedDateTime, DateTimeFormatter](iso8601DateTimeFormatter)
+  implicit val iso8601DateTimeWrites: Writes[ZonedDateTime] = temporalWrites[ZonedDateTime, DateTimeFormatter](Iso8601DateTimeFormatter.formatter)
 }

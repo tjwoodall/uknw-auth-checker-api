@@ -18,4 +18,5 @@ package uk.gov.hmrc.uknwauthcheckerapi.models.constants
 
 object CustomHeaderNames {
   val xCorrelationId = "X-Correlation-Id"
+  val xTimestamp     = "X-Timestamp"
 }

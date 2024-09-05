@@ -37,9 +37,7 @@ class IntegrationFrameworkService @Inject() (
   appConfig:                     AppConfig,
   integrationFrameworkConnector: IntegrationFrameworkConnector,
   localDateService:              LocalDateService
-)(implicit
-  ec: ExecutionContext
-) {
+)(using ec: ExecutionContext) {
 
   def getAuthorisations(
     authorisationRequest: AuthorisationRequest

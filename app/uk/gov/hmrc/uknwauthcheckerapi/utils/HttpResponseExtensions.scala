@@ -28,7 +28,7 @@ trait HttpResponseExtensions {
     def error[A]: Future[A] =
       Future.failed(UpstreamErrorResponse(response.body, response.status))
 
-    def as[A](implicit reads: Reads[A]): Future[A] =
+    def as[A](using reads: Reads[A]): Future[A] =
       response.json
         .validate[A]
         .map(result => Future.successful(result))

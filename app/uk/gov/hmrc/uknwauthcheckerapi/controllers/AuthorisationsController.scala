@@ -26,7 +26,7 @@ import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.uknwauthcheckerapi.controllers.actions.{AuthAction, HeaderValidatorAction}
 import uk.gov.hmrc.uknwauthcheckerapi.controllers.responses.AuthorisationResponseHandler
-import uk.gov.hmrc.uknwauthcheckerapi.services.{IntegrationFrameworkService, ValidationService}
+import uk.gov.hmrc.uknwauthcheckerapi.services.{IntegrationFrameworkService, ValidationService, ZonedDateTimeService}
 
 @Singleton()
 class AuthorisationsController @Inject() (
@@ -34,7 +34,7 @@ class AuthorisationsController @Inject() (
   cc:                          ControllerComponents,
   integrationFrameworkService: IntegrationFrameworkService,
   validationService:           ValidationService
-)(implicit ec: ExecutionContext)
+)(using ec: ExecutionContext, zs: ZonedDateTimeService)
     extends BackendController(cc)
     with HeaderValidatorAction
     with AuthorisationResponseHandler {

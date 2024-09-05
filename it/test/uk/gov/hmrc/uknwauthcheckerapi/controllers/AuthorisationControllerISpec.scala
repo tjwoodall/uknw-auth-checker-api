@@ -26,11 +26,11 @@ import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSResponse
 import play.mvc.Http.HeaderNames
-import uk.gov.hmrc.uknwauthcheckerapi.BaseISpec
 import uk.gov.hmrc.uknwauthcheckerapi.generators._
 import uk.gov.hmrc.uknwauthcheckerapi.models._
 import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{CustomHeaderNames, HmrcContentTypes}
 import uk.gov.hmrc.uknwauthcheckerapi.models.eis._
+import uk.gov.hmrc.uknwauthcheckerapi.{BaseISpec, generators}
 
 class AuthorisationControllerISpec extends BaseISpec {
 
@@ -53,6 +53,11 @@ class AuthorisationControllerISpec extends BaseISpec {
           .withHeader(CustomHeaderNames.xCorrelationId, matching(TestRegexes.uuidPattern))
           .withHeader(HeaderNames.DATE, matching(TestRegexes.rfc7231DateTimePattern))
       )
+
+    def verifyTimestampHeader(response: WSResponse): Unit =
+      response.header(CustomHeaderNames.xTimestamp) match
+        case Some(header) => header must fullyMatch regex TestRegexes.iso8601DateTimeFormatPattern
+        case None         => fail("Timestamp header not present")
   }
 
   "POST /authorisations" should {
@@ -70,6 +75,7 @@ class AuthorisationControllerISpec extends BaseISpec {
         val result: WSResponse = postRequest(authorisationsUrl, authorisationRequestJson)
 
         result.status mustBe OK
+        verifyTimestampHeader(result)
         verifyIntegrationFrameworkCall()
       }
     }
@@ -83,6 +89,7 @@ class AuthorisationControllerISpec extends BaseISpec {
         val result: WSResponse = postRequest(authorisationsUrl, authorisationRequestJson)
 
         result.status mustBe BAD_REQUEST
+        verifyTimestampHeader(result)
       }
     }
 
@@ -95,6 +102,7 @@ class AuthorisationControllerISpec extends BaseISpec {
         val result: WSResponse = postRequest(authorisationsUrl, authorisationRequestJson)
 
         result.status mustBe BAD_REQUEST
+        verifyTimestampHeader(result)
       }
     }
 
@@ -107,6 +115,7 @@ class AuthorisationControllerISpec extends BaseISpec {
         val result: WSResponse = postRequest(authorisationsUrl, authorisationRequestJson)
 
         result.status mustBe REQUEST_ENTITY_TOO_LARGE
+        verifyTimestampHeader(result)
       }
     }
 
@@ -122,6 +131,7 @@ class AuthorisationControllerISpec extends BaseISpec {
         val result: WSResponse = postRequest(authorisationsUrl, authorisationRequestJson)
 
         result.status mustBe BAD_REQUEST
+        verifyTimestampHeader(result)
         verifyIntegrationFrameworkCall()
       }
     }
@@ -138,6 +148,7 @@ class AuthorisationControllerISpec extends BaseISpec {
         val result: WSResponse = postRequest(authorisationsUrl, authorisationRequestJson)
 
         result.status mustBe FORBIDDEN
+        verifyTimestampHeader(result)
         verifyIntegrationFrameworkCall()
       }
     }
@@ -154,6 +165,7 @@ class AuthorisationControllerISpec extends BaseISpec {
         val result: WSResponse = postRequest(authorisationsUrl, authorisationRequestJson)
 
         result.status mustBe INTERNAL_SERVER_ERROR
+        verifyTimestampHeader(result)
         verifyIntegrationFrameworkCall(callAmountWith5xxRetries)
       }
     }
@@ -170,6 +182,7 @@ class AuthorisationControllerISpec extends BaseISpec {
         val result: WSResponse = postRequest(authorisationsUrl, authorisationRequestJson)
 
         result.status mustBe INTERNAL_SERVER_ERROR
+        verifyTimestampHeader(result)
         verifyIntegrationFrameworkCall()
       }
     }
@@ -185,6 +198,7 @@ class AuthorisationControllerISpec extends BaseISpec {
         val result: WSResponse = postRequest(authorisationsUrl, authorisationRequestJson)
 
         result.status mustBe SERVICE_UNAVAILABLE
+        verifyTimestampHeader(result)
       }
     }
 
@@ -199,6 +213,7 @@ class AuthorisationControllerISpec extends BaseISpec {
         val result: WSResponse = postRequest(authorisationsUrl, authorisationRequestJson, headers)
 
         result.status mustBe UNAUTHORIZED
+        verifyTimestampHeader(result)
       }
     }
 
@@ -213,6 +228,7 @@ class AuthorisationControllerISpec extends BaseISpec {
         val result: WSResponse = postRequest(authorisationsUrl, authorisationRequestJson, headers)
 
         result.status mustBe NOT_ACCEPTABLE
+        verifyTimestampHeader(result)
       }
     }
 
@@ -224,6 +240,7 @@ class AuthorisationControllerISpec extends BaseISpec {
       val result: WSResponse = postEmptyRequest(authorisationsUrl, headers)
 
       result.status mustBe NOT_ACCEPTABLE
+      verifyTimestampHeader(result)
     }
   }
 }

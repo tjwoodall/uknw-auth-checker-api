@@ -39,7 +39,7 @@ class IntegrationFrameworkConnector @Inject() (
   httpClient:                 HttpClientV2,
   override val configuration: Config,
   override val actorSystem:   ActorSystem
-)(implicit ec: ExecutionContext)
+)(using ec: ExecutionContext)
     extends Retries
     with RequestBuilderExtensions
     with HeaderCarrierExtensions {

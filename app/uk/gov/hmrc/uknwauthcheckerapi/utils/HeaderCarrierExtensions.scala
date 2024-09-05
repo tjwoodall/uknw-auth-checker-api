@@ -23,7 +23,7 @@ import uk.gov.hmrc.uknwauthcheckerapi.models.constants.CustomHeaderNames
 
 trait HeaderCarrierExtensions {
 
-  def generateCorrelationId()(implicit hc: HeaderCarrier): String =
+  def generateCorrelationId()(using hc: HeaderCarrier): String =
     hc.headers(scala.Seq(CustomHeaderNames.xCorrelationId)) match {
       case Seq((_, id)) =>
         id

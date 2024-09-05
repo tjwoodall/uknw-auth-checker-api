@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uknwauthcheckerapi.generators
+package uk.gov.hmrc.uknwauthcheckerapi.services
 
-object TestRegexes {
-  val iso8601DateTimeFormatPattern: String = "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9][0-9]Z"
-  val rfc7231DateTimePattern: String = "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), ([0-3][0-9]) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)" +
-    " ([0-9]{4}) ([01][0-9]|2[0-3])(:[0-5][0-9]){2} [A-Z][A-Z][A-Z]$"
-  val uuidPattern: String = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+import java.time.{ZoneId, ZonedDateTime}
+import javax.inject.Singleton
+
+import uk.gov.hmrc.uknwauthcheckerapi.models.Iso8601DateTimeFormatter
+
+@Singleton
+class ZonedDateTimeService {
+  def nowUtc(): ZonedDateTime = ZonedDateTime.now(ZoneId.of("UTC"))
+
+  def nowAsIsoUtc8601String(): String = Iso8601DateTimeFormatter.format(nowUtc())
 }
