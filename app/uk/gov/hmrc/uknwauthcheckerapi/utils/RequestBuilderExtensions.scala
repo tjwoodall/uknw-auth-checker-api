@@ -24,18 +24,15 @@ import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.http.client.RequestBuilder
 
-trait RequestBuilderExtensions extends HttpResponseExtensions {
-
-  implicit class RequestBuilderExtension(requestBuilder: RequestBuilder) {
-    def executeAndDeserialise[T](implicit ec: ExecutionContext, reads: Reads[T]): Future[T] =
-      requestBuilder
-        .execute[HttpResponse]
-        .flatMap { response =>
-          response.status match {
-            case OK => response.as[T]
-            case _ =>
-              response.error
-          }
+extension (requestBuilder: RequestBuilder) {
+  def executeAndDeserialise[T](implicit ec: ExecutionContext, reads: Reads[T]): Future[T] =
+    requestBuilder
+      .execute[HttpResponse]
+      .flatMap { response =>
+        response.status match {
+          case OK => response.as[T]
+          case _ =>
+            response.error
         }
-  }
+      }
 }

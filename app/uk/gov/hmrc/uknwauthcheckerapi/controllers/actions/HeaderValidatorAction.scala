@@ -23,9 +23,9 @@ import play.api.mvc._
 import uk.gov.hmrc.uknwauthcheckerapi.errors.NotAcceptableApiError
 import uk.gov.hmrc.uknwauthcheckerapi.models.constants.HmrcMimeTypes
 import uk.gov.hmrc.uknwauthcheckerapi.services.ZonedDateTimeService
-import uk.gov.hmrc.uknwauthcheckerapi.utils.RequestExtensions
+import uk.gov.hmrc.uknwauthcheckerapi.utils.hasHeaderValue
 
-trait HeaderValidatorAction(using zs: ZonedDateTimeService) extends Results with RequestExtensions {
+trait HeaderValidatorAction(using zs: ZonedDateTimeService) extends Results {
 
   def validateHeaders(controllerComponents: ControllerComponents): ActionBuilder[Request, AnyContent] = new ActionBuilder[Request, AnyContent] {
 

@@ -18,10 +18,7 @@ package uk.gov.hmrc.uknwauthcheckerapi.utils
 
 import play.api.mvc.Request
 
-trait RequestExtensions {
-
-  implicit class RequestExtension[T](request: Request[T]) {
-    def hasHeaderValue(key: String, value: String): Boolean =
-      request.headers.get(key).contains(value)
-  }
+extension [T](request: Request[T]) {
+  def hasHeaderValue(key: String, value: String): Boolean =
+    request.headers.get(key).contains(value)
 }

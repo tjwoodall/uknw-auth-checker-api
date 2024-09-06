@@ -31,7 +31,7 @@ import uk.gov.hmrc.uknwauthcheckerapi.config.AppConfig
 import uk.gov.hmrc.uknwauthcheckerapi.models.Rfc7231DateTime
 import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{CustomHeaderNames, HmrcContentTypes}
 import uk.gov.hmrc.uknwauthcheckerapi.models.eis.{EisAuthorisationRequest, EisAuthorisationsResponse}
-import uk.gov.hmrc.uknwauthcheckerapi.utils.{HeaderCarrierExtensions, RequestBuilderExtensions}
+import uk.gov.hmrc.uknwauthcheckerapi.utils.{HeaderCarrierExtensions, executeAndDeserialise}
 
 @Singleton
 class IntegrationFrameworkConnector @Inject() (
@@ -41,7 +41,6 @@ class IntegrationFrameworkConnector @Inject() (
   override val actorSystem:   ActorSystem
 )(using ec: ExecutionContext)
     extends Retries
-    with RequestBuilderExtensions
     with HeaderCarrierExtensions {
 
   def getEisAuthorisationsResponse(eisAuthorisationRequest: EisAuthorisationRequest)(implicit hc: HeaderCarrier): Future[EisAuthorisationsResponse] =

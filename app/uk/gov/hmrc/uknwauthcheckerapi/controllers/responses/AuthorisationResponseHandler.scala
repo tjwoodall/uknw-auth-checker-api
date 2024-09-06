@@ -33,7 +33,7 @@ import uk.gov.hmrc.uknwauthcheckerapi.services.ZonedDateTimeService
 
 trait AuthorisationResponseHandler extends Logging {
 
-  implicit class AuthorisationsResponseHelper(response: EitherT[Future, DataRetrievalError, AuthorisationsResponse]) {
+  extension (response: EitherT[Future, DataRetrievalError, AuthorisationsResponse]) {
 
     def toResult(using ec: ExecutionContext, request: Request[JsValue], zs: ZonedDateTimeService): Future[Result] =
       response.fold(

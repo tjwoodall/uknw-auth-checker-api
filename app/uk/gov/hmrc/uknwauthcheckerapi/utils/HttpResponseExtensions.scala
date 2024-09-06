@@ -21,17 +21,14 @@ import scala.concurrent.Future
 import play.api.libs.json.{JsResult, Reads}
 import uk.gov.hmrc.http.{HttpResponse, UpstreamErrorResponse}
 
-trait HttpResponseExtensions {
+extension (response: HttpResponse) {
 
-  implicit class HttpResponseExtensions(response: HttpResponse) {
+  def error[A]: Future[A] =
+    Future.failed(UpstreamErrorResponse(response.body, response.status))
 
-    def error[A]: Future[A] =
-      Future.failed(UpstreamErrorResponse(response.body, response.status))
-
-    def as[A](using reads: Reads[A]): Future[A] =
-      response.json
-        .validate[A]
-        .map(result => Future.successful(result))
-        .recoverTotal(error => Future.failed(JsResult.Exception(error)))
-  }
+  def as[A](using reads: Reads[A]): Future[A] =
+    response.json
+      .validate[A]
+      .map(result => Future.successful(result))
+      .recoverTotal(error => Future.failed(JsResult.Exception(error)))
 }
