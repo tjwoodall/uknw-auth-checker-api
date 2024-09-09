@@ -26,6 +26,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsJson, status}
 import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.uknwauthcheckerapi.controllers.BaseSpec
+import uk.gov.hmrc.uknwauthcheckerapi.errors.ApiErrorResponses._
 import uk.gov.hmrc.uknwauthcheckerapi.generators.TestConstants
 
 class ApiErrorHandlerSpec extends BaseSpec {

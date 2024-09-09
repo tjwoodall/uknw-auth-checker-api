@@ -16,19 +16,22 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.controllers
 
+import java.time.{LocalDate, LocalTime, ZoneId, ZonedDateTime}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
+
 import com.google.inject.AbstractModule
 import com.typesafe.config.Config
 import org.apache.pekko.actor.ActorSystem
 import org.apache.pekko.stream.Materializer
-import org.mockito.ArgumentMatchers.{any, eq as matching}
+import org.mockito.ArgumentMatchers.{any, eq => matching}
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar.mock
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+
 import play.api.Application
 import play.api.http.{HeaderNames, HttpVerbs}
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -42,12 +45,10 @@ import uk.gov.hmrc.http.HttpVerbs.POST
 import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 import uk.gov.hmrc.uknwauthcheckerapi.config.AppConfig
 import uk.gov.hmrc.uknwauthcheckerapi.connectors.IntegrationFrameworkConnector
-import uk.gov.hmrc.uknwauthcheckerapi.generators.*
+import uk.gov.hmrc.uknwauthcheckerapi.generators._
 import uk.gov.hmrc.uknwauthcheckerapi.models.Iso8601DateTimeFormatter
 import uk.gov.hmrc.uknwauthcheckerapi.models.constants.MinMaxValues
 import uk.gov.hmrc.uknwauthcheckerapi.services.{IntegrationFrameworkService, LocalDateService, ValidationService, ZonedDateTimeService}
-
-import java.time.{LocalDate, LocalTime, ZoneId, ZonedDateTime}
 
 class BaseSpec
     extends AnyWordSpec

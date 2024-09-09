@@ -26,7 +26,8 @@ import play.api.test.Helpers.await
 import uk.gov.hmrc.auth.core.retrieve.Credentials
 import uk.gov.hmrc.auth.core.{InternalError, MissingBearerToken}
 import uk.gov.hmrc.uknwauthcheckerapi.controllers.actions.AuthAction
-import uk.gov.hmrc.uknwauthcheckerapi.errors.{ServiceUnavailableApiError, UnauthorizedApiError}
+import uk.gov.hmrc.uknwauthcheckerapi.errors.ApiErrorResponses.ServiceUnavailableApiError
+import uk.gov.hmrc.uknwauthcheckerapi.errors.UnauthorizedApiError
 import uk.gov.hmrc.uknwauthcheckerapi.models.constants.ApiErrorMessages
 
 class AuthActionSpec extends BaseSpec {

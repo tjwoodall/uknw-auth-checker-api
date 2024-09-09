@@ -25,7 +25,8 @@ import uk.gov.hmrc.auth.core.AuthProvider.StandardApplication
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
-import uk.gov.hmrc.uknwauthcheckerapi.errors.{ServiceUnavailableApiError, UnauthorizedApiError}
+import uk.gov.hmrc.uknwauthcheckerapi.errors.ApiErrorResponses.ServiceUnavailableApiError
+import uk.gov.hmrc.uknwauthcheckerapi.errors.UnauthorizedApiError
 import uk.gov.hmrc.uknwauthcheckerapi.models.constants.ApiErrorMessages
 import uk.gov.hmrc.uknwauthcheckerapi.services.ZonedDateTimeService
 

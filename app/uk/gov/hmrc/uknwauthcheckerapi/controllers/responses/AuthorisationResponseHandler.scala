@@ -25,6 +25,7 @@ import play.api.http.Status._
 import play.api.libs.json.JsError.toJson
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Request, Result, Results}
+import uk.gov.hmrc.uknwauthcheckerapi.errors.ApiErrorResponses._
 import uk.gov.hmrc.uknwauthcheckerapi.errors.DataRetrievalError._
 import uk.gov.hmrc.uknwauthcheckerapi.errors._
 import uk.gov.hmrc.uknwauthcheckerapi.models.AuthorisationsResponse
