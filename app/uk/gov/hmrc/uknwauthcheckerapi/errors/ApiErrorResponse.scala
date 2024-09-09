@@ -61,40 +61,16 @@ object ApiErrorResponse {
     JsObject(Seq(JsonPaths.code -> JsString(o.code), JsonPaths.message -> JsString(o.message)))
 }
 
-case object ForbiddenApiError extends ApiErrorResponse {
-  val statusCode: Int    = FORBIDDEN
-  val code:       String = ApiErrorCodes.forbidden
-  val message:    String = ApiErrorMessages.forbidden
-}
-
-case object InternalServerApiError extends ApiErrorResponse {
-  val statusCode: Int    = INTERNAL_SERVER_ERROR
-  val code:       String = ApiErrorCodes.internalServerError
-  val message:    String = ApiErrorMessages.internalServerError
-}
-
-case object NotAcceptableApiError extends ApiErrorResponse {
-  val statusCode: Int    = NOT_ACCEPTABLE
-  val code:       String = ApiErrorCodes.notAcceptable
-  val message:    String = ApiErrorMessages.notAcceptable
-}
-
-case object NotFoundApiError extends ApiErrorResponse {
-  val statusCode: Int    = NOT_FOUND
-  val code:       String = ApiErrorCodes.matchingResourceNotFound
-  val message:    String = ApiErrorMessages.matchingResourceNotFound
-}
-
-case object RequestEntityTooLargeApiError extends ApiErrorResponse {
-  val statusCode: Int    = REQUEST_ENTITY_TOO_LARGE
-  val code:       String = ApiErrorCodes.requestEntityTooLarge
-  val message:    String = ApiErrorMessages.requestEntityTooLarge
-}
-
-case object ServiceUnavailableApiError extends ApiErrorResponse {
-  val statusCode: Int    = SERVICE_UNAVAILABLE
-  val code:       String = ApiErrorCodes.serviceUnavailable
-  val message:    String = ApiErrorMessages.serviceUnavailable
+enum ApiErrorResponses(val statusCode: Int, val code: String, val message: String) extends ApiErrorResponse {
+  case ForbiddenApiError extends ApiErrorResponses(FORBIDDEN, ApiErrorCodes.forbidden, ApiErrorMessages.forbidden)
+  case InternalServerApiError
+      extends ApiErrorResponses(INTERNAL_SERVER_ERROR, ApiErrorCodes.internalServerError, ApiErrorMessages.internalServerError)
+  case NotAcceptableApiError extends ApiErrorResponses(NOT_ACCEPTABLE, ApiErrorCodes.notAcceptable, ApiErrorMessages.notAcceptable)
+  case NotFoundApiError extends ApiErrorResponses(NOT_FOUND, ApiErrorCodes.matchingResourceNotFound, ApiErrorMessages.matchingResourceNotFound)
+  case RequestEntityTooLargeApiError
+      extends ApiErrorResponses(REQUEST_ENTITY_TOO_LARGE, ApiErrorCodes.requestEntityTooLarge, ApiErrorMessages.requestEntityTooLarge)
+  case ServiceUnavailableApiError
+      extends ApiErrorResponses(SERVICE_UNAVAILABLE, ApiErrorCodes.serviceUnavailable, ApiErrorMessages.serviceUnavailable)
 }
 
 final case class UnauthorizedApiError(reason: String) extends ApiErrorResponse {

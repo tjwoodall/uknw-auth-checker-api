@@ -20,7 +20,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import play.api.http.{HeaderNames, MimeTypes}
 import play.api.mvc._
-import uk.gov.hmrc.uknwauthcheckerapi.errors.NotAcceptableApiError
+import uk.gov.hmrc.uknwauthcheckerapi.errors.ApiErrorResponses.NotAcceptableApiError
 import uk.gov.hmrc.uknwauthcheckerapi.models.constants.HmrcMimeTypes
 import uk.gov.hmrc.uknwauthcheckerapi.services.ZonedDateTimeService
 import uk.gov.hmrc.uknwauthcheckerapi.utils.hasHeaderValue
