@@ -79,7 +79,7 @@ final case class UnauthorizedApiError(reason: String) extends ApiErrorResponse {
   val message:    String = ApiErrorMessages.unauthorized
 }
 
-final case class BadRequestApiError(errorMessages: String) extends ApiErrorResponse with BadRequestErrorTransformer {
+final case class BadRequestApiError(errorMessages: String) extends ApiErrorResponse, BadRequestErrorTransformer {
   val statusCode: Int    = BAD_REQUEST
   val code:       String = ApiErrorCodes.badRequest
   val message:    String = ApiErrorMessages.invalidRequest
@@ -87,7 +87,7 @@ final case class BadRequestApiError(errorMessages: String) extends ApiErrorRespo
   val getErrors: JsValue = transformBadRequest(errorMessages)
 }
 
-final case class JsonValidationApiError(jsErrors: JsError) extends ApiErrorResponse with JsErrorTransformer {
+final case class JsonValidationApiError(jsErrors: JsError) extends ApiErrorResponse, JsErrorTransformer {
   val statusCode: Int    = BAD_REQUEST
   val code:       String = ApiErrorCodes.badRequest
   val message:    String = ApiErrorMessages.badRequest

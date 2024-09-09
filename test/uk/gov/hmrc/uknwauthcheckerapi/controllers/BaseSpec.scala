@@ -51,15 +51,15 @@ import uk.gov.hmrc.uknwauthcheckerapi.models.constants.MinMaxValues
 import uk.gov.hmrc.uknwauthcheckerapi.services.{IntegrationFrameworkService, LocalDateService, ValidationService, ZonedDateTimeService}
 
 class BaseSpec
-    extends AnyWordSpec
-    with Matchers
-    with Generators
-    with GuiceOneAppPerSuite
-    with BeforeAndAfterAll
-    with DefaultAwaitTimeout
-    with HeaderNames
-    with TestData
-    with TestHeaders {
+    extends AnyWordSpec,
+      Matchers,
+      Generators,
+      GuiceOneAppPerSuite,
+      BeforeAndAfterAll,
+      DefaultAwaitTimeout,
+      HeaderNames,
+      TestData,
+      TestHeaders {
 
   implicit lazy val ec:           ExecutionContext     = scala.concurrent.ExecutionContext.Implicits.global
   implicit lazy val hc:           HeaderCarrier        = HeaderCarrier()

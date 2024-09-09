@@ -30,7 +30,7 @@ import uk.gov.hmrc.uknwauthcheckerapi.config.AppConfig
 import uk.gov.hmrc.uknwauthcheckerapi.generators.{TestConstants, TestData, TestHeaders}
 import uk.gov.hmrc.uknwauthcheckerapi.models.constants.MinMaxValues
 
-class BaseISpec extends PlaySpec with GuiceOneServerPerSuite with WireMockISpec with TestData with TestHeaders {
+class BaseISpec extends PlaySpec, GuiceOneServerPerSuite, WireMockISpec, TestData, TestHeaders {
 
   protected val additionalAppConfig: Map[String, Any] = Map(
     TestConstants.configMetricsKey  -> false,

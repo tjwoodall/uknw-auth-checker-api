@@ -23,7 +23,7 @@ import uk.gov.hmrc.uknwauthcheckerapi.controllers.BaseSpec
 import uk.gov.hmrc.uknwauthcheckerapi.generators.TestRegexes
 import uk.gov.hmrc.uknwauthcheckerapi.models.constants.CustomHeaderNames
 
-class HeaderCarrierExtensionsSpec extends BaseSpec with HeaderCarrierExtensions {
+class HeaderCarrierExtensionsSpec extends BaseSpec, HeaderCarrierExtensions {
 
   "generateCorrelationId" should {
     "reuse the existing X-Correlation-Id header when present in HeaderCarrier" in {

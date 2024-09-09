@@ -28,7 +28,7 @@ import uk.gov.hmrc.uknwauthcheckerapi.errors.ApiErrorResponses._
 import uk.gov.hmrc.uknwauthcheckerapi.services.ZonedDateTimeService
 
 @Singleton
-class ApiErrorHandler @Inject (implicit zs: ZonedDateTimeService) extends HttpErrorHandler with Logging {
+class ApiErrorHandler @Inject (implicit zs: ZonedDateTimeService) extends HttpErrorHandler, Logging {
 
   override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] = {
     logger.warn(

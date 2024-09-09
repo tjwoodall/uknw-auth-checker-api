@@ -31,7 +31,7 @@ import uk.gov.hmrc.uknwauthcheckerapi.models.constants.ApiErrorMessages
 import uk.gov.hmrc.uknwauthcheckerapi.services.ZonedDateTimeService
 
 @Singleton
-class AuthAction @Inject() (ac: AuthConnector)(using ec: ExecutionContext, zs: ZonedDateTimeService) extends ActionFilter[Request] with Logging {
+class AuthAction @Inject() (ac: AuthConnector)(using ec: ExecutionContext, zs: ZonedDateTimeService) extends ActionFilter[Request], Logging {
   private val auth = new AuthorisedFunctions {
     def authConnector: AuthConnector = ac
   }

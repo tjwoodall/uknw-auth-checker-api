@@ -26,7 +26,7 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite}
 import play.api.http.Status.OK
 import uk.gov.hmrc.uknwauthcheckerapi.generators.TestConstants
 
-trait WireMockISpec extends BeforeAndAfterAll with BeforeAndAfterEach {
+trait WireMockISpec extends BeforeAndAfterAll, BeforeAndAfterEach {
   this: Suite =>
 
   protected val server: WireMockServer = new WireMockServer(wireMockConfig().port(TestConstants.configWireMockPort))

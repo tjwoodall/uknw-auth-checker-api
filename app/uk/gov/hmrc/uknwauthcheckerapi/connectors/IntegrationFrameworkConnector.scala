@@ -40,8 +40,8 @@ class IntegrationFrameworkConnector @Inject() (
   override val configuration: Config,
   override val actorSystem:   ActorSystem
 )(using ec: ExecutionContext)
-    extends Retries
-    with HeaderCarrierExtensions {
+    extends Retries,
+      HeaderCarrierExtensions {
 
   def getEisAuthorisationsResponse(eisAuthorisationRequest: EisAuthorisationRequest)(implicit hc: HeaderCarrier): Future[EisAuthorisationsResponse] =
     retryFor[EisAuthorisationsResponse]("Integration Framework Response")(retryCondition) {

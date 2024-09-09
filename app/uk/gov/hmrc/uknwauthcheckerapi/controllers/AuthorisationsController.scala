@@ -35,9 +35,9 @@ class AuthorisationsController @Inject() (
   integrationFrameworkService: IntegrationFrameworkService,
   validationService:           ValidationService
 )(using ec: ExecutionContext, zs: ZonedDateTimeService)
-    extends BackendController(cc)
-    with HeaderValidatorAction
-    with AuthorisationResponseHandler {
+    extends BackendController(cc),
+      HeaderValidatorAction,
+      AuthorisationResponseHandler {
 
   def authorisations: Action[JsValue] = Action
     .andThen(authAction)
