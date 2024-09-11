@@ -305,8 +305,8 @@ To add a new expected request please refer to the [uknw-auth-checker-api-stub
 
 The regular expression for EORIs to be matched against is as follows:
 
-```text
-^(GB&#124;XI)[0-9]{12}&#124;(GB&#124;XI)[0-9]{15}$
+```regex
+^(GB|XI)[0-9]{12}|(GB|XI)[0-9]{15}$
 ```
 
 Any bruno request which states invalid EORI will have one or more EORIs which do not match the EORI regular explression pattern.
