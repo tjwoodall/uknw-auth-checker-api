@@ -73,7 +73,7 @@ paths:
                       "errors": [
                         {
                           "code": "INVALID_FORMAT",
-                          "message": "JSON is malformed",
+                          "message": "JSON structure is incorrect",
                           "path": ""
                         }
                       ]
@@ -160,6 +160,16 @@ paths:
                 {
                   "code": "NOT_ACCEPTABLE",
                   "message": "Cannot produce an acceptable response. The Accept or Content-Type header is missing or invalid",
+                }
+        "413":
+          description: |
+            Request entity too large. The request was rejected because the payload is too large. This API allows a maximum limit of 100KB for request bodies. Please reduce the size of the request payload and try again.
+          content:
+            application/json:
+              example:
+                {
+                  "code": "REQUEST_ENTITY_TOO_LARGE",
+                  "message": "The request payload exceeds the maximum allowed size of 100KB",
                 }
         "429":
           description: |

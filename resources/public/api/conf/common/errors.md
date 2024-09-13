@@ -5,6 +5,7 @@ We use standard HTTP status codes to show whether an API request succeeded or no
 - 401 for Authorisation failure
 - 403 for Forbidden request
 - 406 for Not Acceptable
+- 413 for Request Entity Too Large
 - 429 for request in excess of rate limit
 - 500 for Internal Server error
 - 503 for Service Unavailable
