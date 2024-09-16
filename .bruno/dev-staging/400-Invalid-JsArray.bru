@@ -1,7 +1,7 @@
 meta {
-  name: 401-No-Bearer-Token
+  name: 400-Invalid-JsArray
   type: http
-  seq: 16
+  seq: 3
 }
 
 post {
@@ -12,13 +12,11 @@ post {
 
 headers {
   Accept: application/vnd.hmrc.1.0+json
-  X-Correlation-Id: {{correlationId}}
+  Authorization: Bearer {{bearerToken}}
 }
 
 body:json {
   {
-    "eoris": [
-      "GB000000000200"
-    ]
+    "eoris":"GB837826880909874"
   }
 }

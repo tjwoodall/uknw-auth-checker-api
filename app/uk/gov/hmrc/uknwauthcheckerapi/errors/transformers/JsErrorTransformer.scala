@@ -23,6 +23,7 @@ trait JsErrorTransformer {
 
   private val errorsMap = Map(
     JsonErrorMessages.expectedJsObject -> JsonErrorMessages.jsonStructureIncorrect,
+    JsonErrorMessages.expectedJsArray  -> JsonErrorMessages.jsonStructureIncorrect,
     JsonErrorMessages.pathMissing      -> JsonErrorMessages.eorisFieldMissing
   )
 

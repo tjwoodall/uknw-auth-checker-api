@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "name": "NOP QA",
+  "name": "NOP API (QA)",
   "type": "collection",
   "ignore": [
     "node_modules",

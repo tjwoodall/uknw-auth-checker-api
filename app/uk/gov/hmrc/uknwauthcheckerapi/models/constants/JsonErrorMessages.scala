@@ -19,6 +19,7 @@ package uk.gov.hmrc.uknwauthcheckerapi.models.constants
 object JsonErrorMessages {
   val eorisFieldMissing:      String = "eoris field missing from JSON"
   val expectedJsObject:       String = "error.expected.jsobject"
+  val expectedJsArray:        String = "error.expected.jsarray"
   val jsonStructureIncorrect: String = "JSON structure is incorrect"
   val pathMissing:            String = "error.path.missing"
 }
