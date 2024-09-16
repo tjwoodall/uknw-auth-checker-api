@@ -65,7 +65,7 @@ paths:
           content:
             application/json:
               examples:
-                single_error_json_malformed:
+                single_error_json_structure_incorrect:
                   value:
                     {
                       "code": "BAD_REQUEST",

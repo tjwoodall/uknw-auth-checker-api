@@ -22,7 +22,7 @@ import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{ApiErrorCodes, JsonError
 trait JsErrorTransformer {
 
   private val errorsMap = Map(
-    JsonErrorMessages.expectedJsObject -> JsonErrorMessages.jsonMalformed,
+    JsonErrorMessages.expectedJsObject -> JsonErrorMessages.jsonStructureIncorrect,
     JsonErrorMessages.pathMissing      -> JsonErrorMessages.eorisFieldMissing
   )
 

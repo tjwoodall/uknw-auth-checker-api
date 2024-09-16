@@ -137,7 +137,7 @@ class AuthorisationsControllerSpec extends BaseSpec {
       )
     }
 
-    "return BAD_REQUEST (400) error when request json is malformed" in new TestContext {
+    "return BAD_REQUEST (400) error when request json is empty" in new TestContext {
       val jsError: JsError = JsError(
         Seq((JsPath \ "", Seq(JsonValidationError(JsonErrorMessages.expectedJsObject))))
       )

@@ -85,7 +85,7 @@ has been set up to validate the fake token in each request, so not including it 
 | Status code | Name                     | Description                                            |
 |-------------|--------------------------|--------------------------------------------------------|
 | 200         | OK                       |                                                        |
-| 400         | BAD_REQUEST              | Malformed json                                         |
+| 400         | BAD_REQUEST              | JSON structure is incorrect                            |
 | 400         | BAD_REQUEST              | Invalid EORI format                                    |
 | 400         | BAD_REQUEST              | EORI path missing                                      |
 | 401         | UNAUTHORIZED             | Unauthorized                                           |
@@ -113,7 +113,7 @@ has been set up to validate the fake token in each request, so not including it 
 }
 ```
 
-### 400 BAD_REQUEST malformed json response
+### 400 BAD_REQUEST json structure is incorrect
 
 ```json
 {
@@ -122,7 +122,7 @@ has been set up to validate the fake token in each request, so not including it 
   "errors": [
     {
       "code": "INVALID_FORMAT",
-      "message": "JSON is malformed",
+      "message": "JSON structure is incorrect",
       "path": ""
     }
   ]
