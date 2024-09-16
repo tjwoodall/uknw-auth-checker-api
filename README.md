@@ -215,8 +215,8 @@ has been set up to validate the fake token in each request, so not including it 
 
 ```json
 {
-  "code": "SERVICE_UNAVAILABLE",
-  "message": "Server is currently unable to handle the incoming requests"
+  "code": "SERVER_ERROR",
+  "message": "Service unavailable"
 }
 ```
 

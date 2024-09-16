@@ -25,6 +25,6 @@ object ApiErrorCodes {
   val matchingResourceNotFound: String = "MATCHING_RESOURCE_NOT_FOUND"
   val notAcceptable:            String = "NOT_ACCEPTABLE"
   val requestEntityTooLarge:    String = "REQUEST_ENTITY_TOO_LARGE"
-  val serviceUnavailable:       String = "SERVICE_UNAVAILABLE"
+  val serviceUnavailable:       String = "SERVER_ERROR"
   val unauthorized:             String = "UNAUTHORIZED"
 }
