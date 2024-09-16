@@ -13,7 +13,8 @@ object CodeCoverageSettings {
     ".*config.*",
     ".*DocumentationController.*",
     ".*\\$anon.*",
-    ".*models.*"
+    ".*models.*",
+    ".*\\$package.*"
   )
 
   val settings: Seq[Setting[?]] = Seq(

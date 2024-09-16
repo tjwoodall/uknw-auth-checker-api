@@ -59,6 +59,10 @@ trait AuthorisationResponseHandler extends Logging {
             logger.error(toLogMessage(INTERNAL_SERVER_ERROR, Some(errorMessage)))
             InternalServerApiError.toResult
 
+          case ServiceUnavailableDataRetrievalError() =>
+            logger.error(toLogMessage(SERVICE_UNAVAILABLE))
+            ServiceUnavailableApiError.toResult
+
           case _ =>
             logger.error(toLogMessage(INTERNAL_SERVER_ERROR))
             InternalServerApiError.toResult

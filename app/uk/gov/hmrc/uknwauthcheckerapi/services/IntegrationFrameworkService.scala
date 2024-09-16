@@ -24,7 +24,7 @@ import cats.data.EitherT
 
 import play.api.http.Status._
 import play.api.libs.json.{JsError, JsSuccess, Json}
-import uk.gov.hmrc.http.{BadGatewayException, HeaderCarrier, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{BadGatewayException, HeaderCarrier, ServiceUnavailableException, UpstreamErrorResponse}
 import uk.gov.hmrc.uknwauthcheckerapi.config.AppConfig
 import uk.gov.hmrc.uknwauthcheckerapi.connectors.IntegrationFrameworkConnector
 import uk.gov.hmrc.uknwauthcheckerapi.errors.DataRetrievalError
@@ -66,7 +66,8 @@ class IntegrationFrameworkService @Inject() (
           )
         }
         .recover {
-          case _: BadGatewayException => Left(BadGatewayDataRetrievalError())
+          case _: BadGatewayException         => Left(BadGatewayDataRetrievalError())
+          case _: ServiceUnavailableException => Left(ServiceUnavailableDataRetrievalError())
           case _ @UpstreamErrorResponse(body, statusCode, _, _) => handleUpstreamErrorResponse(body, statusCode)
           case NonFatal(thr)                                    => Left(InternalUnexpectedDataRetrievalError(thr.getMessage, thr))
         }
@@ -75,8 +76,9 @@ class IntegrationFrameworkService @Inject() (
 
   private def handleUpstreamErrorResponse(body: String, statusCode: Int): Either[DataRetrievalError, AuthorisationsResponse] =
     statusCode match {
-      case BAD_GATEWAY => Left(BadGatewayDataRetrievalError())
-      case FORBIDDEN   => Left(ForbiddenDataRetrievalError())
+      case BAD_GATEWAY         => Left(BadGatewayDataRetrievalError())
+      case FORBIDDEN           => Left(ForbiddenDataRetrievalError())
+      case SERVICE_UNAVAILABLE => Left(ServiceUnavailableDataRetrievalError())
       case _ =>
         Json
           .parse(body)

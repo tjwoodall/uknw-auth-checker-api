@@ -28,7 +28,7 @@ import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 import play.api.http.Status._
 import play.api.libs.json.{JsError, JsPath, Json, JsonValidationError}
 import play.api.test.Helpers.await
-import uk.gov.hmrc.http.{BadGatewayException, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{BadGatewayException, ServiceUnavailableException, UpstreamErrorResponse}
 import uk.gov.hmrc.uknwauthcheckerapi.connectors.IntegrationFrameworkConnector
 import uk.gov.hmrc.uknwauthcheckerapi.controllers.BaseSpec
 import uk.gov.hmrc.uknwauthcheckerapi.errors.DataRetrievalError
@@ -87,7 +87,7 @@ class IntegrationFrameworkServiceSpec extends BaseSpec {
       }
     }
 
-    "return BadGatewayRetrievalError error when call to the integration framework fails with BAD_GATEWAY" in new TestContext {
+    "return BadGatewayRetrievalError error when call to the integration framework fails with BAD_GATEWAY via exception" in new TestContext {
       forAll { (validRequest: ValidAuthorisationRequest, errorMessage: String) =>
         val request = validRequest.request
 
@@ -102,13 +102,12 @@ class IntegrationFrameworkServiceSpec extends BaseSpec {
       }
     }
 
-    "return InternalUnexpectedDataRetrievalError error when call to the integration framework fails with a non fatal error" in new TestContext {
+    "return BadGatewayRetrievalError error when call to the integration framework fails with BAD_GATEWAY via UpstreamErrorResponse" in new TestContext {
       forAll { (validRequest: ValidAuthorisationRequest, errorMessage: String) =>
         val request = validRequest.request
 
-        val expectedEisResponse: Exception = new Exception(errorMessage)
-        val expectedResponse: InternalUnexpectedDataRetrievalError =
-          InternalUnexpectedDataRetrievalError(expectedEisResponse.getMessage, expectedEisResponse)
+        val expectedEisResponse: UpstreamErrorResponse        = UpstreamErrorResponse(TestConstants.emptyJson, BAD_GATEWAY)
+        val expectedResponse:    BadGatewayDataRetrievalError = BadGatewayDataRetrievalError()
 
         doTest(
           request = request,
@@ -147,6 +146,22 @@ class IntegrationFrameworkServiceSpec extends BaseSpec {
 
         val expectedEisResponse: UpstreamErrorResponse       = UpstreamErrorResponse(TestConstants.emptyJson, FORBIDDEN)
         val expectedResponse:    ForbiddenDataRetrievalError = ForbiddenDataRetrievalError()
+
+        doTest(
+          request = request,
+          eisResponse = Future.failed(expectedEisResponse),
+          response = Left(expectedResponse)
+        )
+      }
+    }
+
+    "return InternalUnexpectedDataRetrievalError error when call to the integration framework fails with a non fatal error" in new TestContext {
+      forAll { (validRequest: ValidAuthorisationRequest, errorMessage: String) =>
+        val request = validRequest.request
+
+        val expectedEisResponse: Exception = new Exception(errorMessage)
+        val expectedResponse: InternalUnexpectedDataRetrievalError =
+          InternalUnexpectedDataRetrievalError(expectedEisResponse.getMessage, expectedEisResponse)
 
         doTest(
           request = request,
@@ -210,6 +225,36 @@ class IntegrationFrameworkServiceSpec extends BaseSpec {
 
         val expectedEisResponse: UpstreamErrorResponse            = UpstreamErrorResponse(Json.stringify(Json.toJson(eisError)), IM_A_TEAPOT)
         val expectedResponse:    InternalServerDataRetrievalError = InternalServerDataRetrievalError(eisError.errorDetail.errorMessage)
+
+        doTest(
+          request = request,
+          eisResponse = Future.failed(expectedEisResponse),
+          response = Left(expectedResponse)
+        )
+      }
+    }
+
+    "return ServiceUnavailableRetrievalError error when call to the integration framework fails with SERVICE_UNAVAILABLE via exception" in new TestContext {
+      forAll { (validRequest: ValidAuthorisationRequest, errorMessage: String) =>
+        val request = validRequest.request
+
+        val expectedEisResponse: ServiceUnavailableException          = new ServiceUnavailableException(errorMessage)
+        val expectedResponse:    ServiceUnavailableDataRetrievalError = ServiceUnavailableDataRetrievalError()
+
+        doTest(
+          request = request,
+          eisResponse = Future.failed(expectedEisResponse),
+          response = Left(expectedResponse)
+        )
+      }
+    }
+
+    "return ServiceUnavailableRetrievalError error when call to the integration framework fails with SERVICE_UNAVAILABLE via UpstreamErrorResponse" in new TestContext {
+      forAll { (validRequest: ValidAuthorisationRequest, errorMessage: String) =>
+        val request = validRequest.request
+
+        val expectedEisResponse: UpstreamErrorResponse                = UpstreamErrorResponse(TestConstants.emptyJson, SERVICE_UNAVAILABLE)
+        val expectedResponse:    ServiceUnavailableDataRetrievalError = ServiceUnavailableDataRetrievalError()
 
         doTest(
           request = request,

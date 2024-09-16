@@ -202,6 +202,21 @@ class AuthorisationControllerISpec extends BaseISpec {
       }
     }
 
+    "return SERVICE_UNAVAILABLE when integration framework returns SERVICE_UNAVAILABLE" in new TestContext {
+      forAll { (validRequest: ValidAuthorisationRequest) =>
+        reset()
+
+        val request:                  AuthorisationRequest = validRequest.request
+        val authorisationRequestJson: JsValue              = Json.toJson(request)
+        stubPost(TestConstants.eisAuthorisationsEndpointPath, SERVICE_UNAVAILABLE)
+
+        val result: WSResponse = postRequest(authorisationsUrl, authorisationRequestJson)
+
+        result.status mustBe SERVICE_UNAVAILABLE
+        verifyTimestampHeader(result)
+      }
+    }
+
     "return UNAUTHORIZED when Authorization header is missing" in new TestContext {
       forAll { (validRequest: ValidAuthorisationRequest) =>
         reset()

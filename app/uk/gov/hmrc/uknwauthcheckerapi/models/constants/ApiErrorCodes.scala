@@ -17,6 +17,7 @@
 package uk.gov.hmrc.uknwauthcheckerapi.models.constants
 
 object ApiErrorCodes {
+  val badGateway:               String = "BAD_GATEWAY"
   val badRequest:               String = "BAD_REQUEST"
   val forbidden:                String = "FORBIDDEN"
   val internalServerError:      String = "INTERNAL_SERVER_ERROR"

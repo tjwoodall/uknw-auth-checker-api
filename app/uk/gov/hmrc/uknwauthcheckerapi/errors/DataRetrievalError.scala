@@ -26,6 +26,7 @@ object DataRetrievalError {
   final case class ForbiddenDataRetrievalError() extends DataRetrievalError
   final case class InternalServerDataRetrievalError(message: String) extends DataRetrievalError
   final case class InternalUnexpectedDataRetrievalError(message: String, cause: Throwable) extends DataRetrievalError
+  final case class ServiceUnavailableDataRetrievalError() extends DataRetrievalError
   final case class UnableToDeserialiseDataRetrievalError(jsError: JsError) extends DataRetrievalError
   final case class ValidationDataRetrievalError(jsError: JsError) extends DataRetrievalError
 }

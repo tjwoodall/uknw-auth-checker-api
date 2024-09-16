@@ -146,7 +146,26 @@ class IntegrationFrameworkConnectorSpec extends BaseSpec {
       }
     }
 
-    "return 502 SERVICE_UNAVAILABLE UpstreamErrorResponse when call to integration framework returns an error" in new TestContext {
+    "return 502 BAD_GATEWAY UpstreamErrorResponse when call to integration framework returns an error" in new TestContext {
+      forAll { (eisAuthorisationRequest: EisAuthorisationRequest) =>
+        Try(
+          doTest(
+            eisAuthorisationRequest,
+            BAD_GATEWAY,
+            ApiErrorCodes.badGateway
+          )
+        ) match {
+          case Failure(UpstreamErrorResponse(_, code, _, _)) =>
+            code shouldEqual BAD_GATEWAY
+          case _ => fail(TestConstants.errorExpectedUpstreamResponse)
+        }
+
+        verify(mockRequestBuilder, times(TestConstants.callAmountWithRetries))
+          .execute(using any(), any())
+      }
+    }
+
+    "return 503 SERVICE_UNAVAILABLE UpstreamErrorResponse when call to integration framework returns an error" in new TestContext {
       forAll { (eisAuthorisationRequest: EisAuthorisationRequest) =>
         Try(
           doTest(
