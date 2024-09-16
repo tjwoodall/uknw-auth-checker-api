@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "name": "NOP Staging & Dev",
+  "name": "NOP API (Staging & Dev)",
   "type": "collection",
   "ignore": [
     "node_modules",

@@ -342,6 +342,7 @@ Located in either `.bruno/local` or `./bruno/dev-staging`
 | 400-Duplicate-Invalid-Eori                    |                                | Invalid request with two EORI which are duplicates                        |
 | 400-Invalid-Json-Empty                        |                                | Invalid request with an empty JSON object                                 |
 | 400-Invalid-Json-Format                       |                                | Invalid request with invalid JSON                                         |
+| 400-Invalid-JsArray                           |                                | Invalid request with a JsObject instead of a JsArray                      |
 | 406-No-Accept-Header                          |                                | Invalid request with no `application/vnd.hmrc.1.0+json` Accept header set |
 | 406-No-Body.bru                               |                                | Invalid request with no JSON body                                         |
 | 413-Entity-Too-Large.bru                      |                                | Invalid request with which has a size over 100 KB                         |
@@ -359,6 +360,7 @@ Located in either `.bruno/local` or `./bruno/dev-staging`
 | 400-Invalid-Eori                                 | Invalid request with 2 invalid EORIs                                      |
 | 400-Invalid-Json-Format                          | Invalid request with invalid JSON                                         |
 | 400-Invalid-Json-Empty                           | Invalid request with an empty JSON object                                 |
+| 400-Invalid-JsArray                              | Invalid request with a JsObject instead of JsArray                        |
 | 400-0-Eori                                       | Invalid request with zero EORI                                            |
 | 400-2-Valid-Eoris-2-Expired-Eori-2-Invalid-Eoris | Invalid request with 4 valid EORIs and 2 invalid EORIs                    |
 | 400-19-Valid-Eoris-1-Invalid-EORI                | Invalid request with 19 valid EORIs and 1 invalid EORI                    |
