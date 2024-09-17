@@ -130,7 +130,7 @@ paths:
               example:
                 {
                   "code": "UNAUTHORIZED",
-                  "message": "The bearer token is invalid, missing, or expired",
+                  "message": "The bearer token is invalid, missing, or expired"
                 }
         "403":
           description: |
@@ -145,7 +145,7 @@ paths:
               example:
                 {
                   "code": "FORBIDDEN",
-                  "message": "You are not allowed to access this resource",
+                  "message": "You are not allowed to access this resource"
                 }
         "406":
           description: |
@@ -159,7 +159,7 @@ paths:
               example:
                 {
                   "code": "NOT_ACCEPTABLE",
-                  "message": "Cannot produce an acceptable response. The Accept or Content-Type header is missing or invalid",
+                  "message": "Cannot produce an acceptable response. The Accept or Content-Type header is missing or invalid"
                 }
         "413":
           description: |
@@ -169,7 +169,7 @@ paths:
               example:
                 {
                   "code": "REQUEST_ENTITY_TOO_LARGE",
-                  "message": "The request payload exceeds the maximum allowed size of 100KB",
+                  "message": "The request payload exceeds the maximum allowed size of 100KB"
                 }
         "429":
           description: |
@@ -179,7 +179,7 @@ paths:
               example:
                 {
                   "code": "RATE_LIMIT_VIOLATION",
-                  "message": "Request count from application in excess of rate limit",
+                  "message": "Request count from application in excess of rate limit"
                 }
         "500":
           description: |
@@ -189,7 +189,7 @@ paths:
               example:
                 {
                   "code": "INTERNAL_SERVER_ERROR",
-                  "message": "Unexpected internal server error",
+                  "message": "Unexpected internal server error"
                 }
         "503":
           description: |
@@ -199,7 +199,7 @@ paths:
               example:
                 {
                   "code": "SERVER_ERROR",
-                  "message": "Service unavailable",
+                  "message": "Service unavailable"
                 }
       security:
         - applicationRestricted: []
