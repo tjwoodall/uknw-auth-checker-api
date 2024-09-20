@@ -315,37 +315,40 @@ Any bruno request which states invalid EORI will have one or more EORIs which do
 
 Located in either `.bruno/local` or `./bruno/dev-staging`
 
-| Bruno file                                    | Folder                         | Description                                                               |
-|-----------------------------------------------|--------------------------------|---------------------------------------------------------------------------|
-| 200-1-Eori                                    | 200-Authorised-EORI-Requests   | Valid request with 1 authorised EORI                                      |
-| 200-100-Eori                                  | 200-Authorised-EORI-Requests   | Valid request with 100 authorised EORIs                                   |
-| 200-500-Eori                                  | 200-Authorised-EORI-Requests   | Valid request with 500 authorised EORIs                                   |
-| 200-1000-Eori                                 | 200-Authorised-EORI-Requests   | Valid request with 1000 authorised EORIs                                  |
-| 200-3000-Eori                                 | 200-Authorised-EORI-Requests   | Valid request with 3000 authorised EORIs                                  |
-| 200-duplicate-Eori                            | 200-Authorised-EORI-Requests   | Valid request with 2 authorised duplicate EORI                            |
-| 200-1-Eori                                    | 200-Unauthorised-EORI-Requests | Valid request with 1 unauthorised EORI                                    |
-| 200-100-Eori                                  | 200-Unauthorised-EORI-Requests | Valid request with 100 unauthorised EORIs                                 |
-| 200-500-Eori                                  | 200-Unauthorised-EORI-Requests | Valid request with 500 unauthorised EORIs                                 |
-| 200-1000-Eori                                 | 200-Unauthorised-EORI-Requests | Valid request with 1000 unauthorised EORIs                                |
-| 200-3000-Eori                                 | 200-Unauthorised-EORI-Requests | Valid request with 3000 unauthorised EORIs                                |
-| 200-duplicate-Eori                            | 200-Unauthorised-EORI-Requests | Valid request with 2 unauthorised duplicate EORI                          |
-| 200-1-authorised-unauthorised-Eori            | 200-Mixed-Requests             | Valid request with 1 authorised and unauthorised EORI                     |
-| 200-100-authorised-unauthorised-Eori          | 200-Mixed-Requests             | Valid request with 100 authorised and 100 unauthorised EORI               |
-| 401-Invalid-Bearer-Token                      |                                | Unauthorized request with an invalid bearer token                         |
-| 401-No-Bearer-Token                           |                                | Unauthorized request with no bearer token                                 |
-| 400-0-Eori                                    |                                | Invalid request with zero EORI                                            |
-| 400-3001-Eori                                 |                                | Invalid request with greater than 3000 EORI                               |
-| 400-Invalid-Eori                              | 400-Invalid-EORI               | Invalid request with 1 EORI not                                           |
-| 400-Invalid-with-authorised-Eori              | 400-Invalid-EORI               | Invalid request with invalid EORIs and authorised EORIs                   |
-| 400-Invalid-with-unauthorised-Eori            | 400-Invalid-EORI               | Invalid request with invalid EORIs and unauthorised EORIs                 |
-| 400-Invalid-with-authorised-unauthorised-Eori | 400-Invalid-EORI               | Invalid request with invalid EORIs and authorised and unauthorised EORIs  |
-| 400-Duplicate-Invalid-Eori                    |                                | Invalid request with two EORI which are duplicates                        |
-| 400-Invalid-Json-Empty                        |                                | Invalid request with an empty JSON object                                 |
-| 400-Invalid-Json-Format                       |                                | Invalid request with invalid JSON                                         |
-| 400-Invalid-JsArray                           |                                | Invalid request with a JsObject instead of a JsArray                      |
-| 406-No-Accept-Header                          |                                | Invalid request with no `application/vnd.hmrc.1.0+json` Accept header set |
-| 406-No-Body.bru                               |                                | Invalid request with no JSON body                                         |
-| 413-Entity-Too-Large.bru                      |                                | Invalid request with which has a size over 100 KB                         |
+| Bruno file                                    | Folder                         | Description                                                                     |
+|-----------------------------------------------|--------------------------------|---------------------------------------------------------------------------------|
+| 200-1-Eori                                    | 200-Authorised-EORI-Requests   | Valid request with 1 authorised EORI                                            |
+| 200-100-Eori                                  | 200-Authorised-EORI-Requests   | Valid request with 100 authorised EORIs                                         |
+| 200-500-Eori                                  | 200-Authorised-EORI-Requests   | Valid request with 500 authorised EORIs                                         |
+| 200-1000-Eori                                 | 200-Authorised-EORI-Requests   | Valid request with 1000 authorised EORIs                                        |
+| 200-3000-Eori                                 | 200-Authorised-EORI-Requests   | Valid request with 3000 authorised EORIs                                        |
+| 200-duplicate-Eori                            | 200-Authorised-EORI-Requests   | Valid request with 2 authorised duplicate EORI                                  |
+| 200-1-Eori                                    | 200-Unauthorised-EORI-Requests | Valid request with 1 unauthorised EORI                                          |
+| 200-100-Eori                                  | 200-Unauthorised-EORI-Requests | Valid request with 100 unauthorised EORIs                                       |
+| 200-500-Eori                                  | 200-Unauthorised-EORI-Requests | Valid request with 500 unauthorised EORIs                                       |
+| 200-1000-Eori                                 | 200-Unauthorised-EORI-Requests | Valid request with 1000 unauthorised EORIs                                      |
+| 200-3000-Eori                                 | 200-Unauthorised-EORI-Requests | Valid request with 3000 unauthorised EORIs                                      |
+| 200-duplicate-Eori                            | 200-Unauthorised-EORI-Requests | Valid request with 2 unauthorised duplicate EORI                                |
+| 200-1-authorised-unauthorised-Eori            | 200-Mixed-Requests             | Valid request with 1 authorised and unauthorised EORI                           |
+| 200-100-authorised-unauthorised-Eori          | 200-Mixed-Requests             | Valid request with 100 authorised and 100 unauthorised EORI                     |
+| 401-Invalid-Bearer-Token                      |                                | Unauthorized request with an invalid bearer token                               |
+| 401-No-Bearer-Token                           |                                | Unauthorized request with no bearer token                                       |
+| 400-0-Eori                                    |                                | Invalid request with zero EORI                                                  |
+| 400-3001-Eori                                 |                                | Invalid request with greater than 3000 EORI                                     |
+| 400-Invalid-Eori                              | 400-Invalid-EORI               | Invalid request with 1 EORI not                                                 |
+| 400-Invalid-with-authorised-Eori              | 400-Invalid-EORI               | Invalid request with invalid EORIs and authorised EORIs                         |
+| 400-Invalid-with-unauthorised-Eori            | 400-Invalid-EORI               | Invalid request with invalid EORIs and unauthorised EORIs                       |
+| 400-Invalid-with-authorised-unauthorised-Eori | 400-Invalid-EORI               | Invalid request with invalid EORIs and authorised and unauthorised EORIs        |
+| 400-Duplicate-Invalid-Eori                    |                                | Invalid request with two EORI which are duplicates                              |
+| 400-Invalid-Json-Empty                        |                                | Invalid request with an empty JSON object                                       |
+| 400-Invalid-Json-Format                       |                                | Invalid request with invalid JSON                                               |
+| 400-Invalid-JsArray                           |                                | Invalid request with a JsObject instead of a JsArray                            |
+| 403-1-Eori                                    |                                | Mock data to artificially trigger a 403 error in the Stub given a specific EORI |
+| 406-No-Accept-Header                          |                                | Invalid request with no `application/vnd.hmrc.1.0+json` Accept header set       |
+| 406-No-Body.bru                               |                                | Invalid request with no JSON body                                               |
+| 413-Entity-Too-Large.bru                      |                                | Invalid request with which has a size over 100 KB                               |
+| 500-1-Eori                                    |                                | Mock data to artificially trigger a 500 error in the Stub given a specific EORI |
+| 503-1-Eori                                    |                                | Mock data to artificially trigger a 503 error in the Stub given a specific EORI |
 
 ### QA Bruno files
 

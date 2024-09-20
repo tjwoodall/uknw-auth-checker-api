@@ -1,12 +1,12 @@
 meta {
-  name: 406-No-Body
+  name: 403-1-Eori
   type: http
-  seq: 11
+  seq: 3
 }
 
 post {
   url: {{apiEndpoint}}
-  body: none
+  body: json
   auth: none
 }
 
@@ -17,6 +17,8 @@ headers {
 
 body:json {
   {
-      "eoris": []
+    "eoris": [
+      "GB999999999999403"
+      ]
   }
 }
