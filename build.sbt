@@ -1,7 +1,7 @@
 import uk.gov.hmrc.DefaultBuildSettings
 
 ThisBuild / majorVersion := 0
-ThisBuild / scalaVersion := "3.4.2"
+ThisBuild / scalaVersion := "3.5.1"
 ThisBuild / semanticdbEnabled := true
 ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
 
@@ -12,7 +12,7 @@ lazy val microservice = Project("uknw-auth-checker-api", file("."))
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
     // https://www.scala-lang.org/2021/01/12/configuring-and-suppressing-warnings.html
     // suppress warnings in generated routes files
-    scalacOptions += "-Wconf:cat=lint-eta-sam:s,src=routes/.*:s",
+    scalacOptions += "-Wconf:msg=lint-eta-sam:s,src=routes/.*:s,msg=Flag.*repeatedly:s",
     PlayKeys.devSettings := Seq("play.server.http.port" -> "9070")
   )
   .settings(resolvers += Resolver.jcenterRepo)
@@ -30,6 +30,9 @@ lazy val it = project
   .dependsOn(microservice % "test->test")
   .settings(DefaultBuildSettings.itSettings())
   .settings(libraryDependencies ++= AppDependencies.it)
+  .settings(
+    scalacOptions += "-Wconf:msg=Flag.*repeatedly:s"
+  )
 
 addCommandAlias("fmtAll", ";scalafmtSbt;scalafmtAll;it/scalafmtAll")
 addCommandAlias("fixAll", ";scalafixAll;it/scalafixAll")
