@@ -1,6 +1,4 @@
 {
-  "scopes": [
-  ],
   "api": {
     "name": "Notification of Presentation Waiver Checker",
     "description": "This API enables Community System Providers (CSPs) to verify traders' Notification of Presentation (NOP) waiver using their Economic Operators Registration and Identification (EORI) number.",
