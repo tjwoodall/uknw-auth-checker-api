@@ -234,7 +234,7 @@ and [Scala language](https://www.scala-lang.org/).
 
 ### Prerequisites
 
-* [Java 11+](https://adoptium.net/)
+* [Java 17+](https://adoptium.net/)
 * [SBT 1.9.9](https://www.scala-sbt.org/download/)
 
 ## Running the service
@@ -287,16 +287,16 @@ This is a sbt command alias specific to this project. It will run the scala fix
 linter/reformatter in the app, tests, and integration tests
 > `sbt fixAll`
 
-## Requesting data from the API
+## Requesting data from the API using Bruno
 
-To request data from the API please use the `.bru` files that
-can be found in `.bruno`. Do not change any of the .bru files, as the API
-returns an error `500` INTERNAL_SERVER_ERROR on any unexpected requests.
+To request data from the API using Bruno, use the `.bru` files that
+can be found in the `.bruno` folder.
 
-Furthermore, the `Local` environment in bruno should be used, which enables a pre-script
+Furthermore, for requests on developer machines, the `Local` environment in bruno should be used, as it enables a pre-script
 in the [collection](https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/collection.bru)
-to run, which automatically requests a bearer token from AUTH_LOGIN_API and stores it in
-the `bearerToken` environment variable.
+to run which automatically requests a bearer token from AUTH_LOGIN_API and stores it in
+the `bearerToken` environment variable, which is used by each authenticated request, without the need to add the bearer
+token in manually.
 
 To add a new expected request please refer to the [uknw-auth-checker-api-stub
 /README.md](https://github.com/hmrc/uknw-auth-checker-api-stub/blob/main/README.md)
@@ -309,7 +309,7 @@ The regular expression for EORIs to be matched against is as follows:
 ^(GB|XI)[0-9]{12}|(GB|XI)[0-9]{15}$
 ```
 
-Any bruno request which states invalid EORI will have one or more EORIs which do not match the EORI regular explression pattern.
+Any bruno request which states invalid EORI will have one or more EORIs which do not match the EORI regular expression pattern.
 
 ### Local, Dev & Staging Bruno files
 
