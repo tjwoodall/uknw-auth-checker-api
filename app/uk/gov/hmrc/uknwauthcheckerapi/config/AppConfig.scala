@@ -29,11 +29,10 @@ class AppConfig @Inject() (config: Configuration) {
   val authorisationsEndpoint = "/authorisations"
   val authType: String = config.get[String]("authType")
   val eisAuthorisationsUrl = url"${baseUrl("integration-framework")}/cau/validatecustomsauth/v1"
-  val integrationFrameworkBearerToken: String =
-    config.get[String]("microservice.services.integration-framework.bearerToken")
-
   val eoriMax: Int =
     config.get[Int]("microservice.services.self.eoriMax")
+  val integrationFrameworkBearerToken: String =
+    config.get[String]("microservice.services.integration-framework.bearerToken")
 
   def baseUrl(serviceName: String): String = {
     val protocol = getConfString(s"$serviceName.protocol", "http")
@@ -42,15 +41,15 @@ class AppConfig @Inject() (config: Configuration) {
     s"$protocol://$host:$port"
   }
 
-  private def getConfString(confKey: String, defString: => String): String =
-    config
-      .getOptional[String](s"$rootServices.$confKey")
-      .getOrElse(defString)
-
   private def getConfInt(confKey: String, defInt: => Int): Int =
     config
       .getOptional[Int](s"$rootServices.$confKey")
       .getOrElse(defInt)
+
+  private def getConfString(confKey: String, defString: => String): String =
+    config
+      .getOptional[String](s"$rootServices.$confKey")
+      .getOrElse(defString)
 
   private def throwConfigNotFoundError(key: String): Nothing =
     throw new RuntimeException(s"Could not find config key '$key'")
