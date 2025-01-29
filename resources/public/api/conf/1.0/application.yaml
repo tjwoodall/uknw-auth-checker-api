@@ -49,7 +49,7 @@ paths:
       responses:
         "200":
           description: |
-            Success - Authorised. A list of EORI numbers provided with their authorised status as boolean 'true'.
+            Success - Authorised. A list of EORI numbers provided with their authorised status as boolean 'true' or 'false'.
           content:
             application/json:
               schema:
