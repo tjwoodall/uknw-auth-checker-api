@@ -16,17 +16,21 @@
 
 package uk.gov.hmrc.uknwauthcheckerapi.models.constants
 
+import play.api.libs.json.JsError.toJson
+import play.api.libs.json.{JsError, Json}
+
 object ApiErrorMessages {
-  val badRequest:               String           = "Bad request"
-  val forbidden:                String           = "You are not allowed to access this resource"
-  val internalServerError:      String           = "Unexpected internal server error"
-  val invalidEori:              String => String = eori => s"$eori is not a supported EORI number"
-  val invalidEoriCount:         Int => String    = eoriMax => s"The request payload must contain between 1 and $eoriMax EORI entries"
-  val invalidRequest:           String           = "Invalid request"
-  val matchingResourceNotFound: String           = "Matching resource not found"
-  val notAcceptable:            String           = "Cannot produce an acceptable response. The Accept or Content-Type header is missing or invalid"
-  val requestEntityTooLarge:    String           = "Request Entity Too Large"
-  val serviceUnavailable:       String           = "Service unavailable"
+  val badRequest:               String            = "Bad request"
+  val forbidden:                String            = "You are not allowed to access this resource"
+  val internalServerError:      String            = "Unexpected internal server error"
+  val invalidEori:              String => String  = eori => s"$eori is not a supported EORI number"
+  val invalidEoriCount:         Int => String     = eoriMax => s"The request payload must contain between 1 and $eoriMax EORI entries"
+  val invalidRequest:           String            = "Invalid request"
+  val matchingResourceNotFound: String            = "Matching resource not found"
+  val notAcceptable:            String            = "Cannot produce an acceptable response. The Accept or Content-Type header is missing or invalid"
+  val requestEntityTooLarge:    String            = "Request Entity Too Large"
+  val serviceUnavailable:       String            = "Service unavailable"
+  val unableToDeserialiseJson:  JsError => String = jsError => s"Unable to deserialise - ${Json.stringify(toJson(jsError))}"
 
   val unauthorized: String = "The bearer token is invalid, missing, or expired"
 }

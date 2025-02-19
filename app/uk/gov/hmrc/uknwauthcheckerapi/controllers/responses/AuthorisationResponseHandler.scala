@@ -29,7 +29,7 @@ import uk.gov.hmrc.uknwauthcheckerapi.errors.ApiErrorResponses._
 import uk.gov.hmrc.uknwauthcheckerapi.errors.DataRetrievalError._
 import uk.gov.hmrc.uknwauthcheckerapi.errors._
 import uk.gov.hmrc.uknwauthcheckerapi.models.AuthorisationsResponse
-import uk.gov.hmrc.uknwauthcheckerapi.models.constants.CustomHeaderNames
+import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{ApiErrorMessages, CustomHeaderNames}
 import uk.gov.hmrc.uknwauthcheckerapi.services.ZonedDateTimeService
 
 trait AuthorisationResponseHandler extends Logging {
@@ -62,6 +62,10 @@ trait AuthorisationResponseHandler extends Logging {
           case ServiceUnavailableDataRetrievalError() =>
             logger.error(toLogMessage(SERVICE_UNAVAILABLE))
             ServiceUnavailableApiError.toResult
+
+          case UnableToDeserialiseDataRetrievalError(error) =>
+            logger.error(toLogMessage(INTERNAL_SERVER_ERROR, Some(ApiErrorMessages.unableToDeserialiseJson(error))))
+            InternalServerApiError.toResult
 
           case _ =>
             logger.error(toLogMessage(INTERNAL_SERVER_ERROR))

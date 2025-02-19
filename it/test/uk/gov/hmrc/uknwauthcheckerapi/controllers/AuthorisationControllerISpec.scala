@@ -187,6 +187,23 @@ class AuthorisationControllerISpec extends BaseISpec {
       }
     }
 
+    "return INTERNAL_SERVER_ERROR when integration framework response is unable to be deserialised" in new TestContext {
+      forAll { (validRequest: ValidAuthorisationRequest) =>
+        reset()
+
+        val request:                  AuthorisationRequest = validRequest.request
+        val authorisationRequestJson: JsValue              = Json.toJson(request)
+        val response:                 String               = "{}"
+        stubPost(TestConstants.eisAuthorisationsEndpointPath, INTERNAL_SERVER_ERROR, response)
+
+        val result: WSResponse = postRequest(authorisationsUrl, authorisationRequestJson)
+
+        result.status mustBe INTERNAL_SERVER_ERROR
+        verifyTimestampHeader(result)
+        verifyIntegrationFrameworkCall(callAmountWith5xxRetries)
+      }
+    }
+
     "return SERVICE_UNAVAILABLE when integration framework returns BAD_GATEWAY" in new TestContext {
       forAll { (validRequest: ValidAuthorisationRequest) =>
         reset()
