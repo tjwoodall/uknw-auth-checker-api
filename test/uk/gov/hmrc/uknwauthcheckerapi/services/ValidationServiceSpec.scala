@@ -18,8 +18,6 @@ package uk.gov.hmrc.uknwauthcheckerapi.services
 
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 
-import play.api.Application
-import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsError, JsPath, Json, JsonValidationError}
 import uk.gov.hmrc.uknwauthcheckerapi.controllers.BaseSpec
 import uk.gov.hmrc.uknwauthcheckerapi.errors.DataRetrievalError.ValidationDataRetrievalError
@@ -162,14 +160,11 @@ class ValidationServiceSpec extends BaseSpec {
 
 class ValidationServiceOverwrittenMaxEoriSpec extends BaseSpec {
 
-  private val maxEori = 10
-  private val configValue: Map[String, Int] = Map("microservice.services.self.eoriMax" -> maxEori)
+  private lazy val maxEori = 10
 
-  override def fakeApplication(): Application =
-    GuiceApplicationBuilder()
-      .configure(additionalAppConfig ++ configValue)
-      .overrides(moduleOverrides)
-      .build()
+  override def configOverrides: Map[String, Any] = Map(
+    "microservice.services.self.eoriMax" -> maxEori
+  )
 
   private val service = new ValidationService(minMaxValues)
 

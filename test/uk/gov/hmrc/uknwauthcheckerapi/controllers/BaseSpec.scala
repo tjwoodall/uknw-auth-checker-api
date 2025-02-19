@@ -67,7 +67,7 @@ class BaseSpec
   implicit lazy val materializer: Materializer         = Materializer(system)
   implicit lazy val zs:           ZonedDateTimeService = injected[ZonedDateTimeService]
 
-  protected val additionalAppConfig: Map[String, Any] = Map(
+  private val additionalAppConfig: Map[String, Any] = Map(
     TestConstants.configMetricsKey  -> false,
     TestConstants.configAuditingKey -> false,
     TestConstants.configRetriesKey -> List(
@@ -94,13 +94,13 @@ class BaseSpec
   when(mockZonedDateTimeService.nowAsIsoUtc8601String())
     .thenReturn(Iso8601DateTimeFormatter.format(ZonedDateTime.of(LocalDate.now.atTime(LocalTime.MIDNIGHT), ZoneId.of("UTC"))))
 
+  protected def configOverrides: Map[String, Any] = Map()
+
   override def fakeApplication(): Application =
     GuiceApplicationBuilder()
       .configure(additionalAppConfig)
       .overrides(moduleOverrides)
       .build()
-
-  protected def configOverrides: Map[String, Any] = Map()
 
   protected def injected[T](using evidence: ClassTag[T]): T = app.injector.instanceOf[T]
 
