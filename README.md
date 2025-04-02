@@ -293,7 +293,7 @@ To request data from the API using Bruno, use the `.bru` files that
 can be found in the `.bruno` folder.
 
 Furthermore, for requests on developer machines, the `Local` environment in bruno should be used, as it enables a pre-script
-in the [collection](https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/collection.bru)
+in the [collection](https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/local/collection.bru)
 to run which automatically requests a bearer token from AUTH_LOGIN_API and stores it in
 the `bearerToken` environment variable, which is used by each authenticated request, without the need to add the bearer
 token in manually.
