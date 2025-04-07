@@ -58,27 +58,42 @@ Each EORI must match the following pattern:
 You also must include an Accept header of `application/vnd.hmrc.1.0+json` as it is validated by
 the API. Not including it will result in a 406 `NOT_ACCEPTABLE` response.
 
+We need to generate the Bearer token using the following curl command inorder to invoke the `/authorisations` endpoint.
+(This Bearer token is needed to make the call to the Integration Framework)
+
+#### Curl sample to generate the Bearer token
+```shell
+response=$(curl --request POST \
+--url http://localhost:8585/application/session/login \
+ --header 'Content-Type: application/json' \
+--data '{
+    "clientId": "d5f3e2ed-7346-4b02-9efb-f48593407810",
+    "authProvider": "StandardApplication",
+    "applicationId": "87d4dd99-a550-4fe5-90e4-a3d544fa82c8",
+    "applicationName": "uknw-auth-checker-api",
+    "enrolments": [],
+    "ttl": 5000
+}' -i)
+
+token=$(echo "$response" | awk -F'Authorization: Bearer ' 'NF>1{print $2}' | awk -F ',GNAP' '{print $1}')
+echo "Bearer Token: $token"
+```
+
 #### Curl sample
 
 ```shell
 curl --request POST \
   --url http://localhost:9070/authorisations \
+  --header 'Content-Type: application/json' \
   --header 'Accept: application/vnd.hmrc.1.0+json' \
-  --header 'Authorization: Bearer PFZBTElEX1RPS0VOPg==' \
+  --header "Authorization: Bearer $token" \
   --data '{
   "eoris": [
     "GB000000000200",
-    "XI000000000200",
+    "XI000000000200"
   ]
 }'
 ```
-
-The fake bearer token (base64 decoded as `<VALID_TOKEN>`) is stored in the
-[application.conf](https://github.com/hmrc/uknw-auth-checker-api-stub/blob/main/conf/application.conf)
-file under `microservices.services.integration-framework.bearerToken`.
-
-The [uknw-auth-checker-api-stub](https://github.com/hmrc/uknw-auth-checker-api-stub)
-has been set up to validate the fake token in each request, so not including it will respond with 401 `UNAUTHORIZED`.
 
 ## Responses
 
@@ -234,7 +249,7 @@ and [Scala language](https://www.scala-lang.org/).
 
 ### Prerequisites
 
-* [Java 17+](https://adoptium.net/)
+* [Java 21](https://adoptium.net/)
 * [SBT 1.9.9](https://www.scala-sbt.org/download/)
 
 ## Running the service
@@ -250,6 +265,10 @@ with the service manager profile `UKNW_AUTH_CHECKER_API` will start
 the UKNW auth checker API.
 
 > `sm2 --start UKNW_AUTH_CHECKER_API`
+
+Make sure you run all the dependant services through the service manager:
+
+> `sm2 --start NOTIFICATION_OF_PRESENTATION_ALL`
 
 ## Running tests
 
@@ -293,7 +312,7 @@ To request data from the API using Bruno, use the `.bru` files that
 can be found in the `.bruno` folder.
 
 Furthermore, for requests on developer machines, the `Local` environment in bruno should be used, as it enables a pre-script
-in the [collection](https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/collection.bru)
+in the [collection](https://github.com/hmrc/uknw-auth-checker-api/blob/main/.bruno/local/collection.bru)
 to run which automatically requests a bearer token from AUTH_LOGIN_API and stores it in
 the `bearerToken` environment variable, which is used by each authenticated request, without the need to add the bearer
 token in manually.
