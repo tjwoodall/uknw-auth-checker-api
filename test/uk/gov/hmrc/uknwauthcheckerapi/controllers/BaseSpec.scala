@@ -17,7 +17,6 @@
 package uk.gov.hmrc.uknwauthcheckerapi.controllers
 
 import java.time.{LocalDate, LocalTime, ZoneId, ZonedDateTime}
-import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
@@ -25,7 +24,6 @@ import com.google.inject.AbstractModule
 import com.typesafe.config.Config
 import org.apache.pekko.actor.ActorSystem
 import org.apache.pekko.stream.Materializer
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.{any, eq => matching}
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterAll
@@ -41,8 +39,7 @@ import play.api.libs.json.JsValue
 import play.api.mvc.{AnyContentAsEmpty, ControllerComponents}
 import play.api.test.{DefaultAwaitTimeout, FakeHeaders, FakeRequest, Helpers}
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.authProviderId
-import uk.gov.hmrc.auth.core.retrieve.{Credentials, EmptyRetrieval, LegacyCredentials, StandardApplication}
+import uk.gov.hmrc.auth.core.retrieve.{Credentials, EmptyRetrieval}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.HttpVerbs.POST
 import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
@@ -127,10 +124,7 @@ class BaseSpec
   }
 
   protected def stubAuthorization(): Unit = {
-    val retrievalResult = Future.successful(StandardApplication(UUID.randomUUID().toString))
-
-    when(mockAuthConnector.authorise[LegacyCredentials](any(), matching(authProviderId))(any(), any()))
-      .thenReturn(retrievalResult)
+    val retrievalResult = Future.successful(Credentials(TestConstants.credentialProviderId, TestConstants.credentialProviderType))
 
     when(mockAuthConnector.authorise[Credentials](any(), any())(any(), any()))
       .thenReturn(retrievalResult)

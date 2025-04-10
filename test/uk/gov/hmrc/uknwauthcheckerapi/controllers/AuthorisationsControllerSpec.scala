@@ -325,5 +325,4 @@ class AuthorisationsControllerSpec extends BaseSpec {
       )
     }
   }
-
 }

@@ -21,8 +21,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import play.api.Logging
 import play.api.mvc._
+import uk.gov.hmrc.auth.core.AuthProvider.StandardApplication
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.authProviderId
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import uk.gov.hmrc.uknwauthcheckerapi.errors.ApiErrorResponses.ServiceUnavailableApiError
@@ -39,11 +39,7 @@ class AuthAction @Inject() (ac: AuthConnector)(using ec: ExecutionContext, zs: Z
   override def filter[A](request: Request[A]): Future[Option[Result]] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequest(request)
     auth
-      .authorised()
-      .retrieve(authProviderId) { authProviderId =>
-        logger.warn(s"[AuthAction][filter] Auth Provider ID: ${authProviderId.toString}")
-        Future.successful(None)
-      }
+      .authorised(AuthProviders(StandardApplication))(Future.successful(None))
       .recover {
         case exception: InternalError =>
           logger.error(s"[AuthAction][filter] Authorization failed with Internal Error", exception)

@@ -275,5 +275,4 @@ class AuthorisationControllerISpec extends BaseISpec {
       verifyTimestampHeader(result)
     }
   }
-
 }
