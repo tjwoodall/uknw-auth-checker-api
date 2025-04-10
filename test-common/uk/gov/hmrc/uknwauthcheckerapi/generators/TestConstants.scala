@@ -17,23 +17,24 @@
 package uk.gov.hmrc.uknwauthcheckerapi.generators
 
 object TestConstants {
-  val authorisationEndpoint:           String = "authorisation"
-  val actorName:                       String = "actor"
-  val bearerToken:                     String = "Bearer PFZBTElEX1RPS0VOPg=="
-  val callAmountWithRetries:           Int    = 4
-  val configAuditingKey:               String = "auditing.enabled"
-  val configOverrideRetryInterval:     String = "1ms"
-  val configMetricsKey:                String = "metrics.enabled"
-  val configRetriesKey:                String = "http-verbs.retries.intervals"
-  val configWireMockHost:              String = "localhost"
-  val configWireMockPort:              Int    = 9999
-  val credentialProviderId:            String = "id"
-  val credentialProviderType:          String = "StandardApplication"
-  val eisAuthorisationsEndpointPath:   String = "/cau/validatecustomsauth/v1"
-  val errorExpectedException:          String = "expected exception to be thrown"
-  val errorUnexpectedResponse:         String = "unexpected response"
-  val errorExpectedUpstreamResponse:   String = "expected UpstreamErrorResponse when error is received"
-  val emptyJson:                       String = "{}"
+  val authorisationEndpoint:         String = "authorisation"
+  val actorName:                     String = "actor"
+  val bearerToken:                   String = "Bearer PFZBTElEX1RPS0VOPg=="
+  val callAmountWithRetries:         Int    = 4
+  val configAuditingKey:             String = "auditing.enabled"
+  val configOverrideRetryInterval:   String = "1ms"
+  val configMetricsKey:              String = "metrics.enabled"
+  val configRetriesKey:              String = "http-verbs.retries.intervals"
+  val configWireMockHost:            String = "localhost"
+  val configWireMockPort:            Int    = 9999
+  val credentialProviderId:          String = "id"
+  val credentialProviderType:        String = "StandardApplication"
+  val eisAuthorisationsEndpointPath: String = "/cau/validatecustomsauth/v1"
+  val errorExpectedException:        String = "expected exception to be thrown"
+  val errorUnexpectedResponse:       String = "unexpected response"
+  val errorExpectedUpstreamResponse: String = "expected UpstreamErrorResponse when error is received"
+  val emptyJson:                     String = "{}"
+  val standardApplicationJson = """{ "authProviderId": { "clientId": "123" }}"""
   val emptyString:                     String = ""
   val invalidAuthTypeErrorMessage:     String = "Invalid auth type UKNW"
   val invalidAuthTypeEisErrorMessage:  String = "Invalid authorisation type : UKNW"

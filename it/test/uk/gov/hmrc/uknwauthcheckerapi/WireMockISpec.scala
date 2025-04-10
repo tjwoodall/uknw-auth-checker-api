@@ -64,7 +64,7 @@ trait WireMockISpec extends BeforeAndAfterAll, BeforeAndAfterEach {
         .willReturn(
           aResponse()
             .withStatus(OK)
-            .withBody(TestConstants.emptyJson)
+            .withBody(TestConstants.standardApplicationJson)
         )
     )
 
