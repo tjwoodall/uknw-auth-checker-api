@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uknwauthcheckerapi.controllers.docs
+package uk.gov.hmrc.uknwauthcheckerapi.controllers
 
 import javax.inject.{Inject, Singleton}
 
