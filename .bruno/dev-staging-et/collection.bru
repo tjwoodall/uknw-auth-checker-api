@@ -35,9 +35,9 @@ script:pre-request {
 }
 
 script:post-response {
-  var token = res.body.access_token;
-  if (token) {
-    bru.setVar('bearerToken', token);
+  const accessToken = bru.oauth2CredentialVariables["$oauth2.credentials.access_token"];
+  if (accessToken) {
+    bru.setVar('bearerToken', accessToken);
   }
   
   var correlationId = bru.getEnvVar('correlationId');
