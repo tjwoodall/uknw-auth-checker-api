@@ -18,8 +18,10 @@ package uk.gov.hmrc.uknwauthcheckerapi.connectors
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+
 import com.typesafe.config.Config
 import org.apache.pekko.actor.ActorSystem
+
 import play.api.http.{HeaderNames, MimeTypes}
 import play.api.libs.json.Json
 import play.api.libs.ws.writeableOf_JsValue
@@ -43,18 +45,15 @@ class IntegrationFrameworkConnector @Inject() (
 
   def getEisAuthorisationsResponse(eisAuthorisationRequest: EisAuthorisationRequest)(implicit hc: HeaderCarrier): Future[EisAuthorisationsResponse] =
     retryFor[EisAuthorisationsResponse]("Integration Framework Response")(retryCondition) {
-      val headers = integrationFrameworkHeaders(appConfig.integrationFrameworkBearerToken)
       httpClient
         .post(appConfig.eisAuthorisationsUrl)
-        .setHeader(headers*)
+        .setHeader(integrationFrameworkHeaders(appConfig.integrationFrameworkBearerToken)*)
         .withBody(Json.toJson(eisAuthorisationRequest))
         .executeAndDeserialise[EisAuthorisationsResponse]
-
     }
 
   private def integrationFrameworkHeaders(bearerToken: String)(implicit hc: HeaderCarrier): Seq[(String, String)] =
     Seq(
-      (HeaderNames.X_FORWARDED_HOST, appConfig.appName),
       (CustomHeaderNames.xCorrelationId, generateCorrelationId()),
       (HeaderNames.DATE, Rfc7231DateTime.now),
       (HeaderNames.CONTENT_TYPE, HmrcContentTypes.json),

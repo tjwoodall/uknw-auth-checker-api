@@ -26,7 +26,6 @@ class AppConfig @Inject() (config: Configuration) {
 
   private lazy val rootServices = "microservice.services"
 
-  val appName: String = config.get[String]("appName")
   val authorisationsEndpoint = "/authorisations"
   val authType: String = config.get[String]("authType")
   val eisAuthorisationsUrl = url"${baseUrl("integration-framework")}/cau/validatecustomsauth/v1"
