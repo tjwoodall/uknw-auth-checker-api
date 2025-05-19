@@ -21,7 +21,7 @@ import play.api.libs.json._
 import play.api.mvc.Result
 import play.api.mvc.Results.Status
 import uk.gov.hmrc.uknwauthcheckerapi.errors.transformers.{BadRequestErrorTransformer, JsErrorTransformer}
-import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{ApiErrorCodes, ApiErrorMessages, CustomHeaderNames, JsonPaths}
+import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{ApiErrorCodes, ApiErrorMessages, CustomHeaderNames, JsonErrorMessages, JsonPaths}
 import uk.gov.hmrc.uknwauthcheckerapi.services.ZonedDateTimeService
 
 sealed trait ApiErrorResponse {
@@ -93,4 +93,8 @@ final case class JsonValidationApiError(jsErrors: JsError) extends ApiErrorRespo
   val message:    String = ApiErrorMessages.badRequest
 
   val getErrors: JsValue = transformJsErrors(jsErrors)
+}
+
+object JsonValidationApiError {
+  def jsonStructureError: JsonValidationApiError = JsonValidationApiError(JsError(JsonErrorMessages.jsonStructureIncorrect))
 }

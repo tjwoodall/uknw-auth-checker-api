@@ -38,6 +38,7 @@ class ApiErrorHandler @Inject (implicit zs: ZonedDateTimeService) extends HttpEr
 
     Future.successful(
       statusCode match {
+        case BAD_REQUEST              => JsonValidationApiError.jsonStructureError.toResult
         case FORBIDDEN                => ForbiddenApiError.toResult
         case NOT_FOUND                => NotFoundApiError.toResult
         case REQUEST_ENTITY_TOO_LARGE => RequestEntityTooLargeApiError.toResult

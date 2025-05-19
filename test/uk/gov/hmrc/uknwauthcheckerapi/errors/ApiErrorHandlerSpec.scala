@@ -50,6 +50,13 @@ class ApiErrorHandlerSpec extends BaseSpec {
   }
 
   "onClientError" should {
+    "convert a BAD_REQUEST to Bad Request (400) response" in new TestContext {
+      doTestClient(
+        statusCode = BAD_REQUEST,
+        response = JsonValidationApiError.jsonStructureError
+      )
+    }
+
     "convert a FORBIDDEN to Forbidden (403) response" in new TestContext {
       doTestClient(
         statusCode = FORBIDDEN,

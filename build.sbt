@@ -15,7 +15,6 @@ lazy val microservice = Project("uknw-auth-checker-api", file("."))
     scalacOptions += "-Wconf:msg=lint-eta-sam:s,src=routes/.*:s,msg=Flag.*repeatedly:s",
     PlayKeys.devSettings := Seq("play.server.http.port" -> "9070")
   )
-  .settings(resolvers += Resolver.jcenterRepo)
   .settings(CodeCoverageSettings.settings*)
   .settings(
     Compile / unmanagedResourceDirectories += baseDirectory.value / "resources",
