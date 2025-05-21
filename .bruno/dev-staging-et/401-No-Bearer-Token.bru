@@ -1,7 +1,7 @@
 meta {
   name: 401-No-Bearer-Token
   type: http
-  seq: 6
+  seq: 11
 }
 
 post {
@@ -21,9 +21,9 @@ body:json {
     ]
   }
 }
+
 assert {
   res.status: eq 401
   res.body.code: eq "MISSING_CREDENTIALS"
   res.body.message: eq "Authentication information is not provided"
 }
-

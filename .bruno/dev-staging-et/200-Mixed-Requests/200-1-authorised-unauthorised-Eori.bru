@@ -31,23 +31,27 @@ assert {
 tests {
   test("should have 2 EORI results", function() {
     const data = res.getBody();
-
+  
     expect(data.eoris).to.be.an('array').that.has.lengthOf(2);
   });
-
-
+  
+  
   test("EORI returned is EORI sent in request", function(){
     expect(res.getBody().eoris[0].eori).to.equal("GB837826880909874");
      expect(res.getBody().eoris[1].eori).to.equal("GB702601139907");
-
-
+  
+  
   });
-
+  
   test("confirm Date Format", function() {
-      const data = res.getBody();
-  var timestampFormat= /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{2}Z$/.test(data.date);
-  expect(timestampFormat).to.equal(true);
-  var currentDate =  new Date().toJSON().slice(0, 15);
+    const data = res.getBody();
+    var timestampFormat= /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{2}Z$/.test(data.date);
+    expect(timestampFormat).to.equal(true);
+    
+    var startOfToday = new Date();
+    startOfToday.setUTCHours(0,0,0,0);
+    var currentDate =  startOfToday.toJSON().slice(0, 16);
     expect(data.date).to.startWith(currentDate);
+    
   });
 }

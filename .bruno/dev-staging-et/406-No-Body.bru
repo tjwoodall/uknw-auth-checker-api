@@ -1,7 +1,7 @@
 meta {
   name: 406-No-Body
   type: http
-  seq: 7
+  seq: 12
 }
 
 post {
@@ -26,4 +26,3 @@ assert {
   res.body.code: eq "NOT_ACCEPTABLE"
   res.body.message: eq "Cannot produce an acceptable response. The Accept or Content-Type header is missing or invalid"
 }
-

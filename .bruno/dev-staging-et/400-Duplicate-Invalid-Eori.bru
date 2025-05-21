@@ -1,7 +1,7 @@
 meta {
   name: 400-Duplicate-Invalid-Eori
   type: http
-  seq: 8
+  seq: 6
 }
 
 post {
@@ -31,30 +31,27 @@ assert {
 }
 
 tests {
-
   const error_code = 'INVALID_FORMAT';
   var invalidEoris = 'JsdbuwnNN%$400';
   var error_message = " is not a supported EORI number";
   const error_path = "eoris";
   const data = res.getBody();
-
+  
   test(`res.body.errors.code: eq ${error_code}`, function() {
       expect(data.errors[0].code).to.equal(error_code);
   });
-
+  
   test(`res.body.errors.
-  message: eq ${invalidEoris2} / ${invalidEoris} ${error_message}`, function(){
+  message: eq ${invalidEoris} / ${invalidEoris} ${error_message}`, function(){
        expect(data.errors[0].message).to.equal(invalidEoris + error_message);
   });
-
+  
   test(`res.body.errors.path: eq ${error_path}`, function() {
       expect(data.errors[0].path).to.equal(error_path);
-
+  
   });
-
+  
   test(`should have 1 error result`, function() {
      expect(data.errors).to.be.an('array').that.has.lengthOf(1);
   });
 }
-
-

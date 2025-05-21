@@ -1,7 +1,7 @@
 meta {
   name: 401-Invalid-Bearer-Token
   type: http
-  seq: 5
+  seq: 10
 }
 
 post {
@@ -28,4 +28,3 @@ assert {
   res.body.code: eq "INVALID_CREDENTIALS"
   res.body.message: eq "Invalid Authentication information provided"
 }
-

@@ -1,7 +1,7 @@
 meta {
   name: 400-Invalid-Json-Format
   type: http
-  seq: 1
+  seq: 7
 }
 
 post {
@@ -22,6 +22,7 @@ body:json {
       ]
   
 }
+
 assert {
   res.status: eq 400
   res.body.code: eq "BAD_REQUEST"
@@ -29,21 +30,20 @@ assert {
 }
 
 tests {
-
   const error_code = 'INVALID_FORMAT';
   const error_message ="JSON structure is incorrect";
   const error_path = "";
   const data = res.getBody();
-
+  
   test(`res.body.errors.code: eq ${error_code}`, function() {
       expect(data.errors[0].code).to.equal(error_code);
   });
-
+  
   test(`res.body.errors.
   message: eq ${error_message}`, function(){
        expect(data.errors[0].message).to.equal(error_message);
   });
-
+  
   test(`res.body.errors.path: eq ${error_path}`, function() {
       expect(data.errors[0].path).to.equal(error_path);
   });
