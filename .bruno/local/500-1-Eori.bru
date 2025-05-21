@@ -22,3 +22,15 @@ body:json {
       ]
   }
 }
+
+assert {
+  res.status: eq 500
+  res.body.code: eq INTERNAL_SERVER_ERROR
+  res.body.message: eq Unexpected internal server error 
+}
+
+tests {
+  
+  
+  
+}

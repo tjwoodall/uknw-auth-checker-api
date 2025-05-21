@@ -1033,4 +1033,13 @@ tests {
     const data = res.getBody();
     data.eoris.map(json => expect(json.authorised).to.equal(false))
   });
+  test("confirm Date Format", function() {
+     var currentDate = new Date();
+      currentDate
+      .setUTCHours(0,0,0,0);
+     var timestamp = 
+  currentDate.toISOString().replace(".000", '.00');
+    const data = res.getBody();
+  expect(res.body.date).to.equal(timestamp);
+  });
 }

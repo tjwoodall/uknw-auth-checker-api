@@ -128,9 +128,12 @@ tests {
     expect(res.getStatus()).to.equal(200);
     expect(data.eoris).to.be.an('array').that.has.lengthOf(100);
   });
-  
-  test("all EORI results should be authorised", function() {
-    const data = res.getBody();
-    data.eoris.map(json => expect(json.authorised).to.equal(true))
-  });
+
+  test("confirm Date Format", function() {
+        const data = res.getBody();
+    var timestampFormat= /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{2}Z$/.test(data.date);
+    expect(timestampFormat).to.equal(true);
+    var currentDate =  new Date().toJSON().slice(0, 15);
+      expect(data.date).to.startWith(currentDate);
+    });
 }

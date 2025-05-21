@@ -10021,3 +10021,10 @@ body:json {
     ]
   }
 }
+
+assert {
+  res.status: eq 413
+  res.body.code: eq REQUEST_ENTITY_TOO_LARGE
+  res.body.message: eq Request Entity Too Large
+}
+

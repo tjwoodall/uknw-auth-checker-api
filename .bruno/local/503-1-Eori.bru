@@ -22,3 +22,14 @@ body:json {
       ]
   }
 }
+
+assert {
+  res.body.code: eq SERVER_ERROR
+  res.body.message: eq Service unavailable
+  res.status: eq 503
+}
+
+tests {
+  
+  
+}

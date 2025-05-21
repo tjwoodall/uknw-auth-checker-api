@@ -22,3 +22,9 @@ body:json {
       ]
   }
 }
+
+assert {
+  res.status : eq 403
+  res.body.code: eq "FORBIDDEN"
+  res.body.message: eq "You are not allowed to access this resource"
+}

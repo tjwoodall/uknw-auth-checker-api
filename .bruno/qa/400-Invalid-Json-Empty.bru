@@ -20,3 +20,30 @@ body:json {
   {
   }
 }
+
+assert {
+  res.status: eq 400
+  res.body.code: eq "BAD_REQUEST"
+  res.body.message: eq "Bad request"
+}
+
+tests {
+  
+  const error_code = 'INVALID_FORMAT';
+  const error_message ="eoris field missing from JSON";
+  const error_path = "eoris";
+  const data = res.getBody();
+  
+  test(`res.body.errors.code: eq ${error_code}`, function() {
+      expect(data.errors[0].code).to.equal(error_code);
+  });
+  
+  test(`res.body.errors.
+  message: eq ${error_message}`, function(){
+       expect(data.errors[0].message).to.equal(error_message);
+  });
+  
+  test(`res.body.errors.path: eq ${error_path}`, function() {
+      expect(data.errors[0].path).to.equal(error_path);
+  });
+}

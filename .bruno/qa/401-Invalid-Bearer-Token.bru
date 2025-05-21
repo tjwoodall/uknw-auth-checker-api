@@ -23,3 +23,9 @@ body:json {
     ]
   }
 }
+
+assert {
+  res.status: eq 401
+  res.body.code: eq "INVALID_CREDENTIALS"
+  res.body.message: eq "Invalid Authentication information provided"
+}

@@ -23,3 +23,27 @@ body:json {
     ]
   }
 }
+
+tests {
+  test("should have 2 EORI results", function() {
+    const data = res.getBody();
+    expect(res.getStatus()).to.equal(200);
+    expect(data.eoris).to.be.an('array').that.has.lengthOf(2);
+  });
+  
+  test(" one EORI result should be authorised and one EORI result should not be authorised ", function() {
+    const data = res.getBody();
+    expect (data.eoris[0].authorised).to.equal(true)
+     expect (data.eoris[1].authorised).to.equal(false)
+  });
+  test("confirm Date Format", function() {
+     var currentDate = new Date();
+      currentDate
+      .setUTCHours(0,0,0,0);
+     var timestamp = 
+  currentDate.toISOString().replace(".000", '.00');
+    const data = res.getBody();
+  expect(res.body.date).to.equal(timestamp);
+  });
+  
+}

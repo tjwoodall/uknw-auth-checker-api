@@ -1,7 +1,7 @@
 meta {
-  name: 400-19-Valid-Eoris-1-Invalid-EORI
+  name: 400-Invalid-Eori-wrong-country-prefix
   type: http
-  seq: 13
+  seq: 5
 }
 
 post {
@@ -12,34 +12,13 @@ post {
 
 headers {
   Accept: application/vnd.hmrc.1.0+json
-  Authorization: Bearer {{bearerToken}}
-  X-Correlation-Id: {{correlationId}}
+  Authorization: {{bearerToken}}
 }
 
 body:json {
   {
     "eoris": [
-      "GB56789101119991",
-      "GB567891011122",
-      "GB567891011123",
-      "GB567891011124",
-      "GB567891011125",
-      "GB567891011126",
-      "GB567891011127",
-      "GB567891011128",
-      "GB567891011129",
-      "GB567891011130",
-      "GB567891011131",
-      "GB567891011132",
-      "GB567891011133",
-      "GB567891011134",
-      "GB567891011135",
-      "GB567891011136",
-      "GB567891011137",
-      "GB567891011138",
-      "GB567891011139",
-      "GB567891011140"
-    ]
+      "DK837826880909874"]
   }
 }
 
@@ -50,12 +29,11 @@ assert {
 }
 
 tests {
-  
   const error_code = 'INVALID_FORMAT';
-  const invalidEoris = 'GB56789101119991';
+  const invalidEoris ='DK837826880909874';
   const error_message = invalidEoris +" is not a supported EORI number";
   const error_path = "eoris";
-  const data = res.getBody();
+    const data = res.getBody();
   
   test(`res.body.errors.code: eq ${error_code}`, function() {
       expect(data.errors[0].code).to.equal(error_code);

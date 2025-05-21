@@ -20,3 +20,9 @@ body:json {
       "eoris": []
   }
 }
+
+assert {
+  res.status: eq 406
+  res.body.code: eq NOT_ACCEPTABLE
+  res.body.message: eq Cannot produce an acceptable response. The Accept or Content-Type header is missing or invalid
+}

@@ -21,3 +21,9 @@ body:json {
     ]
   }
 }
+
+assert {
+  res.status: eq 401
+  res.body.code: eq UNAUTHORIZED
+  res.body.message: eq The bearer token is invalid, missing, or expired
+}

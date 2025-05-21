@@ -2,6 +2,10 @@ headers {
   X-Correlation-Id: {{correlationId}}
 }
 
+vars:pre-request {
+  invalidEoris: JsdbuwnNN%$400
+}
+
 script:pre-request {
   const axios = require("axios");
   
