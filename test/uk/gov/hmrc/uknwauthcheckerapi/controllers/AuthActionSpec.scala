@@ -38,7 +38,7 @@ class AuthActionSpec extends BaseSpec {
     def doTest(throwable: Throwable): Option[Result] = {
       reset(mockAuthConnector)
 
-      when(mockAuthConnector.authorise[Credentials](any(), any())(any(), any()))
+      when(mockAuthConnector.authorise[Credentials](any(), any())(using any(), any()))
         .thenReturn(Future.failed(throwable))
 
       await(authAction.filter(fakePostRequest))

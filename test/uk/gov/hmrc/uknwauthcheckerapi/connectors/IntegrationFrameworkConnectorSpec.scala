@@ -42,7 +42,7 @@ class IntegrationFrameworkConnectorSpec extends BaseSpec {
       reset(mockHttpClient)
       reset(mockRequestBuilder)
 
-      when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
+      when(mockHttpClient.post(any())(using any())).thenReturn(mockRequestBuilder)
       when(mockRequestBuilder.setHeader(any())).thenReturn(mockRequestBuilder)
       when(mockRequestBuilder.withBody(any())(using any(), any(), any())).thenReturn(mockRequestBuilder)
 

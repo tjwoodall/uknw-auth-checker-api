@@ -250,7 +250,7 @@ and [Scala language](https://www.scala-lang.org/).
 ### Prerequisites
 
 * [Java 21](https://adoptium.net/)
-* [SBT 1.9.9](https://www.scala-sbt.org/download/)
+* [SBT 1.10.11](https://www.scala-sbt.org/download/)
 
 ## Running the service
 

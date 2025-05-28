@@ -31,8 +31,8 @@ sealed trait ApiErrorResponse {
 
   private def convertErrorsToReadableFormat: JsValue =
     this match {
-      case badRequestError: BadRequestApiError     => Json.toJson(badRequestError)(ApiErrorResponse.badRequestApiErrorWrites)
-      case validationError: JsonValidationApiError => Json.toJson(validationError)(ApiErrorResponse.jsonValidationApiErrorWrites)
+      case badRequestError: BadRequestApiError     => Json.toJson(badRequestError)(using ApiErrorResponse.badRequestApiErrorWrites)
+      case validationError: JsonValidationApiError => Json.toJson(validationError)(using ApiErrorResponse.jsonValidationApiErrorWrites)
       case _ => Json.toJson(this)
     }
 

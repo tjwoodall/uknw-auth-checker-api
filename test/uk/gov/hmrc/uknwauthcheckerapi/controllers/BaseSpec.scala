@@ -126,10 +126,10 @@ class BaseSpec
   protected def stubAuthorization(): Unit = {
     val retrievalResult = Future.successful(Credentials(TestConstants.credentialProviderId, TestConstants.credentialProviderType))
 
-    when(mockAuthConnector.authorise[Credentials](any(), any())(any(), any()))
+    when(mockAuthConnector.authorise[Credentials](any(), any())(using any(), any()))
       .thenReturn(retrievalResult)
 
-    when(mockAuthConnector.authorise[Unit](any(), matching(EmptyRetrieval))(any(), any()))
+    when(mockAuthConnector.authorise[Unit](any(), matching(EmptyRetrieval))(using any(), any()))
       .thenReturn(Future.successful(()))
   }
 }
