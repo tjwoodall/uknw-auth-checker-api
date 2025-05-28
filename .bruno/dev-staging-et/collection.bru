@@ -15,6 +15,11 @@ auth:oauth2 {
 }
 
 script:pre-request {
+  const accessToken = bru.oauth2CredentialVariables["$oauth2.credentials.access_token"];
+  if (accessToken) {
+    bru.setVar('bearerToken', accessToken);
+  }
+  
   function uuidv4() {
       var d = new Date().getTime();
       var d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now()*1000)) || 0;
@@ -35,11 +40,6 @@ script:pre-request {
 }
 
 script:post-response {
-  const accessToken = bru.oauth2CredentialVariables["$oauth2.credentials.access_token"];
-  if (accessToken) {
-    bru.setVar('bearerToken', accessToken);
-  }
-  
   var correlationId = bru.getEnvVar('correlationId');
   if (correlationId) {
     bru.setEnvVar('correlationId', '');
