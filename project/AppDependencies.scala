@@ -3,7 +3,7 @@ import sbt.*
 
 object AppDependencies {
 
-  private val bootstrapVersion = "9.13.0"
+  private val bootstrapVersion = "9.15.0"
 
   val compile: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"   %% "bootstrap-backend-play-30" % bootstrapVersion,
@@ -15,7 +15,7 @@ object AppDependencies {
     "org.scalatestplus"      %% "scalacheck-1-18"        % "3.2.19.0"       % Test,
     "io.github.wolfendale"   %% "scalacheck-gen-regexp"  % "1.1.0"          % Test,
     "org.scalacheck"         %% "scalacheck"             % "1.18.1"         % Test,
-    "org.scalatestplus.play" %% "scalatestplus-play"     % "7.0.1"          % Test
+    "org.scalatestplus.play" %% "scalatestplus-play"     % "7.0.2"          % Test
   )
 
   val it: Seq[Nothing] = Seq.empty

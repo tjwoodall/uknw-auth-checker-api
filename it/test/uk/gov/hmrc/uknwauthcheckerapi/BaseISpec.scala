@@ -57,7 +57,7 @@ class BaseISpec extends PlaySpec, GuiceOneServerPerSuite, WireMockISpec, TestDat
 
   protected def injected[T](implicit evidence: ClassTag[T]): T = app.injector.instanceOf[T]
 
-  private def createRequest(url: String, headers: Seq[(String, String)] = defaultHeaders): WSRequest =
+  private def createRequest(url: String, headers: Seq[(String, String)]): WSRequest =
     wsClient.url(url).addHttpHeaders(headers*)
 
   protected def deleteRequest(url: String, headers: Seq[(String, String)] = defaultHeaders): WSResponse =

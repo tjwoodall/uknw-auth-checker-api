@@ -26,11 +26,11 @@ import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSResponse
 import play.mvc.Http.HeaderNames
+import uk.gov.hmrc.uknwauthcheckerapi.BaseISpec
 import uk.gov.hmrc.uknwauthcheckerapi.generators._
 import uk.gov.hmrc.uknwauthcheckerapi.models._
 import uk.gov.hmrc.uknwauthcheckerapi.models.constants.{CustomHeaderNames, HmrcContentTypes}
 import uk.gov.hmrc.uknwauthcheckerapi.models.eis._
-import uk.gov.hmrc.uknwauthcheckerapi.{BaseISpec, generators}
 
 class AuthorisationControllerISpec extends BaseISpec {
 
