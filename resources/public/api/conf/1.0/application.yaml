@@ -1,15 +1,15 @@
 openapi: 3.0.3
 info:
   version: 1.0.0
-  title: Notification of Presentation (NOP) waiver checker API
+  title: Notification of Presentation Waiver Checker API
   description: |
-    This API enables Community System Providers (CSPs) and software developers to check if traders have a valid Notification of Presentation (NOP) waiver authorisation using their EORI number. 
+    This API enables Community System Providers (CSPs) and software developers to check if traders have a valid Notification of Presentation (NOP) waiver authorisation, using their EORI number. 
     This waiver is necessary to enable the transit of Not At Risk (NAR) goods moving through from Great Britain (GB) to Northern Ireland (NI). 
     The API follows RESTful principles and has a single POST method endpoint that returns the data in JSON format. It uses standard HTTP error response codes.
 
     Use this API to request the NOP waiver authorisation status of between 1 and 3000 EORI numbers passed as an array. 
 
-    Note: The API endpoint relates only to GB and NI.
+    **Note:** The API endpoint relates only to GB and NI.
   contact: {}
 servers:
   - url: "https://test-api.service.hmrc.gov.uk"
@@ -22,11 +22,11 @@ paths:
   /customs/uk-notice-of-presentation-waiver/authorisations:
     post:
       tags:
-        - Endpoint for Authorisations
+        - Endpoints
       summary: |
-        Get NOP Waiver Authorisation Status 
+        Retrieve NOP Waiver Authorisation Status 
       description: |
-        Use this method to request the NOP waiver authorisation status of between 1 and 3000 EORI numbers.
+        Use this endpoint to request the NOP waiver authorisation status of between 1 and 3000 EORI numbers.
 
       operationId: requestAuth
       parameters:
@@ -35,11 +35,6 @@ paths:
       requestBody:
         description: |
           The payload of the API request. 
-
-          Request Example:
-
-          curl -X POST "https://test-api.service.hmrc.gov.uk/customs/uk-notice-of-presentation-waiver/authorisations"
-
         required: true
         content:
           application/json:
