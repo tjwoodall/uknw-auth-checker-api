@@ -1,0 +1,266 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: Notification of Presentation Waiver Checker API
+  description: |
+    This API enables Community System Providers (CSPs) and software developers to check if traders have a valid Notification of Presentation (NOP) waiver authorisation, using their EORI number. 
+    This waiver is necessary to enable the transit of Not At Risk (NAR) goods moving through from Great Britain (GB) to Northern Ireland (NI). 
+    The API follows RESTful principles and has a single POST method endpoint that returns the data in JSON format. It uses standard HTTP error response codes.
+
+    Use this API to request the NOP waiver authorisation status of between 1 and 3000 EORI numbers passed as an array. 
+
+    **Note:** The API endpoint relates only to GB and NI.
+  contact: {}
+servers:
+  - url: "https://test-api.service.hmrc.gov.uk"
+    description: |
+      Sandbox URL for the test environment
+  - url: "https://api.service.hmrc.gov.uk"
+    description: |
+      Production URL for the live environment
+paths:
+  /customs/uk-notice-of-presentation-waiver/authorisations:
+    post:
+      tags:
+        - Endpoints
+      summary: |
+        Retrieve NOP Waiver Authorisation Status 
+      description: |
+        Use this endpoint to request the NOP waiver authorisation status of between 1 and 3000 EORI numbers.
+
+      operationId: requestAuth
+      parameters:
+        - $ref: '#/components/parameters/acceptHeader'
+        - $ref: '#/components/parameters/contentTypeHeader'
+      requestBody:
+        description: |
+          The payload of the API request. 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Request"
+
+      responses:
+        "200":
+          description: |
+            Success - Authorised. A list of EORI numbers provided with their authorised status as boolean 'true' or 'false'.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Authorisations"
+        "400":
+          description: |
+            Validation failure. The server cannot or will not process the request due to something that is perceived to be a client error. Possible causes could be:
+
+            <ul>
+              <li>unsupported country code in EORI number (GB and XI are supported)</li>
+              <li>invalid format for EORI number</li>
+            </ul>
+          content:
+            application/json:
+              examples:
+                single_error_json_structure_incorrect:
+                  value:
+                    {
+                      "code": "BAD_REQUEST",
+                      "message": "Bad request",
+                      "errors": [
+                        {
+                          "code": "INVALID_FORMAT",
+                          "message": "JSON structure is incorrect",
+                          "path": ""
+                        }
+                      ]
+                    }
+                single_error_eoris:
+                  value:
+                    {
+                      "code": "BAD_REQUEST",
+                      "message": "Bad request",
+                      "errors": [
+                        {
+                          "code": "INVALID_FORMAT",
+                          "message": "ABCDEFGHIJK is not a supported EORI number",
+                          "path": "eoris"
+                        }
+                      ]
+                    }
+                multiple_errors_eoris:
+                  value:
+                    {
+                      "code": "BAD_REQUEST",
+                      "message": "Bad request",
+                      "errors": [
+                        {
+                          "code": "INVALID_FORMAT",
+                          "message": "ABCDEFGHIJK is not a supported EORI number",
+                          "path": "eoris"
+                        },
+                        {
+                          "code": "INVALID_FORMAT",
+                          "message": "LMNOPQRSTUV is not a supported EORI number",
+                          "path": "eoris"
+                        }
+                      ]
+                    }
+                multiple_errors_path_missing:
+                  value:
+                    {
+                      "code": "BAD_REQUEST",
+                      "message": "Bad request",
+                      "errors": [
+                        {
+                          "code": "INVALID_FORMAT",
+                          "message": "eoris field missing from JSON",
+                          "path": "eoris"
+                        }
+                      ]
+                    }
+        "401":
+          description: |
+            Authentication failure. Commonly a client side error, typically generated when authentication information is not provided, possibly by omitting a bearer token.
+          content:
+            application/json:
+              example:
+                {
+                  "code": "UNAUTHORIZED",
+                  "message": "The bearer token is invalid, missing, or expired"
+                }
+        "403":
+          description: |
+            Forbidden. The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. Other possible causes could be:
+
+            <ul>
+              <li>Authentication token expired</li>
+              <li>Missing authentication token</li>
+            </ul>
+          content:
+            application/json:
+              example:
+                {
+                  "code": "FORBIDDEN",
+                  "message": "You are not allowed to access this resource"
+                }
+        "406":
+          description: |
+            Not acceptable. This response is sent when the incoming request desires an accept header for a content we cannot support. Primary way to fix 406 errors is as follows:
+            <ul>
+              <li>Check Accept header</li>
+              <li>Check Request and Response headers</li>
+            </ul>
+          content:
+            application/json:
+              example:
+                {
+                  "code": "NOT_ACCEPTABLE",
+                  "message": "Cannot produce an acceptable response. The Accept or Content-Type header is missing or invalid"
+                }
+        "413":
+          description: |
+            Request entity too large. The request was rejected because the payload is too large. This API allows a maximum limit of 100KB for request bodies. Please reduce the size of the request payload and try again.
+          content:
+            application/json:
+              example:
+                {
+                  "code": "REQUEST_ENTITY_TOO_LARGE",
+                  "message": "The request payload exceeds the maximum allowed size of 100KB"
+                }
+        "429":
+          description: |
+            Request in excess of rate limit. The user has sent too many requests in a given amount of time.
+          content:
+            application/json:
+              example:
+                {
+                  "code": "RATE_LIMIT_VIOLATION",
+                  "message": "Request count from application in excess of rate limit"
+                }
+        "500":
+          description: |
+            Internal Server Error. The server has encountered a situation it does not know how to handle.
+          content:
+            application/json:
+              example:
+                {
+                  "code": "INTERNAL_SERVER_ERROR",
+                  "message": "Unexpected internal server error"
+                }
+        "503":
+          description: |
+            Service Unavailable. The server is currently unable to handle the incoming requests.
+          content:
+            application/json:
+              example:
+                {
+                  "code": "SERVER_ERROR",
+                  "message": "Service unavailable"
+                }
+      security:
+        - applicationRestricted: []
+components:
+  parameters:
+    acceptHeader:
+      name: Accept
+      in: header
+      description: >-
+        Specifies the response format and the
+        [version](/api-documentation/docs/reference-guide#versioning) of the API
+        to be used.
+      required: true
+      schema:
+        type: string
+        enum: [
+          "application/vnd.hmrc.1.0+json"
+        ]
+    contentTypeHeader:
+      name: Content-Type
+      in: header
+      description: The media type of the request body.
+      schema:
+        type: string
+        enum:
+          - application/json
+      required: true
+  securitySchemes:
+    applicationRestricted:
+      type: oauth2
+      description: |
+        HMRC supports OAuth 2.0 for authenticating application restricted API requests using an OAuth 2.0 Bearer Token in the AUTHORIZATION header.
+        See https://developer.service.hmrc.gov.uk/api-documentation/docs/authorisation/application-restricted-endpoints for details.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.service.hmrc.gov.uk/oauth/token
+          scopes: { }
+  schemas:
+    Request:
+      type: object
+      required:
+        - eoris
+      properties:
+        eoris:
+          description: |
+            An identifier for the business, unique to the customer.
+          type: array
+          pattern: ^(GB|XI)[0-9]{12}|(GB|XI)[0-9]{15}$
+          items:
+            type: string
+            example: GB123123123333
+    Authorisations:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date-time
+          example: 2024-02-01T14:15:22Z
+        eoris:
+          type: array
+          items:
+            type: object
+            properties:
+              eori:
+                type: string
+                example: GB123123123123
+              authorised:
+                type: boolean
+                example: true
