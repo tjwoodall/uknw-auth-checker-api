@@ -59,6 +59,8 @@ paths:
             </ul>
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
               examples:
                 single_error_json_structure_incorrect:
                   value:
@@ -122,6 +124,8 @@ paths:
             Authentication failure. Commonly a client side error, typically generated when authentication information is not provided, possibly by omitting a bearer token.
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
               example:
                 {
                   "code": "UNAUTHORIZED",
@@ -137,6 +141,8 @@ paths:
             </ul>
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
               example:
                 {
                   "code": "FORBIDDEN",
@@ -151,6 +157,8 @@ paths:
             </ul>
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
               example:
                 {
                   "code": "NOT_ACCEPTABLE",
@@ -161,6 +169,8 @@ paths:
             Request entity too large. The request was rejected because the payload is too large. This API allows a maximum limit of 100KB for request bodies. Please reduce the size of the request payload and try again.
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
               example:
                 {
                   "code": "REQUEST_ENTITY_TOO_LARGE",
@@ -171,6 +181,8 @@ paths:
             Request in excess of rate limit. The user has sent too many requests in a given amount of time.
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
               example:
                 {
                   "code": "RATE_LIMIT_VIOLATION",
@@ -181,6 +193,8 @@ paths:
             Internal Server Error. The server has encountered a situation it does not know how to handle.
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
               example:
                 {
                   "code": "INTERNAL_SERVER_ERROR",
@@ -191,6 +205,8 @@ paths:
             Service Unavailable. The server is currently unable to handle the incoming requests.
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
               example:
                 {
                   "code": "SERVER_ERROR",
@@ -264,3 +280,36 @@ components:
               authorised:
                 type: boolean
                 example: true
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          example: BAD_REQUEST
+        message:
+          type: string
+          example: Bad request
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+
+    ErrorDetail:
+      type: object
+      required:
+        - code
+        - message
+        - path
+      properties:
+        code:
+          type: string
+          example: INVALID_FORMAT
+        message:
+          type: string
+          example: ABCDEFGHIJK is not a supported EORI number
+        path:
+          type: string
+          example: eoris
