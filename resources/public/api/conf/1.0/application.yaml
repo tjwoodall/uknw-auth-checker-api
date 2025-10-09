@@ -213,7 +213,7 @@ paths:
                   "message": "Service unavailable"
                 }
       security:
-        - applicationRestricted: []
+        - Application-Restricted: []
 components:
   parameters:
     acceptHeader:
@@ -239,7 +239,7 @@ components:
           - application/json
       required: true
   securitySchemes:
-    applicationRestricted:
+    Application-Restricted:
       type: oauth2
       description: |
         HMRC supports OAuth 2.0 for authenticating application restricted API requests using an OAuth 2.0 Bearer Token in the AUTHORIZATION header.
