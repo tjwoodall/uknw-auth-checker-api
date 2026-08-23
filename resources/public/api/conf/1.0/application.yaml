@@ -13,11 +13,9 @@ info:
   contact: {}
 servers:
   - url: "https://test-api.service.hmrc.gov.uk"
-    description: |
-      Sandbox URL for the test environment
+    description: Sandbox
   - url: "https://api.service.hmrc.gov.uk"
-    description: |
-      Production URL for the live environment
+    description: Production
 paths:
   /customs/uk-notice-of-presentation-waiver/authorisations:
     post:
